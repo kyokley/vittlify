@@ -19,9 +19,23 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-
-# SECURITY WARNING: don't run with debug turned on in production!
-SECRET_KEY = 'secretkey'
+# Generate a secret key
+# Borrowed from https://gist.github.com/ndarville/3452907
+SECRET_FILE = os.path.join(BASE_DIR, 'secret.txt')
+try:
+    SECRET_KEY = open(SECRET_FILE).read().strip()
+except IOError:
+    try:
+        import random
+        SECRET_KEY = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz'
+                                                           'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                                                           '0123456789!@#$%^&*(-_=+)')
+                                for i in range(50)])
+        secret = file(SECRET_FILE, 'w')
+        secret.write(SECRET_KEY)
+        secret.close()
+    except IOError:
+        Exception('Please create a %s file with random characters to generate your secret key!' % SECRET_FILE)
 
 DEBUG = True
 
@@ -37,6 +51,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'vittlify',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -75,10 +90,15 @@ WSGI_APPLICATION = 'vittlify.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
+    # Testing settings!!!
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'dbname',                      # Or path to database file if using sqlite3.
+        'USER': 'db_user',
+        'PASSWORD': 'db_password',
+        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                      # Set to empty string for default.
+    },
 }
 
 
