@@ -23,7 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Borrowed from https://gist.github.com/ndarville/3452907
 SECRET_FILE = os.path.join(BASE_DIR, 'secret.txt')
 try:
-    SECRET_KEY = open(SECRET_FILE).read().strip()
+    with open(SECRET_FILE, 'r') as secret_file:
+        SECRET_KEY = secret_file.read().strip()
 except IOError:
     try:
         import random
@@ -31,9 +32,8 @@ except IOError:
                                                            'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                                                            '0123456789!@#$%^&*(-_=+)')
                                 for i in range(50)])
-        secret = file(SECRET_FILE, 'w')
-        secret.write(SECRET_KEY)
-        secret.close()
+        with open(SECRET_FILE, 'w') as secret_file:
+            secret_file.write(SECRET_KEY)
     except IOError:
         Exception('Please create a %s file with random characters to generate your secret key!' % SECRET_FILE)
 
