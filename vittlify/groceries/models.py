@@ -5,11 +5,12 @@ class Item(models.Model):
     shopping_list = models.ForeignKey('ShoppingList')
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
-    comments = models.TextField()
-    done = models.BooleanField()
+    comments = models.TextField(default='')
+    done = models.BooleanField(default=False)
 
 class Shopper(models.Model):
     user = models.OneToOneField('auth.User')
+    shopping_lists = models.ManyToManyField('ShoppingList')
 
 class ShoppingList(models.Model):
     owner = models.ForeignKey('Shopper')
