@@ -10,7 +10,7 @@ class Item(models.Model):
 
 class Shopper(models.Model):
     user = models.OneToOneField('auth.User')
-    shopping_lists = models.ManyToManyField('ShoppingList', blank=True, null=True)
+    shopping_lists = models.ManyToManyField('ShoppingList', blank=True)
 
 class ShoppingList(models.Model):
     owner = models.ForeignKey('Shopper')
