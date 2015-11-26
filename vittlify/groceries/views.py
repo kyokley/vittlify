@@ -23,13 +23,12 @@ def signin(request):
 
             user = authenticate(username=username, password=password)
 
-            if user is None:
-                raise Exception('Invalid User')
+            if user and user.is_active:
+                login(request, user)
+                context['loggedin'] = True
+                context['user'] = request.user
             else:
-                if user.is_active:
-                    login(request, user)
-                    context['loggedin'] = True
-                    context['user'] = request.user
+                raise Exception('Invalid User')
 
             if user and request.POST.has_key('next'):
                 return HttpResponseRedirect(request.POST['next'])
