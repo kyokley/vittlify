@@ -11,7 +11,6 @@
         <link rel="shortcut icon" type="image/png" href="{% static "assets/favicon.ico" %}"/>
         <!-- Bootstrap core CSS -->
         {% block css %}
-        <link href="{% static "assets/home.css" %}" rel="stylesheet">
         <link href="{% static "bootstrap-dist/css/bootstrap.css" %}" rel="stylesheet">
         <link href="{% static "bootstrap-dist/css/bootstrap-theme.css" %}" rel="stylesheet">
         {% endblock %}
@@ -60,6 +59,9 @@
             </div>
 
         </div> <!-- /container -->
+
+        {% block main %}
+        {% endblock %}
     </body>
 
     {% block javascript %}

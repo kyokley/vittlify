@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
+from .forms import SignInForm
 
 def index(request):
     return HttpResponse("Hello, world. You're at the vittlify index.")
@@ -13,17 +14,15 @@ def home(request):
     return HttpResponse(template.render(context))
 
 def signin(request):
-    context = {}
-    user = None
+    if request.method == 'POST':
+        form = SignInForm(request.POST)
+        if form.is_valid():
+            context = {}
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
 
-    if request.GET.has_key('next'):
-        context['next'] = request.GET['next']
-
-    try:
-        if request.method == 'POST':
-            username = request.POST['username']
-            password = request.POST['password']
             user = authenticate(username=username, password=password)
+
             if user is None:
                 raise Exception('Invalid User')
             else:
@@ -31,10 +30,11 @@ def signin(request):
                     login(request, user)
                     context['loggedin'] = True
                     context['user'] = request.user
-    except Exception:
-        context['error_message'] = 'Incorrect username or password!'
 
-    if user and request.POST.has_key('next'):
-        return HttpResponseRedirect(request.POST['next'])
+            if user and request.POST.has_key('next'):
+                return HttpResponseRedirect(request.POST['next'])
+            return render(request, 'groceries/signin.html', context)
+    else:
+        form = SignInForm()
 
-    return render(request, 'groceries/signin.html', context)
+    return render(request, 'groceries/signin.html', {'form': form})
