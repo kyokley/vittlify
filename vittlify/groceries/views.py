@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.template import RequestContext, loader
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from .forms import SignInForm
@@ -9,9 +8,11 @@ def index(request):
     return HttpResponse("Hello, world. You're at the vittlify index.")
 
 def home(request):
-    template = loader.get_template('groceries/home.html')
-    context = RequestContext(request, {})
-    return HttpResponse(template.render(context))
+    context = {}
+    user = request.user
+    if user and user.is_authenticated():
+        context['loggedin'] = True
+    return render(request, 'groceries/home.html', context)
 
 def signin(request):
     if request.method == 'POST':

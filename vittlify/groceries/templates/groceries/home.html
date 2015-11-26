@@ -36,13 +36,14 @@
                     <a class="navbar-brand" href="/vittlify/">Vittlify</a>
                 </div>
                 <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
                     {% if loggedin %}
-                    <p class="navbar-text navbar-right">Signed in as <a href="/vittlify/settings/" class="navbar-link">{{ user.username }}</a></p>
+                        <p class="navbar-text">Signed in as <a href="/vittlify/settings/" class="navbar-link">{{ user.username }}</a></p>
+                        <li><a href="/vittlify/logout/">Log out</a></li>
                     {% else %}
-                    <ul class="nav navbar-nav">
-                        <li class="navbar-right"><a href="/vittlify/signin/">Log In</a></li>
-                    </ul>
+                        <li><a href="/vittlify/signin/">Log In</a></li>
                     {% endif %}
+                    </ul>
                 </div><!--/.nav-collapse -->
             </div>
             {% endblock %}
