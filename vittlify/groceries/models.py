@@ -5,7 +5,7 @@ class Item(models.Model):
     shopping_list = models.ForeignKey('ShoppingList', related_name='items')
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
-    comments = models.TextField(default='')
+    comments = models.TextField(default='', blank=True)
     done = models.BooleanField(default=False)
 
     def __str__(self):
