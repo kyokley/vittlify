@@ -1,0 +1,39 @@
+{% extends "groceries/home.html" %}
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load url from future %}
+{% include title %}
+
+{% include css %}
+
+{% include navbar %}
+
+    <div class="jumbotron">
+        {% block jumbotron %}
+            {% if not loggedin %}
+                <h1>Grocery lists in the cloud!</h1>
+                <p></p>
+            {% else %}
+                <h1>Logged In!</h1>
+                <h3>You have logged in successfully</h3>
+                <a href="/vittlify/">Go Home</a>
+            {% endif %}
+        {% endblock %}
+    </div>
+
+    {% block main %}
+        {% if not loggedin %}
+              <form action="{% url 'vittlify:signin' %}" class="form-signin" role="form" method='post'>
+                {% csrf_token %}
+                <h2 class="form-signin-heading">Please sign in</h2>
+                <input type="text" id="username-textbox" class="form-control" placeholder="Username" required autofocus>
+                <input type="hidden" name="username" value="" id="username" />
+                <input type="password" id="password-textbox" class="form-control" placeholder="Password" required>
+                <input type="hidden" name="password" value="" id="password" />
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                <input type="hidden" name="next" value="{{ next }}" id="next" />
+              </form>
+        {% endif %}
+    {% endblock %}
+
+{% include javascript %}

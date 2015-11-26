@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load url from future %}
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Grocery lists in the cloud!">
+        <meta name="author" content="Kevin Yokley">
+        <link rel="shortcut icon" type="image/png" href="{% static "assets/favicon.ico" %}"/>
+        <!-- Bootstrap core CSS -->
+        {% block css %}
+        <link href="{% static "assets/home.css" %}" rel="stylesheet">
+        <link href="{% static "bootstrap-dist/css/bootstrap.css" %}" rel="stylesheet">
+        <link href="{% static "bootstrap-dist/css/bootstrap-theme.css" %}" rel="stylesheet">
+        {% endblock %}
+
+        {% block title %}
+        <title>Vittlify</title>
+        {% endblock %}
+
+    </head>
+
+    <body>
+        <!-- Fixed navbar -->
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            {% block navbar%}
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/vittlify/">Vittlify</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    {% if loggedin %}
+                    <p class="navbar-text navbar-right">Signed in as <a href="/vittlify/settings/" class="navbar-link">{{ user.username }}</a></p>
+                    {% else %}
+                    <ul class="nav navbar-nav">
+                        <li class="navbar-right"><a href="/vittlify/signin/">Log In</a></li>
+                    </ul>
+                    {% endif %}
+                </div><!--/.nav-collapse -->
+            </div>
+            {% endblock %}
+        </div>
+
+        <div class="container">
+
+            <!-- Main component for a primary marketing message or call to action -->
+            <div class="jumbotron">
+                {% block jumbotron %}
+                <h1>Welcome to the Vittlify</h1>
+                <p></p>
+                {% endblock %}
+            </div>
+
+        </div> <!-- /container -->
+    </body>
+
+    {% block javascript %}
+    <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="{% static "bootstrap-dist/js/bootstrap.min.js" %}"></script>
+    {% endblock %}
+</html>
