@@ -13,7 +13,7 @@ class Item(models.Model):
 
 class Shopper(models.Model):
     user = models.OneToOneField('auth.User')
-    shopping_lists = models.ManyToManyField('ShoppingList', blank=True)
+    shopping_lists = models.ManyToManyField('ShoppingList', blank=True, through='ShoppingListMember', related_name='members')
 
     @property
     def username(self):
@@ -32,3 +32,10 @@ class ShoppingList(models.Model):
         return 'id: {id} n: {name} o: {username}'.format(id=self.id,
                                                          name=self.name,
                                                          username=self.owner.username)
+
+class ShoppingListMember(models.Model):
+    shopper = models.ForeignKey('Shopper')
+    shopping_list = models.ForeignKey('ShoppingList')
+
+    def __str__(self):
+        return '%s is shared with shopper %s' % (self.shopping_list, self.shopper)
