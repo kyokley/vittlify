@@ -3,15 +3,21 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
 from .forms import SignInForm
+from .models import Shopper
 
 def index(request):
     return HttpResponse("Hello, world. You're at the vittlify index.")
 
 def home(request):
-    context = {}
+    context = {'loggedin': False}
     user = request.user
     if user and user.is_authenticated():
         context['loggedin'] = True
+
+        shopping_lists = list(Shopper.objects.filter(user=user).first().shopping_lists.all())
+        active_list = shopping_lists.pop()
+        context['shopping_lists'] = shopping_lists
+        context['active_list'] = active_list
     return render(request, 'groceries/home.html', context)
 
 def signin(request):

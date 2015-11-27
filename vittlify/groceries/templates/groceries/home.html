@@ -13,6 +13,7 @@
         {% block css %}
         <link href="{% static "bootstrap-dist/css/bootstrap.css" %}" rel="stylesheet">
         <link href="{% static "bootstrap-dist/css/bootstrap-theme.css" %}" rel="stylesheet">
+        <link href="{% static "assets/home.css" %}" rel="stylesheet">
         {% endblock %}
 
         {% block title %}
@@ -51,6 +52,7 @@
 
         <div class="container">
 
+            {% if not loggedin %}
             <!-- Main component for a primary marketing message or call to action -->
             <div class="jumbotron">
                 {% block jumbotron %}
@@ -58,6 +60,30 @@
                 <p></p>
                 {% endblock %}
             </div>
+            {% else %}
+                {% if active_list %}
+                    <div>
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#active-list-{{ active_list.name }}">{{ active_list.name }}</a></li>
+                            {% for shopping_list in shopping_lists %}
+                                <li><a data-toggle="tab" href="#shopping-list-{{ shopping_list.name }}">{{ shopping_list.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="tab-content">
+                        <div id="active-list-{{ active_list.name }}" class="tab-pane fade in active">
+                            <h3>active</h3>
+                            <p>Some content.</p>
+                        </div>
+                        {% for shopping_list in shopping_lists %}
+                        <div id="shopping-list-{{ shopping_list.name }}" class="tab-pane fade">
+                            <h3>HOME</h3>
+                            <p>Some content.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endif %}
 
         </div> <!-- /container -->
 
@@ -69,6 +95,7 @@
     <!-- Bootstrap core JavaScript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
+        <script src="{% static "jquery/jquery-2.1.4.min.js" %}"></script>
         <script src="{% static "bootstrap-dist/js/bootstrap.min.js" %}"></script>
     {% endblock %}
 </html>
