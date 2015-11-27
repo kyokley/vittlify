@@ -38,4 +38,6 @@ class ShoppingListMember(models.Model):
     shopping_list = models.ForeignKey('ShoppingList')
 
     def __str__(self):
-        return '%s is shared with shopper %s' % (self.shopping_list, self.shopper)
+        return '{list_name} is shared with shopper {shopper_name}'.format(
+                    list_name=self.shopping_list.name,
+                    shopper_name=self.shopper.username)
