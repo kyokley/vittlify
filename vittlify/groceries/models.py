@@ -10,6 +10,7 @@ class Item(models.Model):
 
     class Meta:
         unique_together = ('name', 'shopping_list')
+        ordering = ('name',)
 
     def __str__(self):
         return 'id: {id} n: {name}'.format(id=self.id, name=self.name)
@@ -30,6 +31,9 @@ class ShoppingList(models.Model):
     name = models.CharField(max_length=200, default='')
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('date_added',)
 
     def __str__(self):
         return 'id: {id} n: {name} o: {username}'.format(id=self.id,
