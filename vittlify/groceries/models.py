@@ -8,6 +8,9 @@ class Item(models.Model):
     comments = models.TextField(default='', blank=True)
     done = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('name', 'shopping_list')
+
     def __str__(self):
         return 'id: {id} n: {name}'.format(id=self.id, name=self.name)
 
