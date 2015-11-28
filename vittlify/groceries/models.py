@@ -33,6 +33,14 @@ class ShoppingList(models.Model):
                                                          name=self.name,
                                                          username=self.owner.username)
 
+    @property
+    def has_comments(self):
+        for item in self.items.all():
+            if item.comments:
+                return True
+        else:
+            return False
+
 class ShoppingListMember(models.Model):
     shopper = models.ForeignKey('Shopper')
     shopping_list = models.ForeignKey('ShoppingList')
