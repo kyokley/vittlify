@@ -8,6 +8,10 @@ class Item(models.Model):
     comments = models.TextField(default='', blank=True)
     done = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('name', 'shopping_list')
+        ordering = ('name',)
+
     def __str__(self):
         return 'id: {id} n: {name}'.format(id=self.id, name=self.name)
 
@@ -28,10 +32,21 @@ class ShoppingList(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ('date_added',)
+
     def __str__(self):
         return 'id: {id} n: {name} o: {username}'.format(id=self.id,
                                                          name=self.name,
                                                          username=self.owner.username)
+
+    @property
+    def has_comments(self):
+        for item in self.items.all():
+            if item.comments:
+                return True
+        else:
+            return False
 
 class ShoppingListMember(models.Model):
     shopper = models.ForeignKey('Shopper')

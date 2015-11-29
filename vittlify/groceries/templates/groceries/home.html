@@ -73,13 +73,73 @@
                     </div>
                     <div class="tab-content">
                         <div id="active-list-{{ active_list.name }}" class="tab-pane fade in active">
-                            <h3>active</h3>
-                            <p>Some content.</p>
+                            <div class="row">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                {% if active_list.has_comments %}
+                                                <th>Comments</th>
+                                                {% endif %}
+                                                <th>Done</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in active_list.items.all %}
+                                            <tr>
+                                                <td>{{ item.name }}</td>
+                                                {% if active_list.has_comments %}
+                                                <td>{{ item.comment }}</td>
+                                                {% endif %}
+                                                <td>
+                                                    {% if item.done %}
+                                                    <input type="checkbox" id="{{active_list.name}}-{{ item.name }}" name="{{active_list.name}}-{{item.name}}" checked />
+                                                    {% else %}
+                                                    <input type="checkbox" id="{{active_list.name}}-{{ item.name }}" name="{{active_list.name}}-{{item.name}}" />
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         {% for shopping_list in shopping_lists %}
                         <div id="shopping-list-{{ shopping_list.name }}" class="tab-pane fade">
-                            <h3>HOME</h3>
-                            <p>Some content.</p>
+                            <div class="row">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                {% if shopping_list.has_comments %}
+                                                <th>Comments</th>
+                                                {% endif %}
+                                                <th>Done</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in shopping_list.items.all %}
+                                            <tr>
+                                                <td>{{ item.name }}</td>
+                                                {% if shopping_list.has_comments %}
+                                                <td>{{ item.comment }}</td>
+                                                {% endif %}
+                                                <td>
+                                                    {% if item.done %}
+                                                    <input type="checkbox" id="{{shopping_list.name}}-{{ item.name }}" name="{{shopping_list.name}}-{{item.name}}" checked />
+                                                    {% else %}
+                                                    <input type="checkbox" id="{{shopping_list.name}}-{{ item.name }}" name="{{shopping_list.name}}-{{item.name}}" />
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
@@ -100,6 +160,7 @@
         <script src="{% static "bootstrap-dist/js/bootstrap.min.js" %}"></script>
         <script src="{% static "datatables/jquery.dataTables.min.js" %}"></script>
         <script src="{% static "datatables/dataTables.bootstrap.min.js" %}"></script>
+        <script src="{% static "assets/groceries.js" %}"></script>
         <script type="text/javascript">
             //$(document).ready(function(){
             //    $('#myTable').DataTable();
