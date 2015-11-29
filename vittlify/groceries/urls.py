@@ -1,8 +1,10 @@
 from django.conf.urls import url
-
-from . import views
+from . import (views,
+               api_views,
+               )
 
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^signin/$', views.signin, name='signin'),
+    url(r'^shopping_list_items/(?P<pk>[0-9]+)/$', api_views.ItemList.as_view(), name='shopping_list_items'),
 ]

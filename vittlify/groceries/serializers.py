@@ -7,6 +7,7 @@ class ItemSerializer(serializers.Serializer):
     pk = serializers.IntegerField(read_only=True)
     shopping_list_id = serializers.IntegerField()
     comments = serializers.CharField(required=False, allow_blank=True)
+    name = serializers.CharField()
     done = serializers.BooleanField(default=False)
 
     def create(self, validated_data):
@@ -16,6 +17,7 @@ class ItemSerializer(serializers.Serializer):
         shopping_list = ShoppingList.objects.get(pk=validated_data.get('shopping_list_id', instance.shopping_list.id))
         instance.shopping_list = shopping_list
         instance.comments = validated_data.get('comments', instance.comments)
+        instance.name = validated_data.get('name', instance.name)
         instance.done = validated_data.get('done', instance.done)
         instance.save()
         return instance
