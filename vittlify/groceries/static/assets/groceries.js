@@ -12,7 +12,7 @@ function addItem(token, list_id){
                  success: function(json){
                      var table = tables["table-shopping_list-" + list_id];
                      var checkbox = '<input type="checkbox" id="checkbox-' + list_id + '-' + json.pk + '" name="checkbox-' + json.name + '" />';
-                     table.row.add([item_name, checkbox]).draw();
+                     table.row.add([item_name, json.comments, checkbox]).draw();
                  },
                  error: function(){
                      console.log("Failed");
