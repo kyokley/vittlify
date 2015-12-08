@@ -95,9 +95,9 @@
                                                     {% endif %}
                                                     <td>
                                                         {% if item.done %}
-                                                        <input type="checkbox" id="{{active_list.name}}-{{ item.name }}" name="{{active_list.name}}-{{item.name}}" checked />
+                                                        <input type="checkbox" id="checkbox-{{active_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
                                                         {% else %}
-                                                        <input type="checkbox" id="{{active_list.name}}-{{ item.name }}" name="{{active_list.name}}-{{item.name}}" />
+                                                        <input type="checkbox" id="checkbox-{{active_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" />
                                                         {% endif %}
                                                     </td>
                                                 </tr>
@@ -150,9 +150,9 @@
                                                     {% endif %}
                                                     <td>
                                                         {% if item.done %}
-                                                        <input type="checkbox" id="{{shopping_list.name}}-{{ item.name }}" name="{{shopping_list.name}}-{{item.name}}" checked />
+                                                        <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
                                                         {% else %}
-                                                        <input type="checkbox" id="{{shopping_list.name}}-{{ item.name }}" name="{{shopping_list.name}}-{{item.name}}" />
+                                                        <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" />
                                                         {% endif %}
                                                     </td>
                                                 </tr>
