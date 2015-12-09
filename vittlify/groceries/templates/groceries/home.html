@@ -195,6 +195,13 @@
                 {% for shopping_list in shopping_lists %}
                     tables['table-shopping_list-{{shopping_list.id}}'] = $('#table-shopping_list-{{ shopping_list.id }}').DataTable();
                 {% endfor %}
+
+                $('input[name^="checkbox-"]').click(function(){
+                    var item_id = this.id.match('[0-9]+$');
+                    var list_id = this.id.match('[0-9]+');
+                    var checked = this.checked;
+                    updateRow('{{ csrf_token }}', item_id, checked);
+                });
             });
         </script>
     {% endblock %}

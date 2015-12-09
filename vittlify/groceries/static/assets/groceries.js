@@ -21,3 +21,18 @@ function addItem(token, list_id){
                  }
     });
 }
+
+function updateRow(token, item_id, checked){
+    jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
+                 type: "PUT",
+                 dataType: "json",
+                 data: {done: checked,
+                        csrfmiddlewaretoken: token},
+                 success: function(json){
+                     console.log('Set item ' + item_id + ' to ' + checked)
+                 },
+                 error: function(){
+                     console.log("Failed");
+                 }
+    });
+}
