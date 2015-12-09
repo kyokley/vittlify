@@ -1,4 +1,19 @@
 var tables = {};
+function updateRow(token, item_id, checked){
+    jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
+                 type: "PUT",
+                 dataType: "json",
+                 data: {done: checked,
+                        csrfmiddlewaretoken: token},
+                 success: function(json){
+                     console.log('Set item ' + item_id + ' to ' + checked)
+                 },
+                 error: function(){
+                     console.log("Failed");
+                 }
+    });
+}
+
 function addItem(token, list_id){
     var item_name = document.getElementById("new-item-name-" + list_id);
     var item_comments = document.getElementById("new-item-comment-" + list_id);
@@ -15,6 +30,13 @@ function addItem(token, list_id){
                      table.row.add([item_name.value, checkbox]).draw();
                      item_name.value = "";
                      item_comments.value = "";
+
+                     debugger;
+                     var selectorID = "checkbox-" + list_id + "-" + json.pk;
+                     jQuery('input[id=' + selectorID + ']').click(function(){
+                         var checked = this.checked;
+                         updateRow('{{ csrf_token }}', json.pk, checked);
+                     });
                  },
                  error: function(){
                      console.log("Failed");
@@ -22,17 +44,3 @@ function addItem(token, list_id){
     });
 }
 
-function updateRow(token, item_id, checked){
-    jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
-                 type: "PUT",
-                 dataType: "json",
-                 data: {done: checked,
-                        csrfmiddlewaretoken: token},
-                 success: function(json){
-                     console.log('Set item ' + item_id + ' to ' + checked)
-                 },
-                 error: function(){
-                     console.log("Failed");
-                 }
-    });
-}
