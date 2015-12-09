@@ -80,9 +80,6 @@
                                             <thead>
                                                 <tr>
                                                     <th>Item</th>
-                                                    {% if active_list.has_comments %}
-                                                    <th>Comments</th>
-                                                    {% endif %}
                                                     <th>Done</th>
                                                 </tr>
                                             </thead>
@@ -90,9 +87,6 @@
                                                 {% for item in active_list.items.all %}
                                                 <tr>
                                                     <td>{{ item.name }}</td>
-                                                    {% if active_list.has_comments %}
-                                                    <td>{{ item.comment }}</td>
-                                                    {% endif %}
                                                     <td>
                                                         {% if item.done %}
                                                         <input type="checkbox" id="checkbox-{{active_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
@@ -135,9 +129,6 @@
                                             <thead>
                                                 <tr>
                                                     <th>Item</th>
-                                                    {% if shopping_list.has_comments %}
-                                                    <th>Comments</th>
-                                                    {% endif %}
                                                     <th>Done</th>
                                                 </tr>
                                             </thead>
@@ -145,9 +136,6 @@
                                                 {% for item in shopping_list.items.all %}
                                                 <tr>
                                                     <td>{{ item.name }}</td>
-                                                    {% if shopping_list.has_comments %}
-                                                    <td>{{ item.comment }}</td>
-                                                    {% endif %}
                                                     <td>
                                                         {% if item.done %}
                                                         <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
