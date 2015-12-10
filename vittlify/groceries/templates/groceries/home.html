@@ -3,14 +3,13 @@
 {% load url from future %}
 <html lang="en">
     <head>
+        {% block header %}
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Grocery lists in the cloud!">
         <meta name="author" content="Kevin Yokley">
         <link rel="shortcut icon" type="image/png" href="{% static "assets/favicon.ico" %}"/>
-        <!-- Bootstrap core CSS -->
-        {% block css %}
         <link href="{% static "bootstrap-dist/css/bootstrap.css" %}" rel="stylesheet">
         <link href="{% static "bootstrap-dist/css/bootstrap-theme.css" %}" rel="stylesheet">
         <link href="{% static "datatables/dataTables.bootstrap.min.css" %}" rel="stylesheet">
@@ -41,7 +40,7 @@
                     <ul class="nav navbar-nav navbar-right">
                     {% if loggedin %}
                         <p class="navbar-text">Signed in as <a href="/vittlify/settings/" class="navbar-link">{{ user.username }}</a></p>
-                        <li><a href="/vittlify/logout/">Log out</a></li>
+                        <li><a href="/vittlify/signout/">Log out</a></li>
                     {% else %}
                         <li><a href="/vittlify/signin/">Log In</a></li>
                     {% endif %}
@@ -180,15 +179,15 @@
         {% endblock %}
     </body>
 
-    {% block javascript %}
-    <!-- Bootstrap core JavaScript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
+    {% block javascript_imports %}
         <script src="{% static "jquery/jquery-2.1.4.min.js" %}"></script>
         <script src="{% static "bootstrap-dist/js/bootstrap.min.js" %}"></script>
         <script src="{% static "datatables/jquery.dataTables.min.js" %}"></script>
         <script src="{% static "datatables/dataTables.bootstrap.min.js" %}"></script>
         <script src="{% static "assets/groceries.js" %}"></script>
+    {% endblock %}
+
+    {% block javascript %}
         <script type="text/javascript">
             $(document).ready(function(){
                 tables['table-shopping_list-{{active_list.id}}'] = $('#table-shopping_list-{{ active_list.id }}').DataTable();

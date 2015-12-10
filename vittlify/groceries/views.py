@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from .forms import SignInForm
 from .models import Shopper
@@ -39,8 +39,13 @@ def signin(request):
 
             if user and request.POST.has_key('next'):
                 return HttpResponseRedirect(request.POST['next'])
-            return render(request, 'groceries/signin.html', context)
+            return HttpResponseRedirect('/vittlify')
     else:
         form = SignInForm()
 
     return render(request, 'groceries/signin.html', {'form': form})
+
+def signout(request):
+    logout(request)
+    context = {}
+    return render(request, 'groceries/signout.html', context)

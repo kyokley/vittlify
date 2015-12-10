@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 {% load staticfiles %}
 {% load url from future %}
-{% include title %}
+{% include header %}
 
-{% include css %}
+{% include title %}
 
 {% include navbar %}
 
@@ -39,4 +39,5 @@
         {% endblock %}
     </div>
 
+{% include javascript_imports %}
 {% include javascript %}

@@ -1,0 +1,22 @@
+{% extends "groceries/home.html" %}
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load url from future %}
+{% include header %}
+
+{% include title %}
+
+{% include navbar %}
+
+    <div class="jumbotron">
+        {% block jumbotron %}
+            <h1>Logged out!</h1>
+            <h3>You have logged out successfully</h3>
+            <a href="/vittlify/">Go Home</a>
+        {% endblock %}
+    </div>
+
+{% include main %}
+
+{% include javascript_imports %}
+{% include javascript %}

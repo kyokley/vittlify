@@ -31,7 +31,6 @@ function addItem(token, list_id){
                      item_name.value = "";
                      item_comments.value = "";
 
-                     debugger;
                      var selectorID = "checkbox-" + list_id + "-" + json.pk;
                      jQuery('input[id=' + selectorID + ']').click(function(){
                          var checked = this.checked;
