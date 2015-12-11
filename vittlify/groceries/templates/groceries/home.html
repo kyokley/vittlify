@@ -50,7 +50,7 @@
             {% endblock %}
         </div>
 
-        <div class="container">
+        <div id="groceries-app-container" class="container">
 
             {% if not loggedin %}
             <!-- Main component for a primary marketing message or call to action -->
@@ -92,8 +92,12 @@
                                     <tbody>
                                         {% for item in shopping_list.items.all %}
                                         <tr>
-                                            <td>{{ item.name }}</td>
                                             <td>
+                                                <button type="button" class="btn btn-link">
+                                                {{ item.name }}
+                                                </button>
+                                            </td>
+                                            <td class="checkbox-div">
                                                 {% if item.done %}
                                                 <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
                                                 {% else %}

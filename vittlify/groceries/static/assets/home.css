@@ -1,3 +1,4 @@
 body { padding-top: 70px; }
 .shopping_list-tab { padding-top: 10px; }
 .shopping_list-table { padding-top: 10px; }
+#groceries-app-container .checkbox-div {vertical-align: middle;}
