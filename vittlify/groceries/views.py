@@ -11,9 +11,7 @@ def home(request):
         context['loggedin'] = True
 
         shopping_lists = list(Shopper.objects.filter(user=user).first().shopping_lists.all())
-        active_list = shopping_lists.pop()
         context['shopping_lists'] = shopping_lists
-        context['active_list'] = active_list
     return render(request, 'groceries/home.html', context)
 
 def signin(request):

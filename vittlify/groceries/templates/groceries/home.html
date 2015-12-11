@@ -61,116 +61,72 @@
                 {% endblock %}
             </div>
             {% else %}
-                {% if active_list %}
-                    <div>
-                        <ul class="nav nav-tabs">
-                            <li class="active"><a data-toggle="tab" href="#active-list-{{ active_list.name }}">{{ active_list.name }}</a></li>
-                            {% for shopping_list in shopping_lists %}
-                                <li><a data-toggle="tab" href="#shopping-list-{{ shopping_list.name }}">{{ shopping_list.name }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    <div class="tab-content">
-                        <div id="active-list-{{ active_list.name }}" class="tab-pane fade in active">
-                            <div class="row">
-                                <div class="col-xs-12 col-md-7 shopping_list-tab">
-                                    <div class="table-responsive shopping_list-table">
-                                        <table id="table-shopping_list-{{ active_list.id }}" class="table table-striped table-hover datatable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Item</th>
-                                                    <th>Done</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for item in active_list.items.all %}
-                                                <tr>
-                                                    <td>{{ item.name }}</td>
-                                                    <td>
-                                                        {% if item.done %}
-                                                        <input type="checkbox" id="checkbox-{{active_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
-                                                        {% else %}
-                                                        <input type="checkbox" id="checkbox-{{active_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" />
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-5 shopping_list-tab">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">Add new item</div>
-                                        <div class="panel-body">
-                                            <div class="form-group">
-                                                <label for="new-item-name-{{active_list.id}}">Name:</label>
-                                                <input type="text" class="form-control" id="new-item-name-{{active_list.id}}">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="new-item-comment-{{active_list.id}}">Comments:</label>
-                                                <textarea class="form-control" id="new-item-comment-{{active_list.id}}" rows="3"></textarea>
-                                            </div>
-                                            <div class="form-group">
-                                                <button id="add-btn-{{active_list.id}}" class="btn btn-default" onclick="addItem('{{csrf_token}}', {{active_list.id}});">Add</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div>
+                    <ul class="nav nav-tabs">
                         {% for shopping_list in shopping_lists %}
-                        <div id="shopping-list-{{ shopping_list.name }}" class="tab-pane fade">
-                            <div class="row">
-                                <div class="col-xs-12 col-md-7 shopping_list-tab">
-                                    <div class="table-responsive shopping_list-table">
-                                        <table id="table-shopping_list-{{ shopping_list.id }}" class="table table-striped table-hover datatable">
-                                            <thead>
-                                                <tr>
-                                                    <th>Item</th>
-                                                    <th>Done</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for item in shopping_list.items.all %}
-                                                <tr>
-                                                    <td>{{ item.name }}</td>
-                                                    <td>
-                                                        {% if item.done %}
-                                                        <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
-                                                        {% else %}
-                                                        <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" />
-                                                        {% endif %}
-                                                    </td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                            {% if forloop.first %}
+                            <li class="active"><a data-toggle="tab" href="#shopping-list-{{ shopping_list.name }}">{{ shopping_list.name }}</a></li>
+                            {% else %}
+                            <li><a data-toggle="tab" href="#shopping-list-{{ shopping_list.name }}">{{ shopping_list.name }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="tab-content">
+                {% for shopping_list in shopping_lists %}
+                {% if forloop.first %}
+                <div id="shopping-list-{{ shopping_list.name }}" class="tab-pane fade in active">
+                {% else %}
+                <div id="shopping-list-{{ shopping_list.name }}" class="tab-pane fade">
+                {% endif %}
+                    <div class="row">
+                        <div class="col-xs-12 col-md-7 shopping_list-tab">
+                            <div class="table-responsive shopping_list-table">
+                                <table id="table-shopping_list-{{ shopping_list.id }}" class="table table-striped table-hover datatable">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Done</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in shopping_list.items.all %}
+                                        <tr>
+                                            <td>{{ item.name }}</td>
+                                            <td>
+                                                {% if item.done %}
+                                                <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
+                                                {% else %}
+                                                <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" />
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-5 shopping_list-tab">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Add new item</div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label for="new-item-name-{{shopping_list.id}}">Name:</label>
+                                        <input type="text" class="form-control" id="new-item-name-{{shopping_list.id}}">
                                     </div>
-                                </div>
-                                <div class="col-xs-12 col-md-5 shopping_list-tab">
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading">Add new item</div>
-                                        <div class="panel-body">
-                                            <div class="form-group">
-                                                <label for="new-item-name-{{shopping_list.id}}">Name:</label>
-                                                <input type="text" class="form-control" id="new-item-name-{{shopping_list.id}}">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="new-item-comment-{{shopping_list.id}}">Comments:</label>
-                                                <textarea class="form-control" id="new-item-comment-{{shopping_list.id}}" rows="3"></textarea>
-                                            </div>
-                                            <div class="form-group">
-                                                <button id="add-btn-{{shopping_list.id}}" class="btn btn-default" onclick="addItem('{{csrf_token}}', {{shopping_list.id}});">Add</button>
-                                            </div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="new-item-comment-{{shopping_list.id}}">Comments:</label>
+                                        <textarea class="form-control" id="new-item-comment-{{shopping_list.id}}" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <button id="add-btn-{{shopping_list.id}}" class="btn btn-default" onclick="addItem('{{csrf_token}}', {{shopping_list.id}});">Add</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
-                {% endif %}
+                </div>
+                {% endfor %}
             {% endif %}
 
         </div> <!-- /container -->
@@ -190,7 +146,6 @@
     {% block javascript %}
         <script type="text/javascript">
             $(document).ready(function(){
-                tables['table-shopping_list-{{active_list.id}}'] = $('#table-shopping_list-{{ active_list.id }}').DataTable();
                 {% for shopping_list in shopping_lists %}
                     tables['table-shopping_list-{{shopping_list.id}}'] = $('#table-shopping_list-{{ shopping_list.id }}').DataTable();
                 {% endfor %}
