@@ -1,12 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from .forms import SignInForm
 from .models import Shopper
-
-def index(request):
-    return HttpResponse("Hello, world. You're at the vittlify index.")
 
 def home(request):
     context = {'loggedin': False}
@@ -37,7 +33,7 @@ def signin(request):
             else:
                 raise Exception('Invalid User')
 
-            if user and request.POST.has_key('next'):
+            if user and 'next' in request.POST:
                 return HttpResponseRedirect(request.POST['next'])
             return HttpResponseRedirect('/vittlify')
     else:
