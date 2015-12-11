@@ -65,9 +65,9 @@
                     <ul class="nav nav-tabs">
                         {% for shopping_list in shopping_lists %}
                             {% if forloop.first %}
-                            <li class="active"><a data-toggle="tab" href="#shopping-list-{{ shopping_list.name }}">{{ shopping_list.name }}</a></li>
+                            <li class="active"><a data-toggle="tab" href="#shopping-list-{{ shopping_list.id }}">{{ shopping_list.name }}</a></li>
                             {% else %}
-                            <li><a data-toggle="tab" href="#shopping-list-{{ shopping_list.name }}">{{ shopping_list.name }}</a></li>
+                            <li><a data-toggle="tab" href="#shopping-list-{{ shopping_list.id }}">{{ shopping_list.name }}</a></li>
                             {% endif %}
                         {% endfor %}
                     </ul>
@@ -75,9 +75,9 @@
                 <div class="tab-content">
                 {% for shopping_list in shopping_lists %}
                 {% if forloop.first %}
-                <div id="shopping-list-{{ shopping_list.name }}" class="tab-pane fade in active">
+                <div id="shopping-list-{{ shopping_list.id }}" class="tab-pane fade in active">
                 {% else %}
-                <div id="shopping-list-{{ shopping_list.name }}" class="tab-pane fade">
+                <div id="shopping-list-{{ shopping_list.id }}" class="tab-pane fade">
                 {% endif %}
                     <div class="row">
                         <div class="col-xs-12 col-md-7 shopping_list-tab">
