@@ -91,23 +91,21 @@
                                     </thead>
                                     <tbody>
                                         {% for item in shopping_list.items.all %}
-                                        <tr>
-                                            <td>
-                                                <button type="button" class="btn btn-link" id="link-{{ item.id }}" onclick="openItem({{ item.id }}, {{ shopping_list.id }});">
-                                                {{ item.name }}
-                                                {% if item.comments %}
-                                                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                                                {% endif %}
-                                                </button>
-                                            </td>
-                                            <td class="checkbox-div">
-                                                {% if item.done %}
-                                                <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
-                                                {% else %}
-                                                <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" />
-                                                {% endif %}
-                                            </td>
-                                        </tr>
+                                            {% if not item.done %}
+                                            <tr>
+                                                <td>
+                                                    <button type="button" class="btn btn-link" id="link-{{ item.id }}" onclick="openItem({{ item.id }}, {{ shopping_list.id }});">
+                                                    {{ item.name }}
+                                                    {% if item.comments %}
+                                                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                                                    {% endif %}
+                                                    </button>
+                                                </td>
+                                                <td class="checkbox-div">
+                                                    <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" />
+                                                </td>
+                                            </tr>
+                                            {% endif %}
                                         {% endfor %}
                                     </tbody>
                                 </table>
