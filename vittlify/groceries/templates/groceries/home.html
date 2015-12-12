@@ -110,15 +110,15 @@
                                 </table>
                             </div>
                             <div id="edit-item-panel-{{ shopping_list.id }}" class="panel panel-default" style="display: none">
-                                <div class="panel-heading">Edit item</div>
+                                <div class="panel-heading">View Item</div>
                                 <div class="panel-body">
                                     <div class="form-group">
                                         <label for="edit-item">Name:</label>
-                                        <input type="text" class="form-control" id="edit-item-name"/>
+                                        <input type="text" class="form-control" id="edit-item-name-{{ shopping_list.id }}" disabled/>
                                     </div>
                                     <div class="form-group">
                                         <label for="edit-item-comment">Comments:</label>
-                                        <textarea class="form-control" id="edit-item-comment" rows="3"></textarea>
+                                        <textarea class="form-control" id="edit-item-comment-{{ shopping_list.id }}" rows="3"></textarea>
                                     </div>
                                     <div class="form-group">
                                         <button id="save-btn" class="btn btn-default">Save</button>
@@ -140,7 +140,7 @@
                                         <textarea class="form-control" id="new-item-comment-{{shopping_list.id}}" rows="3"></textarea>
                                     </div>
                                     <div class="form-group">
-                                        <button id="add-btn-{{shopping_list.id}}" class="btn btn-default" onclick="addItem('{{csrf_token}}', {{shopping_list.id}});">Add</button>
+                                        <button id="add-btn-{{shopping_list.id}}" class="btn btn-default" onclick="addItem({{shopping_list.id}});">Add</button>
                                     </div>
                                 </div>
                             </div>
@@ -167,6 +167,7 @@
     {% block javascript %}
         <script type="text/javascript">
             $(document).ready(function(){
+                token = '{{ csrf_token }}';
                 {% for shopping_list in shopping_lists %}
                     tables['table-shopping_list-{{shopping_list.id}}'] = $('#table-shopping_list-{{ shopping_list.id }}').DataTable();
                 {% endfor %}
@@ -174,7 +175,7 @@
                 $('input[name^="checkbox-"]').click(function(){
                     var item_id = this.id.match('[0-9]+$');
                     var checked = this.checked;
-                    updateRow('{{ csrf_token }}', item_id, checked);
+                    updateRow(item_id, checked);
                 });
             });
         </script>

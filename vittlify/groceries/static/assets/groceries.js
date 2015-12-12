@@ -1,5 +1,7 @@
 var tables = {};
-function updateRow(token, item_id, checked){
+var token;
+
+function updateRow(item_id, checked){
     jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
                  type: "PUT",
                  dataType: "json",
@@ -14,7 +16,7 @@ function updateRow(token, item_id, checked){
     });
 }
 
-function addItem(token, list_id){
+function addItem(list_id){
     var item_name = document.getElementById("new-item-name-" + list_id);
     var item_comments = document.getElementById("new-item-comment-" + list_id);
     jQuery.ajax({url: "/vittlify/item/",
@@ -49,6 +51,22 @@ function openItem(item_id, shopping_list_id){
 
     shopping_list_div.style.display = "none";
     edit_item_panel.style.display = "block";
+
+    jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
+                 type: "GET",
+                 dataType: "json",
+                 success: function(json){
+                     var edit_item_name_elem = document.getElementById("edit-item-name-" + shopping_list_id);
+                     var edit_item_comment_elem = document.getElementById("edit-item-comment-" + shopping_list_id);
+
+                     edit_item_name_elem.value = json.name;
+                     edit_item_comment_elem.value = json.comments;
+                 },
+                 error: function(){
+                     alert("An error has occurred!");
+                     closeEditPanel(shopping_list_id);
+                 }
+    });
 }
 
 function closeEditPanel(shopping_list_id){
