@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.timezone import utc
+from datetime import datetime
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
@@ -6,7 +8,8 @@ class Item(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
     comments = models.TextField(default='', blank=True)
-    done = models.BooleanField(default=False)
+    _done = models.BooleanField(db_column='done', default=False)
+    date_completed = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ('name', 'shopping_list')
@@ -14,6 +17,18 @@ class Item(models.Model):
 
     def __str__(self):
         return 'id: {id} n: {name}'.format(id=self.id, name=self.name)
+
+    def _get_done(self):
+        return self._done
+    def _set_done(self, val):
+        if val:
+            self.date_completed = datetime.utcnow().replace(tzinfo=utc)
+        self._done = val
+    done = property(fget=_get_done, fset=_set_done)
+
+    @classmethod
+    def recentlyCompletedByUser(cls, user):
+        pass
 
 class Shopper(models.Model):
     user = models.OneToOneField('auth.User')
