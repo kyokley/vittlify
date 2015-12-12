@@ -95,6 +95,9 @@
                                             <td>
                                                 <button type="button" class="btn btn-link" id="link-{{ item.id }}" onclick="openItem({{ item.id }}, {{ shopping_list.id }});">
                                                 {{ item.name }}
+                                                {% if item.comments %}
+                                                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                                                {% endif %}
                                                 </button>
                                             </td>
                                             <td class="checkbox-div">

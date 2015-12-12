@@ -97,6 +97,12 @@ function saveItem(shopping_list_id){
                  data: {comments: edit_item_comment_elem.value,
                         csrfmiddlewaretoken: token},
                  success: function(json){
+                     var link_id = document.getElementById("link-" + json.pk);
+                     if(edit_item_comment_elem.value){
+                         link_id.innerHTML = json.name + ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
+                     } else {
+                         link_id.innerHTML = json.name;
+                     }
                      closeEditPanel(shopping_list_id);
                  },
                  error: function(){
