@@ -121,14 +121,15 @@
                                         <textarea class="form-control" id="edit-item-comment-{{ shopping_list.id }}" rows="3"></textarea>
                                     </div>
                                     <div class="form-group">
-                                        <button id="save-btn" class="btn btn-default">Save</button>
+                                        <input type="hidden" id="edit-item-id" value="" />
+                                        <button id="save-btn" class="btn btn-default" onclick="saveItem({{ shopping_list.id }});">Save</button>
                                         <button id="cancel-btn" class="btn btn-default" onclick="closeEditPanel({{ shopping_list.id }});">Cancel</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-5 shopping_list-tab">
-                            <div class="panel panel-default">
+                            <div id="add-item-panel-{{ shopping_list.id }}" class="panel panel-default">
                                 <div class="panel-heading">Add new item</div>
                                 <div class="panel-body">
                                     <div class="form-group">
