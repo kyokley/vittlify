@@ -43,3 +43,18 @@ function addItem(token, list_id){
     });
 }
 
+function openItem(item_id, shopping_list_id){
+    var shopping_list_div = document.getElementById("div-" + shopping_list_id);
+    var edit_item_panel = document.getElementById("edit-item-panel-" + shopping_list_id);
+
+    shopping_list_div.style.display = "none";
+    edit_item_panel.style.display = "block";
+}
+
+function closeEditPanel(shopping_list_id){
+    var shopping_list_div = document.getElementById("div-" + shopping_list_id);
+    var edit_item_panel = document.getElementById("edit-item-panel-" + shopping_list_id);
+
+    shopping_list_div.style.display = "block";
+    edit_item_panel.style.display = "none";
+}

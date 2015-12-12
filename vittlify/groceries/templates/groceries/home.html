@@ -81,7 +81,7 @@
                 {% endif %}
                     <div class="row">
                         <div class="col-xs-12 col-md-7 shopping_list-tab">
-                            <div class="table-responsive shopping_list-table">
+                            <div id="div-{{ shopping_list.id }}" class="table-responsive shopping_list-table">
                                 <table id="table-shopping_list-{{ shopping_list.id }}" class="table table-striped table-hover datatable">
                                     <thead>
                                         <tr>
@@ -93,7 +93,7 @@
                                         {% for item in shopping_list.items.all %}
                                         <tr>
                                             <td>
-                                                <button type="button" class="btn btn-link">
+                                                <button type="button" class="btn btn-link" id="link-{{ item.id }}" onclick="openItem({{ item.id }}, {{ shopping_list.id }});">
                                                 {{ item.name }}
                                                 </button>
                                             </td>
@@ -108,6 +108,23 @@
                                         {% endfor %}
                                     </tbody>
                                 </table>
+                            </div>
+                            <div id="edit-item-panel-{{ shopping_list.id }}" class="panel panel-default" style="display: none">
+                                <div class="panel-heading">Edit item</div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label for="edit-item">Name:</label>
+                                        <input type="text" class="form-control" id="edit-item-name"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="edit-item-comment">Comments:</label>
+                                        <textarea class="form-control" id="edit-item-comment" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <button id="save-btn" class="btn btn-default">Save</button>
+                                        <button id="cancel-btn" class="btn btn-default" onclick="closeEditPanel({{ shopping_list.id }});">Cancel</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-5 shopping_list-tab">
