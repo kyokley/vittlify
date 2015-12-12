@@ -2,6 +2,9 @@ from django.db import models
 from django.utils.timezone import utc
 from datetime import datetime
 
+RECENTLY_COMPLETED_DAYS = 14
+LARGE_INT = 999999999
+
 class Item(models.Model):
     name = models.CharField(max_length=200)
     shopping_list = models.ForeignKey('ShoppingList', related_name='items')
@@ -23,12 +26,22 @@ class Item(models.Model):
     def _set_done(self, val):
         if val:
             self.date_completed = datetime.utcnow().replace(tzinfo=utc)
+        else:
+            self.date_completed = None
         self._done = val
     done = property(fget=_get_done, fset=_set_done)
 
     @classmethod
-    def recentlyCompletedByUser(cls, user):
-        pass
+    def recentlyCompletedByShopper(cls, shopper):
+        items = cls.objects.raw('''
+                        SELECT item.* FROM groceries_item AS item
+                        INNER JOIN groceries_shoppinglistmember AS slm
+                        ON slm.shopping_list_id = item.shopping_list_id
+                        WHERE slm.shopper_id = %s
+                        AND item.date_completed IS NOT NULL
+                        AND item.date_completed > now() - INTERVAL '%s days';
+                           ''', (shopper.id, RECENTLY_COMPLETED_DAYS))
+        return items
 
 class Shopper(models.Model):
     user = models.OneToOneField('auth.User')
@@ -40,6 +53,16 @@ class Shopper(models.Model):
 
     def __str__(self):
         return 'id: {id} u: {name}'.format(id=self.id, name=self.user.username)
+
+class RecentlyCompletedShoppingList(object):
+    def __init__(self,
+                 owner,
+                 name='Recently Completed'
+                 ):
+        self.id = LARGE_INT
+        self.owner = owner if isinstance(owner, Shopper) else Shopper.objects.get(pk=owner.id)
+        self.name = name
+        self.displayItems = [x for x in Item.recentlyCompletedByShopper(self.owner)]
 
 class ShoppingList(models.Model):
     owner = models.ForeignKey('Shopper')
@@ -62,6 +85,9 @@ class ShoppingList(models.Model):
                 return True
         else:
             return False
+
+    def displayItems(self):
+        return self.items.filter(_done=False)
 
 class ShoppingListMember(models.Model):
     shopper = models.ForeignKey('Shopper')
