@@ -12,7 +12,7 @@ class Item(models.Model):
     date_completed = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ('name', 'shopping_list')
+        #unique_together = ('name', 'shopping_list')
         ordering = ('name',)
 
     def __str__(self):
