@@ -29,7 +29,14 @@ function addItem(list_id){
                  success: function(json){
                      var table = tables["table-shopping_list-" + list_id];
                      var checkbox = '<input type="checkbox" id="checkbox-' + list_id + '-' + json.pk + '" name="checkbox-' + json.name + '" />';
-                     table.row.add([item_name.value, checkbox]).draw();
+                     var link_name = '<button type="button" class="btn btn-link" id="link-' + json.pk + '" onclick="openItem(' + json.pk + ', ' + json.shopping_list_id + ');">';
+                     link_name = link_name + json.name;
+                     if(json.comments){
+                          link_name += ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
+                     }
+                     link_name += '</button>';
+
+                     table.row.add([link_name, checkbox]).draw();
                      item_name.value = "";
                      item_comments.value = "";
 
