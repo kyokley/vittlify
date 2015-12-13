@@ -57,7 +57,7 @@ class Shopper(models.Model):
 class RecentlyCompletedShoppingList(object):
     def __init__(self,
                  owner,
-                 name='Recently Completed'
+                 name='Finished'
                  ):
         self.id = LARGE_INT
         self.owner = owner if isinstance(owner, Shopper) else Shopper.objects.get(pk=owner.id)

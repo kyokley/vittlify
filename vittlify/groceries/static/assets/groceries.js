@@ -1,3 +1,4 @@
+/*jslint browser:true */
 var tables = {};
 var token;
 var deletedTable;
@@ -14,10 +15,11 @@ function updateRow(item_id, list_id, checked, row_elem){
                      var hiddenInput = document.getElementById('done-checked-' + item_id);
                      var button = document.getElementById('done-btn-' + list_id + '-' + item_id);
                      var link_btn = document.getElementById('link-' + item_id);
+                     var row, rowNode;
 
                      if(checked === "true"){
-                         var row = table.row(row_elem);
-                         var rowNode = row.node();
+                         row = table.row(row_elem);
+                         rowNode = row.node();
 
                          row.remove();
                          deletedTable.row.add(rowNode).draw();
@@ -25,8 +27,8 @@ function updateRow(item_id, list_id, checked, row_elem){
                          hiddenInput.value = "false";
                          link_btn.disabled = true;
                      } else {
-                         var row = deletedTable.row(row_elem);
-                         var rowNode = row.node();
+                         row = deletedTable.row(row_elem);
+                         rowNode = row.node();
 
                          row.remove();
                          table.row.add(rowNode).draw();
@@ -36,7 +38,7 @@ function updateRow(item_id, list_id, checked, row_elem){
                      }
                  },
                  error: function(){
-                     console.log("Failed");
+                     alert("An error has occurred");
                  }
     });
 }
@@ -75,15 +77,15 @@ function addItem(list_id){
 
                      var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
                     jQuery('button[id="' + selectorID + '"]').click(function(){
-                            var item_id = this.id.match('[0-9]+$');
-                            var list_id = this.id.match('[0-9]+');
-                            var checked = document.getElementById("done-checked-" + item_id).value;
-                            var row_elem = $(this).parents('tr');
-                            updateRow(item_id, list_id, checked, row_elem);
+                            // var item_id = this.id.match('[0-9]+$');
+                            // var list_id = this.id.match('[0-9]+');
+                            var checked = document.getElementById("done-checked-" + json.pk).value;
+                            var row_elem = jQuery(this).parents('tr');
+                            updateRow(json.pk, json.shopping_list_id, checked, row_elem);
                     });
                  },
                  error: function(){
-                     console.log("Failed");
+                     alert("An error has occurred");
                  }
     });
 }
