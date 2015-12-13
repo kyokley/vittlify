@@ -54,7 +54,13 @@ function addItem(list_id){
                  success: function(json){
                      var table = tables["table-shopping_list-" + list_id];
                      var done_button = '<input type="hidden" id="done-checked-' + json.pk + '" value=true />';
-                     done_button += '<button type="button" class="btn btn-info" id="done-btn-' + json.shopping_list_id + '-' + json.id + '">';
+                     done_button += '<button type="button" class="btn btn-info" id="done-btn-' + json.shopping_list_id + '-' + json.pk + '">';
+                     if(json.done){
+                         done_button += 'Undone';
+                     } else {
+                         done_button += 'Done';
+                     }
+                     done_button += '</button>';
 
                      var link_name = '<button type="button" class="btn btn-link" id="link-' + json.pk + '" onclick="openItem(' + json.pk + ', ' + json.shopping_list_id + ');">';
                      link_name = link_name + json.name;
@@ -67,11 +73,14 @@ function addItem(list_id){
                      item_name.value = "";
                      item_comments.value = "";
 
-                     var selectorID = "done-btn-" + list_id + "-" + json.pk;
-                     jQuery('input[id=' + selectorID + ']').click(function(){
-                         var checked = this.checked;
-                         updateRow('{{ csrf_token }}', json.pk, checked);
-                     });
+                     var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
+                    jQuery('button[id="' + selectorID + '"]').click(function(){
+                            var item_id = this.id.match('[0-9]+$');
+                            var list_id = this.id.match('[0-9]+');
+                            var checked = document.getElementById("done-checked-" + item_id).value;
+                            var row_elem = $(this).parents('tr');
+                            updateRow(item_id, list_id, checked, row_elem);
+                    });
                  },
                  error: function(){
                      console.log("Failed");
