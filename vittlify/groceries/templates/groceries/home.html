@@ -101,11 +101,14 @@
                                                 </button>
                                             </td>
                                             <td class="checkbox-div">
+                                                <input type="hidden" id="done-checked-{{ item.id }}" value={% if not item.done %}true{% else %}false{% endif %} />
+                                                <button type="button" class="btn btn-info" id="done-btn-{{shopping_list.id}}-{{ item.id }}">
                                                 {% if item.done %}
-                                                <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" checked />
+                                                    Undone
                                                 {% else %}
-                                                <input type="checkbox" id="checkbox-{{shopping_list.id}}-{{ item.id }}" name="checkbox-{{item.name}}" />
+                                                    Done
                                                 {% endif %}
+                                                </button>
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -174,12 +177,18 @@
                 token = '{{ csrf_token }}';
                 {% for shopping_list in shopping_lists %}
                     tables['table-shopping_list-{{shopping_list.id}}'] = $('#table-shopping_list-{{ shopping_list.id }}').DataTable();
+
+                    {% if forloop.last %}
+                        deletedTable = tables['table-shopping_list-{{shopping_list.id}}'];
+                    {% endif %}
                 {% endfor %}
 
-                $('input[name^="checkbox-"]').click(function(){
+                $('button[id^="done-btn-"]').click(function(){
                     var item_id = this.id.match('[0-9]+$');
-                    var checked = this.checked;
-                    updateRow(item_id, checked);
+                    var list_id = this.id.match('[0-9]+');
+                    var checked = document.getElementById("done-checked-" + item_id).value;
+                    var row_elem = $(this).parents('tr');
+                    updateRow(item_id, list_id, checked, row_elem);
                 });
             });
         </script>

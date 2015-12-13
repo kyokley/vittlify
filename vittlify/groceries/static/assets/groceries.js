@@ -1,14 +1,24 @@
 var tables = {};
 var token;
+var deletedTable;
 
-function updateRow(item_id, checked){
+function updateRow(item_id, list_id, checked, row_elem){
     jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
                  type: "PUT",
                  dataType: "json",
                  data: {done: checked,
                         csrfmiddlewaretoken: token},
                  success: function(json){
-                     console.log('Set item ' + item_id + ' to ' + checked)
+                    debugger;
+                     console.log('Set item ' + item_id + ' to ' + checked);
+                     var table = tables["table-shopping_list-" + list_id];
+                     var row = table.row(row_elem);
+                     var rowNode = row.node();
+
+                     if(checked){
+                         row.remove();
+                         deletedTable.row.add(rowNode).draw();
+                     }
                  },
                  error: function(){
                      console.log("Failed");
