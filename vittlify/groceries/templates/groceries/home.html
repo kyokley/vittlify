@@ -51,14 +51,13 @@
         </div>
 
         <div id="groceries-app-container" class="container">
+        {% block main %}
 
             {% if not loggedin %}
             <!-- Main component for a primary marketing message or call to action -->
             <div class="jumbotron">
-                {% block jumbotron %}
                 <h1>Welcome to the Vittlify</h1>
                 <p></p>
-                {% endblock %}
             </div>
             {% else %}
                 <div>
@@ -163,10 +162,9 @@
                 {% endfor %}
             {% endif %}
 
+        {% endblock %}
         </div> <!-- /container -->
 
-        {% block main %}
-        {% endblock %}
     </body>
 
     {% block javascript_imports %}

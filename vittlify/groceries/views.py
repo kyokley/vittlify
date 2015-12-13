@@ -16,6 +16,18 @@ def home(request):
         context['shopping_lists'].append(recently_completed_list)
     return render(request, 'groceries/home.html', context)
 
+def settings(request):
+    context = {'loggedin': False}
+    user = request.user
+    if user and user.is_authenticated():
+        context['loggedin'] = True
+        owned_lists = list(Shopper.objects.filter(user=user)
+                                          .first()
+                                          .owned_lists
+                                          .all())
+        context['owned_lists'] = owned_lists
+    return render(request, 'groceries/settings.html', context)
+
 def signin(request):
     if request.method == 'POST':
         form = SignInForm(request.POST)

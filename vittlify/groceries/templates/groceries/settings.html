@@ -1,0 +1,75 @@
+{% extends "groceries/home.html" %}
+
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load url from future %}
+
+{% block header %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Grocery lists in the cloud!">
+    <meta name="author" content="Kevin Yokley">
+    <link rel="shortcut icon" type="image/png" href="{% static "assets/favicon.ico" %}"/>
+    <link href="{% static "bootstrap-dist/css/bootstrap.css" %}" rel="stylesheet">
+    <link href="{% static "bootstrap-dist/css/bootstrap-theme.css" %}" rel="stylesheet">
+    <link href="{% static "datatables/dataTables.bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "assets/home.css" %}" rel="stylesheet">
+    <link href="{% static "bootstrap-duallistbox-master/bootstrap-duallistbox.min.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% include title %}
+
+{% include navbar %}
+
+
+{% block main %}
+<div class="page-header">
+  <h1>Settings</h1>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Your lists</h3>
+  </div>
+  <div class="panel-body">
+    <select name="owned_lists" size="5" class="form-control">
+        {% for owned_list in owned_lists %}
+            <option>{{ owned_list.name }}</option>
+        {% endfor %}
+    </select>
+  </div>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Sharing</h3>
+  </div>
+  <div class="panel-body">
+    Panel content
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript_imports %}
+    <script src="{% static "jquery/jquery-2.1.4.min.js" %}"></script>
+    <script src="{% static "bootstrap-dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/dataTables.bootstrap.min.js" %}"></script>
+    <script src="{% static "assets/settings.js" %}"></script>
+    <script src="{% static "bootstrap-duallistbox-master/jquery.bootstrap-duallistbox.min.js" %}"></script>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            token = '{{ csrf_token }}';
+
+            // var demo2 = $('.demo2').bootstrapDualListbox({
+            //   nonSelectedListLabel: 'Non-selected',
+            //   selectedListLabel: 'Selected',
+            //   preserveSelectionOnMove: 'moved',
+            //   moveOnSelect: false,
+            //   nonSelectedFilter: 'ion ([7-9]|[1][0-2])'
+            // });
+        });
+    </script>
+{% endblock %}

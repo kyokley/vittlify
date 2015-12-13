@@ -65,7 +65,7 @@ class RecentlyCompletedShoppingList(object):
         self.displayItems = [x for x in Item.recentlyCompletedByShopper(self.owner)]
 
 class ShoppingList(models.Model):
-    owner = models.ForeignKey('Shopper')
+    owner = models.ForeignKey('Shopper', related_name='owned_lists')
     name = models.CharField(max_length=200, default='')
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
