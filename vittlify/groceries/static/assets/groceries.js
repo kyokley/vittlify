@@ -9,15 +9,30 @@ function updateRow(item_id, list_id, checked, row_elem){
                  data: {done: checked,
                         csrfmiddlewaretoken: token},
                  success: function(json){
-                    debugger;
                      console.log('Set item ' + item_id + ' to ' + checked);
                      var table = tables["table-shopping_list-" + list_id];
-                     var row = table.row(row_elem);
-                     var rowNode = row.node();
+                     var hiddenInput = document.getElementById('done-checked-' + item_id);
+                     var button = document.getElementById('done-btn-' + list_id + '-' + item_id);
+                     var link_btn = document.getElementById('link-' + item_id);
 
-                     if(checked){
+                     if(checked === "true"){
+                         var row = table.row(row_elem);
+                         var rowNode = row.node();
+
                          row.remove();
                          deletedTable.row.add(rowNode).draw();
+                         button.innerHTML = "Undone";
+                         hiddenInput.value = "false";
+                         link_btn.disabled = true;
+                     } else {
+                         var row = deletedTable.row(row_elem);
+                         var rowNode = row.node();
+
+                         row.remove();
+                         table.row.add(rowNode).draw();
+                         button.innerHTML = "Done";
+                         hiddenInput.value = "true";
+                         link_btn.disabled = false;
                      }
                  },
                  error: function(){
@@ -38,7 +53,9 @@ function addItem(list_id){
                         csrfmiddlewaretoken: token},
                  success: function(json){
                      var table = tables["table-shopping_list-" + list_id];
-                     var checkbox = '<input type="checkbox" id="checkbox-' + list_id + '-' + json.pk + '" name="checkbox-' + json.name + '" />';
+                     var done_button = '<input type="hidden" id="done-checked-' + json.pk + '" value=true />';
+                     done_button += '<button type="button" class="btn btn-info" id="done-btn-' + json.shopping_list_id + '-' + json.id + '">';
+
                      var link_name = '<button type="button" class="btn btn-link" id="link-' + json.pk + '" onclick="openItem(' + json.pk + ', ' + json.shopping_list_id + ');">';
                      link_name = link_name + json.name;
                      if(json.comments){
@@ -46,11 +63,11 @@ function addItem(list_id){
                      }
                      link_name += '</button>';
 
-                     table.row.add([link_name, checkbox]).draw();
+                     table.row.add([link_name, done_button]).draw();
                      item_name.value = "";
                      item_comments.value = "";
 
-                     var selectorID = "checkbox-" + list_id + "-" + json.pk;
+                     var selectorID = "done-btn-" + list_id + "-" + json.pk;
                      jQuery('input[id=' + selectorID + ']').click(function(){
                          var checked = this.checked;
                          updateRow('{{ csrf_token }}', json.pk, checked);
