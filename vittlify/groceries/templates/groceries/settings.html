@@ -32,11 +32,29 @@
     <h3 class="panel-title">Your lists</h3>
   </div>
   <div class="panel-body">
-    <select id="owned-lists-select" name="owned-lists" size="5" class="form-control">
-        {% for owned_list in owned_lists %}
-            <option>{{ owned_list.name }}</option>
-        {% endfor %}
-    </select>
+      <div class="row">
+          <div class="col-xs-12 col-md-7">
+              <div class="form-group">
+                <select id="owned-lists-select" name="owned-lists" size="5" class="form-control">
+                    {% for owned_list in owned_lists %}
+                        <option>{{ owned_list.name }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <button id="delete-list-btn" class="btn btn-default">Delete</button>
+              </div>
+          </div>
+          <div class="col-xs-12 col-md-5">
+              <div class="form-group">
+                    <label for="new-list-name">Add new list:</label>
+                    <input type="text" class="form-control" id="new-list-name">
+              </div>
+              <div class="form-group">
+                    <button id="add-list-btn" class="btn btn-default">Add</button>
+              </div>
+          </div>
+      </div>
   </div>
 </div>
 <div class="panel panel-default">
