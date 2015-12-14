@@ -19,13 +19,18 @@ def home(request):
 def settings(request):
     context = {'loggedin': False}
     user = request.user
-    if user and user.is_authenticated():
-        context['loggedin'] = True
-        owned_lists = list(Shopper.objects.filter(user=user)
-                                          .first()
-                                          .owned_lists
-                                          .all())
-        context['owned_lists'] = owned_lists
+
+    if not user or not user.is_authenticated():
+        return HttpResponseRedirect('/vittlify')
+
+    context['loggedin'] = True
+    owned_lists = list(Shopper.objects.filter(user=user)
+                                      .first()
+                                      .owned_lists
+                                      .all())
+    context['owned_lists'] = owned_lists
+    context['shoppers'] = [shopper for shopper in Shopper.objects.select_related('user').all()
+                                if shopper.user != user]
     return render(request, 'groceries/settings.html', context)
 
 def signin(request):

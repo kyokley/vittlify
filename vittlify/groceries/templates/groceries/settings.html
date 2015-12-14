@@ -32,7 +32,7 @@
     <h3 class="panel-title">Your lists</h3>
   </div>
   <div class="panel-body">
-    <select name="owned_lists" size="5" class="form-control">
+    <select id="owned-lists-select" name="owned-lists" size="5" class="form-control">
         {% for owned_list in owned_lists %}
             <option>{{ owned_list.name }}</option>
         {% endfor %}
@@ -44,7 +44,20 @@
     <h3 class="panel-title">Sharing</h3>
   </div>
   <div class="panel-body">
-    Panel content
+      <div class="form-group">
+        <select id="shopper-select" class="form-control">
+            {% for shopper in shoppers %}
+                <option id="user-select-{{ shopper.user.id }}">{{ shopper.user.username }}</option>
+            {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <select multiple id="sharing-select" size="5" class="form-control">
+            {% for owned_list in owned_lists %}
+                <option>{{ owned_list.name }}</option>
+            {% endfor %}
+        </select>
+      </div>
   </div>
 </div>
 {% endblock %}
@@ -63,13 +76,13 @@
         $(document).ready(function(){
             token = '{{ csrf_token }}';
 
-            // var demo2 = $('.demo2').bootstrapDualListbox({
-            //   nonSelectedListLabel: 'Non-selected',
-            //   selectedListLabel: 'Selected',
-            //   preserveSelectionOnMove: 'moved',
-            //   moveOnSelect: false,
-            //   nonSelectedFilter: 'ion ([7-9]|[1][0-2])'
-            // });
+            var sharing_select = $('#sharing-select').bootstrapDualListbox({
+              nonSelectedListLabel: 'Available Lists',
+              selectedListLabel: 'Shared',
+              preserveSelectionOnMove: false,
+              moveOnSelect: true,
+              showFilterInputs: false
+            });
         });
     </script>
 {% endblock %}
