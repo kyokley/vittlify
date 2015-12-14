@@ -35,6 +35,7 @@
       <div class="row">
           <div class="col-xs-12 col-md-7">
               <div class="form-group">
+                <label for="owned-lists-select">Active lists:</label>
                 <select id="owned-lists-select" name="owned-lists" size="5" class="form-control">
                     {% for owned_list in owned_lists %}
                         <option>{{ owned_list.name }}</option>
@@ -63,6 +64,7 @@
   </div>
   <div class="panel-body">
       <div class="form-group">
+        <label for="shopper-select">Other User:</label>
         <select id="shopper-select" class="form-control">
             {% for shopper in shoppers %}
                 <option id="user-select-{{ shopper.user.id }}">{{ shopper.user.username }}</option>
