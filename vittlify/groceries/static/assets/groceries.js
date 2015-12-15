@@ -46,48 +46,52 @@ function updateRow(item_id, list_id, checked, row_elem){
 function addItem(list_id){
     var item_name = document.getElementById("new-item-name-" + list_id);
     var item_comments = document.getElementById("new-item-comment-" + list_id);
-    jQuery.ajax({url: "/vittlify/item/",
-                 type: "POST",
-                 dataType: "json",
-                 data: {shopping_list_id: list_id,
-                        name: item_name.value,
-                        comments: item_comments.value,
-                        csrfmiddlewaretoken: token},
-                 success: function(json){
-                     var table = tables["table-shopping_list-" + list_id];
-                     var done_button = '<input type="hidden" id="done-checked-' + json.pk + '" value=true />';
-                     done_button += '<button type="button" class="btn btn-info" id="done-btn-' + json.shopping_list_id + '-' + json.pk + '">';
-                     if(json.done){
-                         done_button += 'Undone';
-                     } else {
-                         done_button += 'Done';
+    if(!item_name.value){
+        alert('Name is a required field for new items');
+    } else {
+        jQuery.ajax({url: "/vittlify/item/",
+                     type: "POST",
+                     dataType: "json",
+                     data: {shopping_list_id: list_id,
+                            name: item_name.value,
+                            comments: item_comments.value,
+                            csrfmiddlewaretoken: token},
+                     success: function(json){
+                         var table = tables["table-shopping_list-" + list_id];
+                         var done_button = '<input type="hidden" id="done-checked-' + json.pk + '" value=true />';
+                         done_button += '<button type="button" class="btn btn-info" id="done-btn-' + json.shopping_list_id + '-' + json.pk + '">';
+                         if(json.done){
+                             done_button += 'Undone';
+                         } else {
+                             done_button += 'Done';
+                         }
+                         done_button += '</button>';
+
+                         var link_name = '<button type="button" class="btn btn-link" id="link-' + json.pk + '" onclick="openItem(' + json.pk + ', ' + json.shopping_list_id + ');">';
+                         link_name = link_name + json.name;
+                         if(json.comments){
+                              link_name += ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
+                         }
+                         link_name += '</button>';
+
+                         table.row.add([link_name, done_button]).draw();
+                         item_name.value = "";
+                         item_comments.value = "";
+
+                         var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
+                        jQuery('button[id="' + selectorID + '"]').click(function(){
+                                // var item_id = this.id.match('[0-9]+$');
+                                // var list_id = this.id.match('[0-9]+');
+                                var checked = document.getElementById("done-checked-" + json.pk).value;
+                                var row_elem = jQuery(this).parents('tr');
+                                updateRow(json.pk, json.shopping_list_id, checked, row_elem);
+                        });
+                     },
+                     error: function(json){
+                         alert("An error has occurred");
                      }
-                     done_button += '</button>';
-
-                     var link_name = '<button type="button" class="btn btn-link" id="link-' + json.pk + '" onclick="openItem(' + json.pk + ', ' + json.shopping_list_id + ');">';
-                     link_name = link_name + json.name;
-                     if(json.comments){
-                          link_name += ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
-                     }
-                     link_name += '</button>';
-
-                     table.row.add([link_name, done_button]).draw();
-                     item_name.value = "";
-                     item_comments.value = "";
-
-                     var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
-                    jQuery('button[id="' + selectorID + '"]').click(function(){
-                            // var item_id = this.id.match('[0-9]+$');
-                            // var list_id = this.id.match('[0-9]+');
-                            var checked = document.getElementById("done-checked-" + json.pk).value;
-                            var row_elem = jQuery(this).parents('tr');
-                            updateRow(json.pk, json.shopping_list_id, checked, row_elem);
-                    });
-                 },
-                 error: function(){
-                     alert("An error has occurred");
-                 }
-    });
+        });
+    }
 }
 
 function openItem(item_id, shopping_list_id){
