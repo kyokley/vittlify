@@ -52,8 +52,8 @@ server {{
     server_name {serverName};
 
     ssl on;
-    ssl_certificate {installDir}/server/server.crt;
-    ssl_certificate_key {installDir}/server/server.key;
+    ssl_certificate {installDir}/vittlify/server/server.crt;
+    ssl_certificate_key {installDir}/vittlify/server/server.key;
 
     ssl_session_timeout 5m;
 
