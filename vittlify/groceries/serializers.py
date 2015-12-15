@@ -12,6 +12,10 @@ class ItemSerializer(serializers.Serializer):
     done = serializers.BooleanField(default=False)
 
     def create(self, validated_data):
+        if not validated_data.get('name'):
+            raise ValueError('Name must be provided for a new Item object')
+        if not validated_data.get('shopping_list_id'):
+            raise ValueError('Shopping_list_id must be provided for a new Item object')
         return Item.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
