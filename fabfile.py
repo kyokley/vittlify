@@ -47,18 +47,8 @@ upstream django {{
      server unix:///tmp/{programName}.sock; # for a file socket
 }}
 
-# configuration of the server
 server {{
-    # the port your site will be served on
-    listen      {port};
-    # the domain name it will serve for
-    server_name {serverName};
-
-    rewrite ^(.*) https://$host:{securePort}$1 permanent;
-}}
-
-server {{
-    listen {securePort};
+    listen {port};
     server_name {serverName};
 
     ssl on;
