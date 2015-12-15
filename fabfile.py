@@ -92,7 +92,7 @@ server {{
 }}
 '''
 
-virtualenvPthTemplate = '{installDir}'
+virtualenvPthTemplate = '{installDir}/vittlify'
 
 def create_venv(venv_home, venv_name):
     venv_location = os.path.join(venv_home, venv_name)
@@ -147,7 +147,7 @@ def install():
               'user': user,
               'venv_location': venv_location,
               'installDir': installDir,
-              'uwsgiConfLocation': os.path.join(installDir, 'uwsgi.ini'),
+              'uwsgiConfLocation': os.path.join(installDir, 'vittlify', 'uwsgi.ini'),
               'port': port,
               'serverName': serverName,
               }
