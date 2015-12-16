@@ -104,7 +104,7 @@
                                             </td>
                                             <td class="checkbox-div">
                                                 <input type="hidden" id="done-checked-{{ item.id }}" value={% if not item.done %}true{% else %}false{% endif %} />
-                                                <button type="button" class="btn btn-info" id="done-btn-{{item.shopping_list_id}}-{{ item.id }}">
+                                                <button type="button" class="btn btn-info done-btn-class" id="done-btn-{{item.shopping_list_id}}-{{ item.id }}">
                                                 {% if item.done %}
                                                     Undone
                                                 {% else %}
@@ -186,7 +186,8 @@
                     {% endif %}
                 {% endfor %}
 
-                $('button[id^="done-btn-"]').click(function(){
+                //$('button[id^="done-btn-"]').click(function(){
+                $('.done-btn-class').on('click', 'tr', function(){
                     var item_id = this.id.match('[0-9]+$');
                     var list_id = this.id.match('[0-9]+');
                     var checked = document.getElementById("done-checked-" + item_id).value;

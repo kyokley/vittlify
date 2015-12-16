@@ -21,7 +21,7 @@ function updateRow(item_id, list_id, checked, row_elem){
                          row = table.row(row_elem);
                          rowNode = row.node();
 
-                         row.remove();
+                         row.remove().draw(false);
                          deletedTable.row.add(rowNode).draw();
                          button.innerHTML = "Undone";
                          hiddenInput.value = "false";
@@ -30,7 +30,7 @@ function updateRow(item_id, list_id, checked, row_elem){
                          row = deletedTable.row(row_elem);
                          rowNode = row.node();
 
-                         row.remove();
+                         row.remove().draw(false);
                          table.row.add(rowNode).draw();
                          button.innerHTML = "Done";
                          hiddenInput.value = "true";
@@ -59,7 +59,7 @@ function addItem(list_id){
                      success: function(json){
                          var table = tables["table-shopping_list-" + list_id];
                          var done_button = '<input type="hidden" id="done-checked-' + json.pk + '" value=true />';
-                         done_button += '<button type="button" class="btn btn-info" id="done-btn-' + json.shopping_list_id + '-' + json.pk + '">';
+                         done_button += '<button type="button" class="btn btn-info done-btn-class" id="done-btn-' + json.shopping_list_id + '-' + json.pk + '">';
                          if(json.done){
                              done_button += 'Undone';
                          } else {
@@ -74,15 +74,16 @@ function addItem(list_id){
                          }
                          link_name += '</button>';
 
-                         table.row.add([link_name, done_button]).draw();
+                         var row = table.row.add([link_name, done_button]).draw();
+                         var rowNode = row.node();
                          item_name.value = "";
                          item_comments.value = "";
 
-                         var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
-                         jQuery('button[id="' + selectorID + '"]').click(function(){
-                                var checked = document.getElementById("done-checked-" + json.pk).value;
-                                var row_elem = jQuery(this).parents('tr');
-                                updateRow(json.pk, json.shopping_list_id, checked, row_elem);
+                        // var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
+                        // jQuery('button[id="' + selectorID + '"]').click(function(){
+                        jQuery(rowNode).click(function(){
+                               var checked = document.getElementById("done-checked-" + json.pk).value;
+                               updateRow(json.pk, json.shopping_list_id, checked, row);
                         });
                      },
                      error: function(json){
