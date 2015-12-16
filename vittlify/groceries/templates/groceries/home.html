@@ -184,16 +184,15 @@
                     {% if forloop.last %}
                         deletedTable = tables['table-shopping_list-{{shopping_list.id}}'];
                     {% endif %}
-                {% endfor %}
 
-                //$('button[id^="done-btn-"]').click(function(){
-                $('.done-btn-class').on('click', 'tr', function(){
+                tables['table-shopping_list-{{shopping_list.id}}'].$('.done-btn-class').on('click', function(){
                     var item_id = this.id.match('[0-9]+$');
                     var list_id = this.id.match('[0-9]+');
                     var checked = document.getElementById("done-checked-" + item_id).value;
                     var row_elem = $(this).parents('tr');
                     updateRow(item_id, list_id, checked, row_elem);
                 });
+                {% endfor %}
             });
         </script>
     {% endblock %}

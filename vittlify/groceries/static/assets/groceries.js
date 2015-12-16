@@ -79,11 +79,11 @@ function addItem(list_id){
                          item_name.value = "";
                          item_comments.value = "";
 
-                        // var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
-                        // jQuery('button[id="' + selectorID + '"]').click(function(){
-                        jQuery(rowNode).click(function(){
+                        var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
+                        table.$('button[id="' + selectorID + '"]').click(function(){
                                var checked = document.getElementById("done-checked-" + json.pk).value;
-                               updateRow(json.pk, json.shopping_list_id, checked, row);
+                               var row_elem = $(this).parents('tr');
+                               updateRow(json.pk, json.shopping_list_id, checked, row_elem);
                         });
                      },
                      error: function(json){
