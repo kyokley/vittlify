@@ -79,9 +79,7 @@ function addItem(list_id){
                          item_comments.value = "";
 
                          var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
-                        jQuery('button[id="' + selectorID + '"]').click(function(){
-                                // var item_id = this.id.match('[0-9]+$');
-                                // var list_id = this.id.match('[0-9]+');
+                         jQuery('button[id="' + selectorID + '"]').click(function(){
                                 var checked = document.getElementById("done-checked-" + json.pk).value;
                                 var row_elem = jQuery(this).parents('tr');
                                 updateRow(json.pk, json.shopping_list_id, checked, row_elem);
