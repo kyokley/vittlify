@@ -1,4 +1,6 @@
-from groceries.serializers import ItemSerializer
+from groceries.serializers import (ItemSerializer,
+                                   ShoppingListSerializer,
+                                   )
 from groceries.models import (Item,
                               ShoppingList,
                               )
@@ -48,3 +50,20 @@ class ItemView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ShoppingListView(APIView):
+    authentication_classes = (BasicAuthentication,)
+
+    def get_shopping_list(self, pk):
+        try:
+            return ShoppingList.objects.get(pk=pk)
+        except Item.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        shopping_list = self.get_shopping_list(pk)
+        serializer = ShoppingListSerializer(shopping_list)
+        return Response(serializer.data)
+
+class ShoppingListMemberView(APIView):
+    pass

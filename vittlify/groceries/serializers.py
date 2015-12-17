@@ -54,6 +54,3 @@ class ShoppingListMemberSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         return ShoppingListMember.objects.create(**validated_data)
-
-    def destroy(self):
-        pass
