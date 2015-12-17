@@ -22,7 +22,7 @@ function updateRow(item_id, list_id, checked, row_elem){
                          rowNode = row.node();
 
                          row.remove().draw(false);
-                         deletedTable.row.add(rowNode).draw();
+                         deletedTable.row.add(rowNode).draw(false);
                          button.innerHTML = "Undone";
                          hiddenInput.value = "false";
                          link_btn.disabled = true;
@@ -31,7 +31,7 @@ function updateRow(item_id, list_id, checked, row_elem){
                          rowNode = row.node();
 
                          row.remove().draw(false);
-                         table.row.add(rowNode).draw();
+                         table.row.add(rowNode).draw(false);
                          button.innerHTML = "Done";
                          hiddenInput.value = "true";
                          link_btn.disabled = false;
@@ -74,7 +74,7 @@ function addItem(list_id){
                          }
                          link_name += '</button>';
 
-                         var row = table.row.add([link_name, done_button]).draw();
+                         var row = table.row.add([link_name, done_button]).draw(false);
                          var rowNode = row.node();
                          item_name.value = "";
                          item_comments.value = "";
