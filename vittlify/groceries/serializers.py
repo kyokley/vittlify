@@ -2,6 +2,7 @@ from rest_framework import serializers
 from groceries.models import (Item,
                               ShoppingList,
                               Shopper,
+                              ShoppingListMember,
                               )
 
 class ItemSerializer(serializers.Serializer):
@@ -45,3 +46,14 @@ class ShoppingListSerializer(serializers.Serializer):
         instance.name = validated_data.get('name', instance.name)
         instance.save()
         return instance
+
+class ShoppingListMemberSerializer(serializers.Serializer):
+    pk = serializers.IntegerField(read_only=True)
+    shopping_list_id = serializers.IntegerField()
+    shopper_id = serializers.IntegerField()
+
+    def create(self, validated_data):
+        return ShoppingListMember.objects.create(**validated_data)
+
+    def destroy(self):
+        pass
