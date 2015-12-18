@@ -1,5 +1,6 @@
 from groceries.serializers import (ItemSerializer,
                                    ShoppingListSerializer,
+                                   Shopper,
                                    )
 from groceries.models import (Item,
                               ShoppingList,
@@ -62,8 +63,26 @@ class ShoppingListView(APIView):
 
     def get(self, request, pk, format=None):
         shopping_list = self.get_shopping_list(pk)
+        shopper = Shopper.objects.filter(user=request.user).first()
+        if shopper != shopping_list.owner:
+            raise ValueError('Shopper is not the owner of this list')
         serializer = ShoppingListSerializer(shopping_list)
         return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        shopping_list = self.get_shopping_list(pk)
+        serializer = ShoppingListSerializer(shopping_list, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, format=None):
+        serializer = ShoppingListSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ShoppingListMemberView(APIView):
     pass

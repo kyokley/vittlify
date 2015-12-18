@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^shopping_list_items/(?P<pk>[0-9]+)/$', api_views.ShoppingListItemsView.as_view(), name='shopping_list_items'),
     url(r'^item/(?P<pk>[0-9]+)/$', api_views.ItemView.as_view()),
     url(r'^item/$', api_views.ItemView.as_view()),
+    url(r'^shopping_list/(?P<pk>[0-9]+)/$', api_views.ShoppingListView.as_view()),
 ]

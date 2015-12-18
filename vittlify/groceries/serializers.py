@@ -34,10 +34,14 @@ class ItemSerializer(serializers.Serializer):
 
 class ShoppingListSerializer(serializers.Serializer):
     pk = serializers.IntegerField(read_only=True)
-    owner_id = serializers.IntegerField()
+    owner_id = serializers.IntegerField(required=False)
     name = serializers.CharField()
 
     def create(self, validated_data):
+        if not validated_data.get('name'):
+            raise ValueError('Name must be provided for a new ShoppingList object')
+        if not validated_data.get('owner_id'):
+            raise ValueError('OwnerId must be provided for a new ShoppingList object')
         return ShoppingList.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
