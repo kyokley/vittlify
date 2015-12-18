@@ -62,14 +62,17 @@ class ShoppingListView(APIView):
             raise Http404
 
     def get(self, request, pk, format=None):
-        shopping_list = self.get_shopping_list(pk)
         shopper = Shopper.objects.filter(user=request.user).first()
+        shopping_list = self.get_shopping_list(pk)
         if shopper != shopping_list.owner:
             raise ValueError('Shopper is not the owner of this list')
         serializer = ShoppingListSerializer(shopping_list)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
+        shopper = Shopper.objects.filter(user=request.user).first()
+        if request.data['owner_id'] != shopper.id:
+            raise ValueError('Cannot create shopping list owned by another user')
         shopping_list = self.get_shopping_list(pk)
         serializer = ShoppingListSerializer(shopping_list, data=request.data)
         if serializer.is_valid():
@@ -78,6 +81,10 @@ class ShoppingListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, format=None):
+        shopper = Shopper.objects.filter(user=request.user).first()
+        owner_id = request.data.get('owner_id') or shopper.id
+        if int(owner_id) != shopper.id:
+            raise ValueError('Cannot create shopping list owned by another user')
         serializer = ShoppingListSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

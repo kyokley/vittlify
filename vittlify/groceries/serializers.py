@@ -34,7 +34,7 @@ class ItemSerializer(serializers.Serializer):
 
 class ShoppingListSerializer(serializers.Serializer):
     pk = serializers.IntegerField(read_only=True)
-    owner_id = serializers.IntegerField(required=False)
+    owner_id = serializers.IntegerField()
     name = serializers.CharField()
 
     def create(self, validated_data):
