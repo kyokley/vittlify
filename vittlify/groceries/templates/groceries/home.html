@@ -85,9 +85,6 @@
                                         <tr>
                                             <th>Item</th>
                                             <th>Done</th>
-                                            {% if forloop.last %}
-                                                <th>List</th>
-                                            {% endif %}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -115,9 +112,6 @@
                                                 {% endif %}
                                                 </button>
                                             </td>
-                                            {% if forloop.parentloop.last %}
-                                            <td>{{ item.shopping_list.name }}</td>
-                                            {% endif %}
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -177,6 +171,7 @@
         <script src="{% static "bootstrap-dist/js/bootstrap.min.js" %}"></script>
         <script src="{% static "datatables/jquery.dataTables.min.js" %}"></script>
         <script src="{% static "datatables/dataTables.bootstrap.min.js" %}"></script>
+        <script src="{% static "assets/ajaxSetup.js" %}"></script>
         <script src="{% static "assets/groceries.js" %}"></script>
     {% endblock %}
 

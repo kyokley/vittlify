@@ -42,7 +42,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <button id="delete-list-btn" class="btn btn-default">Delete</button>
+                <button id="delete-list-btn" class="btn btn-default" onclick="deleteShoppingList();">Delete</button>
               </div>
           </div>
           <div class="col-xs-12 col-md-5">
@@ -86,6 +86,7 @@
     <script src="{% static "bootstrap-dist/js/bootstrap.min.js" %}"></script>
     <script src="{% static "datatables/jquery.dataTables.min.js" %}"></script>
     <script src="{% static "datatables/dataTables.bootstrap.min.js" %}"></script>
+    <script src="{% static "assets/ajaxSetup.js" %}"></script>
     <script src="{% static "assets/settings.js" %}"></script>
     <script src="{% static "bootstrap-duallistbox-master/jquery.bootstrap-duallistbox.min.js" %}"></script>
 {% endblock %}

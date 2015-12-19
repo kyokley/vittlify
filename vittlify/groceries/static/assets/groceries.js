@@ -1,14 +1,12 @@
 /*jslint browser:true */
 var tables = {};
-var token;
 var deletedTable;
 
 function updateRow(item_id, list_id, checked, row_elem){
     jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
                  type: "PUT",
                  dataType: "json",
-                 data: {done: checked,
-                        csrfmiddlewaretoken: token},
+                 data: {done: checked},
                  success: function(json){
                      console.log('Set item ' + item_id + ' to ' + checked);
                      var table = tables["table-shopping_list-" + list_id];
@@ -54,8 +52,7 @@ function addItem(list_id){
                      dataType: "json",
                      data: {shopping_list_id: list_id,
                             name: item_name.value,
-                            comments: item_comments.value,
-                            csrfmiddlewaretoken: token},
+                            comments: item_comments.value},
                      success: function(json){
                          var table = tables["table-shopping_list-" + list_id];
                          var done_button = '<input type="hidden" id="done-checked-' + json.pk + '" value=true />';
@@ -142,8 +139,7 @@ function saveItem(shopping_list_id){
     jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
                  type: "PUT",
                  dataType: "json",
-                 data: {comments: edit_item_comment_elem.value,
-                        csrfmiddlewaretoken: token},
+                 data: {comments: edit_item_comment_elem.value},
                  success: function(json){
                      var link_id = document.getElementById("link-" + json.pk);
                      if(edit_item_comment_elem.value){
