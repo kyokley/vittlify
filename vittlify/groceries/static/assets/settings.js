@@ -1,9 +1,7 @@
 /*jslint browser:true */
 function addShoppingList(owner_id){
     var new_list_name = document.getElementById("new-list-name");
-    if(!new_list_name.value){
-        alert('Name is a required field for new shopping lists');
-    } else {
+    if(new_list_name.value){
         jQuery.ajax({url: "/vittlify/shopping_list/",
                      type: "POST",
                      dataType: "json",
