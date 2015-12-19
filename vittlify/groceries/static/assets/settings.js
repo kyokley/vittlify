@@ -31,3 +31,7 @@ function newShoppingList(name, list_id){
     opt.value = "owned_list_opt-" + list_id;
     list_select.appendChild(opt);
 }
+
+function deleteShoppingList(){
+
+}
