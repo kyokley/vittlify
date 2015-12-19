@@ -60,7 +60,7 @@ class RecentlyCompletedShoppingList(object):
                  name='Finished'
                  ):
         self.id = LARGE_INT
-        self.owner = owner if isinstance(owner, Shopper) else Shopper.objects.get(pk=owner.id)
+        self.owner = owner if isinstance(owner, Shopper) else Shopper.objects.filter(user=owner).first()
         self.name = name
         self.displayItems = [x for x in Item.recentlyCompletedByShopper(self.owner)]
 
