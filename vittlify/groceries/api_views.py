@@ -8,7 +8,7 @@ from groceries.models import (Item,
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.http import Http404
 
 class ShoppingListItemsView(APIView):
@@ -24,7 +24,7 @@ class ShoppingListItemsView(APIView):
         return Response(serializer.data)
 
 class ItemView(APIView):
-    authentication_classes = (BasicAuthentication,)
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
 
     def get_item(self, pk):
         try:
@@ -53,7 +53,7 @@ class ItemView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ShoppingListView(APIView):
-    authentication_classes = (BasicAuthentication,)
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
 
     def get_shopping_list(self, pk):
         try:

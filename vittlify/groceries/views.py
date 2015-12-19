@@ -24,6 +24,7 @@ def settings(request):
         return HttpResponseRedirect('/vittlify')
 
     context['loggedin'] = True
+    context['owner'] = Shopper.objects.filter(user=user).first()
     owned_lists = list(Shopper.objects.filter(user=user)
                                       .first()
                                       .owned_lists

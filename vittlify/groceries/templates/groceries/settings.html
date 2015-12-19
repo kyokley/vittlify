@@ -37,7 +37,7 @@
                 <label for="owned-lists-select">Active lists:</label>
                 <select id="owned-lists-select" name="owned-lists" size="5" class="form-control">
                     {% for owned_list in owned_lists %}
-                        <option>{{ owned_list.name }}</option>
+                        <option value="owned_list_opt-{{ owned_list.id }}">{{ owned_list.name }}</option>
                     {% endfor %}
                 </select>
               </div>
@@ -51,7 +51,7 @@
                     <input type="text" class="form-control" id="new-list-name">
               </div>
               <div class="form-group">
-                    <button id="add-list-btn" class="btn btn-default">Add</button>
+                  <button id="add-list-btn" class="btn btn-default" onclick="addShoppingList({{owner.id}});">Add</button>
               </div>
           </div>
       </div>

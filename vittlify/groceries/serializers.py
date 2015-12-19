@@ -42,7 +42,10 @@ class ShoppingListSerializer(serializers.Serializer):
             raise ValueError('Name must be provided for a new ShoppingList object')
         if not validated_data.get('owner_id'):
             raise ValueError('OwnerId must be provided for a new ShoppingList object')
-        return ShoppingList.objects.create(**validated_data)
+        new_list = ShoppingList.objects.create(**validated_data)
+        ShoppingListMember.objects.create(**{'shopper': new_list.owner,
+                                             'shopping_list': new_list})
+        return new_list
 
     def update(self, instance, validated_data):
         owner = Shopper.objects.get(pk=validated_data.get('owner_id', instance.owner.id))
