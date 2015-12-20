@@ -68,7 +68,6 @@ function updateSharedList(){
                          type: "POST",
                          dataType: "json",
                          success: function(json){
-                            //sharing_select.bootstrapDualListbox('refresh');
                             console.log(json)
                          },
                          error: function(){
@@ -80,7 +79,6 @@ function updateSharedList(){
                          type: "DELETE",
                          dataType: "json",
                          success: function(json){
-                            //sharing_select.bootstrapDualListbox('refresh');
                             console.log(json)
                          },
                          error: function(){
