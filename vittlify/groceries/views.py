@@ -108,6 +108,7 @@ def shared_list_member_json(request, shopper_id, list_id):
             return JsonResponse(slm.as_dict(), status=200)
     elif request.method == 'DELETE':
         if not slm:
-            return JsonResponse(slm.as_dict(), status=200)
+            return JsonResponse({}, status=204)
         else:
-            return JsonResponse(status=204)
+            slm.delete()
+            return JsonResponse({}, status=200)

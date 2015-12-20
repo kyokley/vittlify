@@ -13,6 +13,7 @@ function addShoppingList(owner_id){
                          newShoppingList(json.name, json.pk);
                          var new_list_name = document.getElementById("new-list-name");
                          new_list_name.value = "";
+                         refreshSharedLists();
                      },
                      error: function(){
                          alert("An error has occurred");
@@ -40,6 +41,7 @@ function deleteShoppingList(){
                      dataType: "json",
                      success: function(){
                          removeShoppingList();
+                         refreshSharedLists();
                      },
                      error: function(){
                          alert("An error has occurred");
@@ -51,6 +53,42 @@ function deleteShoppingList(){
 function removeShoppingList(){
     var list = document.getElementById("owned-lists-select");
     list.removeChild(list.options[list.selectedIndex]);
+}
+
+function updateSharedList(){
+    var list = document.getElementById("shopper-select");
+    var sel = list.options[list.selectedIndex];
+    var shopper_id = sel.value.match('[0-9]+');
+    var sharing_select_elem = document.getElementById("sharing-select");
+    for(var i = 0; i < sharing_select_elem.options.length; i++){
+        var opt = sharing_select_elem.options[i];
+        var list_id = opt.value.match('[0-9]+');
+        if(opt.selected){
+            jQuery.ajax({url: "/vittlify/shared_list_member/" + shopper_id + "/" + list_id + "/",
+                         type: "POST",
+                         dataType: "json",
+                         success: function(json){
+                            //sharing_select.bootstrapDualListbox('refresh');
+                            console.log(json)
+                         },
+                         error: function(){
+                             alert("An error has occurred");
+                         }
+            });
+        } else {
+            jQuery.ajax({url: "/vittlify/shared_list_member/" + shopper_id + "/" + list_id + "/",
+                         type: "DELETE",
+                         dataType: "json",
+                         success: function(json){
+                            //sharing_select.bootstrapDualListbox('refresh');
+                            console.log(json)
+                         },
+                         error: function(){
+                             alert("An error has occurred");
+                         }
+            });
+        }
+    }
 }
 
 function refreshSharedLists(){
