@@ -1,9 +1,10 @@
 from groceries.serializers import (ItemSerializer,
                                    ShoppingListSerializer,
-                                   Shopper,
+                                   ShopperSerializer,
                                    )
 from groceries.models import (Item,
                               ShoppingList,
+                              Shopper,
                               )
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -58,7 +59,7 @@ class ShoppingListView(APIView):
     def get_shopping_list(self, pk):
         try:
             return ShoppingList.objects.get(pk=pk)
-        except Item.DoesNotExist:
+        except ShoppingList.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
@@ -96,5 +97,16 @@ class ShoppingListView(APIView):
         shopping_list.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ShoppingListMemberView(APIView):
-    pass
+class ShopperView(APIView):
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+
+    def get_shopper(self, pk):
+        try:
+            return Shopper.objects.get(pk=pk)
+        except Shopper.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        shopper = Shopper.objects.get(pk=pk)
+        serializer = ShopperSerializer(shopper)
+        return Response(serializer.data)

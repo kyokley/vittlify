@@ -54,10 +54,12 @@ class ShoppingListSerializer(serializers.Serializer):
         instance.save()
         return instance
 
-class ShoppingListMemberSerializer(serializers.Serializer):
-    pk = serializers.IntegerField(read_only=True)
-    shopping_list_id = serializers.IntegerField()
-    shopper_id = serializers.IntegerField()
+class ShopperSerializer(serializers.ModelSerializer):
+    shopping_lists = ShoppingListSerializer(many=True, read_only=True)
 
-    def create(self, validated_data):
-        return ShoppingListMember.objects.create(**validated_data)
+    class Meta:
+        model = Shopper
+
+class ShoppingListMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShoppingListMember

@@ -1,8 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from .forms import SignInForm
-from .models import Shopper, RecentlyCompletedShoppingList
+from .models import (Shopper,
+                     RecentlyCompletedShoppingList,
+                     ShoppingList,
+                     ShoppingListMember,
+                     )
 
 def home(request):
     context = {'loggedin': False}
@@ -63,3 +67,47 @@ def signout(request):
     logout(request)
     context = {}
     return render(request, 'groceries/signout.html', context)
+
+def shared_lists(request, shopper_id):
+    if request.method == 'GET':
+        owner = Shopper.objects.filter(user=request.user).first()
+        owned_lists = set(owner.owned_lists.all())
+
+        shopper = Shopper.objects.get(pk=shopper_id)
+
+        selected = set()
+
+        for owned_list in owned_lists:
+            if owned_list in shopper.shopping_lists.all():
+                selected.add(owned_list)
+
+        unselected = owned_lists.difference(selected)
+        data = {'selected': [x.as_dict() for x in selected],
+                'unselected': [x.as_dict() for x in unselected]}
+        return JsonResponse(data)
+
+def shared_list_member_json(request, shopper_id, list_id):
+    owner = Shopper.objects.filter(user=request.user).first()
+    shopping_list = ShoppingList.objects.get(pk=list_id)
+
+    if owner != shopping_list.owner:
+        raise ValueError('User is not the owner of the requested shopping list')
+
+    shopper = Shopper.objects.get(pk=shopper_id)
+    slm = (ShoppingListMember.objects
+                             .filter(shopper=shopper)
+                             .filter(shopping_list=shopping_list)
+                             .first())
+
+    if request.method == 'POST':
+        if not slm:
+            slm = ShoppingListMember.objects.create(**{'shopper': shopper,
+                                                       'shopping_list': shopping_list})
+            return JsonResponse(slm.as_dict(), status=201)
+        else:
+            return JsonResponse(slm.as_dict(), status=200)
+    elif request.method == 'DELETE':
+        if not slm:
+            return JsonResponse(slm.as_dict(), status=200)
+        else:
+            return JsonResponse(status=204)

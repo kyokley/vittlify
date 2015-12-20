@@ -66,14 +66,14 @@
         <label for="shopper-select">Other User:</label>
         <select id="shopper-select" class="form-control">
             {% for shopper in shoppers %}
-                <option id="user-select-{{ shopper.user.id }}">{{ shopper.user.username }}</option>
+                <option value="user-select-{{ shopper.user.id }}">{{ shopper.user.username }}</option>
             {% endfor %}
         </select>
       </div>
       <div class="form-group">
         <select multiple id="sharing-select" size="5" class="form-control">
             {% for owned_list in owned_lists %}
-                <option>{{ owned_list.name }}</option>
+            <option value="sharing-select-opt-{{owned_list.id}}">{{ owned_list.name }}</option>
             {% endfor %}
         </select>
       </div>
@@ -96,7 +96,7 @@
         $(document).ready(function(){
             token = '{{ csrf_token }}';
 
-            var sharing_select = $('#sharing-select').bootstrapDualListbox({
+            sharing_select = $('#sharing-select').bootstrapDualListbox({
               nonSelectedListLabel: 'Available Lists',
               selectedListLabel: 'Shared',
               preserveSelectionOnMove: false,

@@ -54,6 +54,9 @@ class Shopper(models.Model):
     def __str__(self):
         return 'id: {id} u: {name}'.format(id=self.id, name=self.user.username)
 
+    def as_dict(self):
+        return {'id': self.id}
+
 class RecentlyCompletedShoppingList(object):
     def __init__(self,
                  owner,
@@ -78,6 +81,12 @@ class ShoppingList(models.Model):
                                                          name=self.name,
                                                          username=self.owner.username)
 
+    def as_dict(self):
+        return {'owner': self.owner.as_dict(),
+                'name': self.name,
+                'id': self.id,
+                }
+
     @property
     def has_comments(self):
         for item in self.items.all():
@@ -97,3 +106,8 @@ class ShoppingListMember(models.Model):
         return '{list_name} is shared with shopper {shopper_name}'.format(
                     list_name=self.shopping_list.name,
                     shopper_name=self.shopper.username)
+
+    def as_dict(self):
+        return {'shopper': self.shopper.as_dict(),
+                'shopping_list': self.shopping_list.as_dict(),
+                'id': self.id}
