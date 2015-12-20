@@ -66,7 +66,7 @@
         <label for="shopper-select">Other User:</label>
         <select id="shopper-select" class="form-control" onchange="refreshSharedLists();">
             {% for shopper in shoppers %}
-                <option value="user-select-{{ shopper.user.id }}">{{ shopper.user.username }}</option>
+                <option value="user-select-{{ shopper.id }}">{{ shopper.user.username }}</option>
             {% endfor %}
         </select>
       </div>
