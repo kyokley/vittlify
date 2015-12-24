@@ -107,6 +107,14 @@ class ShopperView(APIView):
             raise Http404
 
     def get(self, request, pk, format=None):
-        shopper = Shopper.objects.get(pk=pk)
+        shopper = self.get_shopper(pk=pk)
         serializer = ShopperSerializer(shopper)
         return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        shopper = self.get_shopper(pk=pk)
+        serializer = ShopperSerializer(shopper, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

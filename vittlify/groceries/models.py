@@ -46,6 +46,7 @@ class Item(models.Model):
 class Shopper(models.Model):
     user = models.OneToOneField('auth.User')
     shopping_lists = models.ManyToManyField('ShoppingList', blank=True, through='ShoppingListMember', related_name='members')
+    email = models.EmailField(null=True, blank=True)
 
     @property
     def username(self):

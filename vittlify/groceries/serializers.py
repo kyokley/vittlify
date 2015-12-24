@@ -56,9 +56,16 @@ class ShoppingListSerializer(serializers.Serializer):
 
 class ShopperSerializer(serializers.ModelSerializer):
     shopping_lists = ShoppingListSerializer(many=True, read_only=True)
+    email = serializers.CharField(required=False)
+    user = serializers.CharField(read_only=True)
 
     class Meta:
         model = Shopper
+
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+        return instance
 
 class ShoppingListMemberSerializer(serializers.ModelSerializer):
     class Meta:
