@@ -1,5 +1,6 @@
 /*jslint browser:true */
 var sharing_select;
+var owner_id;
 
 function addShoppingList(owner_id){
     var new_list_name = document.getElementById("new-list-name");
@@ -126,4 +127,42 @@ function refreshSharedLists(){
                      }
         });
     }
+}
+
+function clearEmailText(){
+    var textbox = document.getElementById("user-email-text");
+    textbox.value = "";
+}
+
+function saveEmailText(){
+    var user_email_field = document.getElementById("user-email-text");
+    var user_email = user_email_field.value;
+
+    jQuery.ajax({url: "/vittlify/shopper/" + owner_id + "/",
+                 type: "PUT",
+                 dataType: "json",
+                 data: {"email": user_email},
+                 success: function(json){
+                    var res = jQuery("#email-saved-text");
+                    var savedField = res[0];
+                    savedField.style.color = "Black";
+                    savedField.innerText = "Saved Successfully";
+                    res.fadeOut(2000, function() {
+                        savedField.innerText = "";
+                        res.show(0);
+                    });
+                 },
+                 error: function(json){
+                     console.log(json);
+                    var res = jQuery("#email-saved-text");
+                    var savedField = res[0];
+                    savedField.style.color = "Red";
+                    savedField.innerText = "Save failed: " + json.responseJSON["email"];
+                    res.fadeOut(2000, function() {
+                        savedField.style.color = "Black";
+                        savedField.innerText = "";
+                        res.show(0);
+                    });
+                 }
+    });
 }

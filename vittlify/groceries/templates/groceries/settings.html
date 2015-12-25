@@ -35,12 +35,15 @@
           <div class="col-xs-5">
               <div class="form-group">
                 <label for="user-email-text">Email:</label>
-                <input type="text" class="form-control" id="user-email-text" value="{{ owner.email }}" />
+                <input type="text" class="form-control" id="user-email-text" value="{% if owner.email and owner.email != 'None' %}{{ owner.email }}{% endif %}" />
               </div>
               <div class="form-group">
-                <button id="save-user-email-btn" class="btn btn-default" onclick="">Save</button>
-                <button id="clear-user-email-btn" class="btn btn-default" onclick="">Clear</button>
+                <button id="save-user-email-btn" class="btn btn-default" onclick="saveEmailText();">Save</button>
+                <button id="clear-user-email-btn" class="btn btn-default" onclick="clearEmailText();">Clear</button>
               </div>
+          </div>
+          <div class="col-xs-7">
+            <span id="email-saved-text"></span>
           </div>
       </div>
   </div>
@@ -110,6 +113,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             token = '{{ csrf_token }}';
+            owner_id = '{{ owner.id }}';
 
             sharing_select = $('#sharing-select').bootstrapDualListbox({
               nonSelectedListLabel: 'Available Lists',
