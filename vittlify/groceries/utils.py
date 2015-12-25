@@ -6,8 +6,9 @@ from email.MIMEText import MIMEText
 from email.Utils import COMMASPACE, formatdate
 from email import Encoders
 import os
+from config.settings import EMAIL_FROM_ADDR
 
-def sendMail(to_addr, from_addr, subject, text, files=None, server='localhost'):
+def sendMail(to_addr, subject, text, from_addr=EMAIL_FROM_ADDR, files=None, server='localhost'):
     if type(to_addr) is not list:
         to_addr = [to_addr]
     if not files:
