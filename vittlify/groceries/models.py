@@ -115,7 +115,7 @@ class ShoppingListMember(models.Model):
 
 class NotifyAction(models.Model):
     item = models.ForeignKey('Item')
-    shopping_list = models.ForeignKey('ShoppinggList')
+    shopping_list = models.ForeignKey('ShoppingList')
     shopper = models.ForeignKey('Shopper')
     sent = models.BooleanField(null=False, default=False)
     date_added = models.DateTimeField(auto_now_add=True)
