@@ -112,3 +112,19 @@ class ShoppingListMember(models.Model):
         return {'shopper': self.shopper.as_dict(),
                 'shopping_list': self.shopping_list.as_dict(),
                 'id': self.id}
+
+class NotifyAction(models.Model):
+    item = models.ForeignKey('Item')
+    shopping_list = models.ForeignKey('ShoppinggList')
+    shopper = models.ForeignKey('Shopper')
+    sent = models.BooleanField(null=False, default=False)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_edited = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'I: {item_name} S: {shopper_name} S: {sent} A: {date_added} E: {date_edited}'.format(
+                item_name=self.item.name,
+                shopper_name=self.shopper.username,
+                sent=self.sent,
+                date_added=self.date_added,
+                date_edited=self.date_edited)
