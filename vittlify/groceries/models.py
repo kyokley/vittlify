@@ -118,7 +118,7 @@ class NotifyAction(models.Model):
     shopping_list = models.ForeignKey('ShoppingList', null=True)
     shopper = models.ForeignKey('Shopper', null=False)
     action = models.TextField(default='', blank=True)
-    sent = models.BooleanField(null=False, default=False)
+    sent = models.BooleanField(null=False, default=False, db_index=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
 
