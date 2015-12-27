@@ -5,6 +5,7 @@ from groceries.serializers import (ItemSerializer,
 from groceries.models import (Item,
                               ShoppingList,
                               Shopper,
+                              NotifyAction,
                               )
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -42,6 +43,20 @@ class ItemView(APIView):
         item = self.get_item(pk)
         serializer = ItemSerializer(item, data=request.data)
         if serializer.is_valid():
+            if ('done' in serializer.validated_data and
+                    serializer.validated_data.get('done') != item.done):
+                na = NotifyAction()
+                na.shopper = Shopper.objects.filter(user=request.user).first()
+                na.shopping_list = item.shopping_list
+                na.item = item
+                if serializer.validated_data.get('done'):
+                    template = '{item_name} has been completed by {username}'
+                else:
+                    template = '{item_name} has been uncompleted by {username}'
+                na.action = template.format(
+                                item_name=item.name,
+                                username=na.shopper.username)
+                na.save()
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -50,6 +65,18 @@ class ItemView(APIView):
         serializer = ItemSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            item = serializer.instance
+            na = NotifyAction()
+            na.shopper = Shopper.objects.filter(user=request.user).first()
+            na.shopping_list = item.shopping_list
+            na.item = item
+            template = '{item_name} has been added to {shopping_list} by {username}'
+            na.action = template.format(
+                            item_name=item.name,
+                            username=na.shopper.username,
+                            shopping_list=item.shopping_list.name)
+            na.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
