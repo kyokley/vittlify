@@ -7,6 +7,7 @@ from groceries.models import (Item,
                               Shopper,
                               NotifyAction,
                               )
+from groceries.auth import UnsafeSessionAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -77,6 +78,16 @@ class ItemView(APIView):
                             username=na.shopper.username,
                             shopping_list=item.shopping_list.name)
             na.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UnsafeItemView(ItemView):
+    authentication_classes = (UnsafeSessionAuthentication,)
+
+    def post(self, request, format=None):
+        serializer = ItemSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
