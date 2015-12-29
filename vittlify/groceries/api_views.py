@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.http import Http404
+from config.settings import ALEXA_LIST
 
 class ShoppingListItemsView(APIView):
     def get_items(self, pk):
@@ -90,6 +91,27 @@ class UnsafeItemView(ItemView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, format=None):
+        name = request.data['name']
+        shopping_list = ShoppingList.objects.get(pk=ALEXA_LIST)
+        items = (Item.objects.filter(shopping_list=shopping_list)
+                             .filter(name=name)
+                             .all())
+        for item in items:
+            na = NotifyAction()
+            na.shopper = shopping_list.owner
+            na.shopping_list = shopping_list
+            na.item = item
+            template = '{item_name} has been completed by {username}'
+            na.action = template.format(
+                            item_name=item.name,
+                            username=na.shopper.username)
+            na.save()
+
+            item.done = True
+            item.save()
+        return Response(status=status.HTTP_200_OK)
 
 class ShoppingListView(APIView):
     authentication_classes = (BasicAuthentication, SessionAuthentication)

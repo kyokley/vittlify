@@ -123,5 +123,6 @@ EMAIL_FROM_ADDR = 'info@vittlify.com'
 STATIC_URL = '/static/'
 
 ALEXA_PASS = 'ALEXA_PASS'
+ALEXA_LIST = 1
 
 from .local_settings import *
