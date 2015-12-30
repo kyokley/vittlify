@@ -35,3 +35,10 @@ def sendMail(to_addr, subject, text, from_addr=EMAIL_FROM_ADDR, files=None, serv
     smtp = smtplib.SMTP(server)
     smtp.sendmail(from_addr, to_addr, msg.as_string())
     smtp.close()
+
+def queryDictToDict(data):
+    ret = dict()
+    for key, val in data.items():
+        ret[key] = val
+
+    return ret

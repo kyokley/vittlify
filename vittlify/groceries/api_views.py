@@ -14,6 +14,7 @@ from rest_framework import status
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.http import Http404
 from config.settings import ALEXA_LIST
+from groceries.utils import queryDictToDict
 
 class ShoppingListItemsView(APIView):
     def get_items(self, pk):
@@ -86,9 +87,23 @@ class UnsafeItemView(ItemView):
     authentication_classes = (UnsafeSessionAuthentication,)
 
     def post(self, request, format=None):
-        serializer = ItemSerializer(data=request.data)
+        data = queryDictToDict(request.data)
+        data['shopping_list_id'] = ALEXA_LIST
+        serializer = ItemSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
+
+            item = serializer.instance
+            na = NotifyAction()
+            na.shopper = item.shopping_list.owner
+            na.shopping_list = item.shopping_list
+            na.item = item
+            template = '{item_name} has been added to {shopping_list} by {username}'
+            na.action = template.format(
+                            item_name=item.name,
+                            username=na.shopper.username,
+                            shopping_list=item.shopping_list.name)
+            na.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
