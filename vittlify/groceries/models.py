@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.timezone import utc
 from datetime import datetime
+from email import EMAIL_TEMPLATE
 
 RECENTLY_COMPLETED_DAYS = 14
 LARGE_INT = 999999999
@@ -57,6 +58,20 @@ class Shopper(models.Model):
 
     def as_dict(self):
         return {'id': self.id}
+
+    def generateEmail(self):
+        actions = set()
+        for shopping_list in self.shopping_lists.all():
+            actions.update(list(NotifyAction.objects
+                                            .filter(shopping_list=shopping_list)
+                                            .filter(sent=False)
+                                            .all()))
+
+        actionTemplate = ''
+        for action in actions:
+            actionTemplate += '<ul>%s<ul>\n' % action.action
+        template = EMAIL_TEMPLATE.format(actionTemplate)
+        return template
 
 class RecentlyCompletedShoppingList(object):
     def __init__(self,
