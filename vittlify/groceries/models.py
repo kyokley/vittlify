@@ -70,7 +70,7 @@ class Shopper(models.Model):
         actionTemplate = ''
         for action in actions:
             actionTemplate += '<ul>%s<ul>\n' % action.action
-        template = EMAIL_TEMPLATE.format(actionTemplate)
+        template = EMAIL_TEMPLATE.format(actions=actionTemplate)
         return template
 
 class RecentlyCompletedShoppingList(object):
