@@ -4,7 +4,7 @@ EMAIL_TEMPLATE = '''
 <head>
 <meta name="viewport" content="width=device-width">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Really Simple HTML Email Template</title>
+<title>Vittlify Digest</title>
 <style>
 /* -------------------------------------
     GLOBAL
