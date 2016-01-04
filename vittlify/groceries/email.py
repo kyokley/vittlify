@@ -165,7 +165,6 @@ ol li {{
           <td>
             <p>Greetings from Vittlify!</p>
             <p>The following is a list of actions that have been taken that you may be interested in.</p>
-            <h1>Actions</h1>
             {actions}
           </td>
         </tr>

@@ -61,15 +61,16 @@ class Shopper(models.Model):
 
     def generateEmail(self):
         actions = set()
+        actionTemplate = '\n'
         for shopping_list in self.shopping_lists.all():
             actions.update(list(NotifyAction.objects
                                             .filter(shopping_list=shopping_list)
                                             .filter(sent=False)
                                             .all()))
 
-        actionTemplate = ''
-        for action in actions:
-            actionTemplate += '<ul>%s<ul>\n' % action.action
+            actionTemplate += '<h1>%s</h1>\n' % shopping_list.name
+            for action in actions:
+                actionTemplate += '<ul><li>%s</li></ul>\n' % action.getActionRecord()
         template = EMAIL_TEMPLATE.format(actions=actionTemplate)
         return template
 
@@ -144,3 +145,7 @@ class NotifyAction(models.Model):
                 sent=self.sent,
                 date_added=self.date_added,
                 date_edited=self.date_edited)
+
+    def getActionRecord(self):
+        return 'At %s, %s' % (self.date_added.strftime('%H:%M'),
+                              self.action)

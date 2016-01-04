@@ -98,7 +98,7 @@ class UnsafeItemView(ItemView):
             na.shopper = item.shopping_list.owner
             na.shopping_list = item.shopping_list
             na.item = item
-            template = '{item_name} has been added to {shopping_list} by {username}'
+            template = '{item_name} has been added by {username}'
             na.action = template.format(
                             item_name=item.name,
                             username=na.shopper.username,
