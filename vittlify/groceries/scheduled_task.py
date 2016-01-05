@@ -1,4 +1,4 @@
-from groceries.models import Shopper
+from groceries.models import Shopper, NotifyAction
 from groceries.utils import sendMail
 
 def run_emails():
@@ -9,3 +9,7 @@ def run_emails():
             sendMail(shopper.email,
                      'Vittlify Digest',
                      msg)
+
+    actions = NotifyAction.objects.filter(sent=False).all()
+    for action in actions:
+        action.sent = True
