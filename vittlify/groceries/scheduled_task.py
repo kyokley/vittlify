@@ -1,5 +1,6 @@
 from groceries.models import Shopper, NotifyAction
 from groceries.utils import sendMail
+from django_cron import CronJobBase, Schedule
 
 def run_emails():
     shoppers = Shopper.objects.all()
@@ -13,3 +14,6 @@ def run_emails():
     actions = NotifyAction.objects.filter(sent=False).all()
     for action in actions:
         action.sent = True
+
+class EmailJob(CronJobBase):
+    pass
