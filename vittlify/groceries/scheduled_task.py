@@ -15,6 +15,7 @@ def run_emails():
     actions = NotifyAction.objects.filter(sent=False).all()
     for action in actions:
         action.sent = True
+        action.save()
 
 class EmailJob(CronJobBase):
     schedule = Schedule(run_every_mins=CRON_JOB_FREQUENCY)
