@@ -52,7 +52,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'groceries',
-    'django-cron',
+    'django_cron',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -127,6 +127,7 @@ ALEXA_PASS = 'ALEXA_PASS'
 ALEXA_LIST = 1
 
 CRON_CLASSES = ['groceries.scheduled_task.EmailJob']
-CRON_JOB_FREQUENCY = 1440
+#CRON_JOB_FREQUENCY = 1440
+CRON_JOB_FREQUENCY = 5
 
 from .local_settings import *
