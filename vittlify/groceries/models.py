@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.timezone import utc
 from datetime import datetime
-from email import EMAIL_TEMPLATE
+from email_template import EMAIL_TEMPLATE
 
 RECENTLY_COMPLETED_DAYS = 14
 LARGE_INT = 999999999
