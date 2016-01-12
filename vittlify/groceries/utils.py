@@ -22,7 +22,7 @@ def sendMail(to_addr, subject, text, from_addr=EMAIL_FROM_ADDR, files=None, serv
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
-    msg.attach(MIMEText(text))
+    msg.attach(MIMEText(text, 'html'))
 
     for file in files:
         part = MIMEBase('application', 'octet-stream')
