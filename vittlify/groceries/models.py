@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.timezone import utc
+from django.utils.timezone import utc, localtime
 from datetime import datetime
 from email_template import EMAIL_TEMPLATE
 
@@ -147,5 +147,5 @@ class NotifyAction(models.Model):
                 date_edited=self.date_edited)
 
     def getActionRecord(self):
-        return 'At %s, %s' % (self.date_added.strftime('%H:%M'),
+        return 'At %s, %s' % (localtime(self.date_added).strftime('%H:%M'),
                               self.action)
