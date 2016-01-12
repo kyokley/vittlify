@@ -65,6 +65,7 @@ class Shopper(models.Model):
             actions = list(NotifyAction.objects
                                        .filter(shopping_list=shopping_list)
                                        .filter(sent=False)
+                                       .order_by('date_added')
                                        .all())
 
             if actions:
