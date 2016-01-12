@@ -126,7 +126,6 @@ ALEXA_PASS = 'ALEXA_PASS'
 ALEXA_LIST = 1
 
 CRON_CLASSES = ['groceries.scheduled_task.EmailJob']
-#CRON_JOB_FREQUENCY = 1440
-CRON_JOB_FREQUENCY = 5
+CRON_JOB_FREQUENCY = 1440
 
 from .local_settings import *
