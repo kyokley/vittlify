@@ -60,7 +60,7 @@ class Shopper(models.Model):
         return {'id': self.id}
 
     def generateEmail(self):
-        actionTemplate = '\n'
+        actionTemplate = ''
         for shopping_list in self.shopping_lists.all():
             actions = list(NotifyAction.objects
                                        .filter(shopping_list=shopping_list)
@@ -72,7 +72,9 @@ class Shopper(models.Model):
                 actionTemplate += '<h1>%s</h1>\n' % shopping_list.name
                 for action in actions:
                     actionTemplate += '<ul><li>%s</li></ul>\n' % action.getActionRecord()
-        template = EMAIL_TEMPLATE.format(actions=actionTemplate)
+        template = None
+        if actionTemplate:
+            template = EMAIL_TEMPLATE.format(actions=actionTemplate)
         return template
 
 class RecentlyCompletedShoppingList(object):

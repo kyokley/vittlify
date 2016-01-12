@@ -9,9 +9,10 @@ def run_emails():
     for shopper in shoppers:
         if shopper.email:
             msg = shopper.generateEmail()
-            sendMail(shopper.email,
-                     'Vittlify Digest',
-                     msg)
+            if msg:
+                sendMail(shopper.email,
+                         'Vittlify Digest',
+                         msg)
 
     actions = NotifyAction.objects.filter(sent=False).all()
     for action in actions:
