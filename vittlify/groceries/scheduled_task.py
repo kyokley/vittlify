@@ -2,6 +2,7 @@ from groceries.models import Shopper, NotifyAction
 from groceries.utils import sendMail
 from django_cron import CronJobBase, Schedule
 from config.settings import CRON_JOB_FREQUENCY
+from datetime import datetime
 
 def run_emails():
     shoppers = Shopper.objects.all()
@@ -17,10 +18,14 @@ def run_emails():
         action.sent = True
         action.save()
 
+def test_email(addr):
+    sendMail(addr,
+             'Vittlify Test at %s' % datetime.now(),
+             'This is a test email from vittlify.')
+
 class EmailJob(CronJobBase):
     schedule = Schedule(run_every_mins=CRON_JOB_FREQUENCY)
     code = 'groceries.email_job'
 
     def do(self):
-        #run_emails()
-        print 'run emails'
+        run_emails()
