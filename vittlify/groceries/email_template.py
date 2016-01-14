@@ -167,6 +167,8 @@ ol li {{
             <p>The following is a list of actions that have been taken that you may be interested in.</p>
             {actions}
           </td>
+        </tr>
+        <tr>
           <td>
             This is an automated message. Do not reply to this email!
           </td>
