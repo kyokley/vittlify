@@ -28,7 +28,7 @@ def run_weekly_emails():
             msg = shopper.generateEmail()
             if msg:
                 sendMail(shopper.email,
-                         'Vittlify Digest',
+                         'Vittlify Weekly Digest',
                          msg)
 
     actions = NotifyAction.objects.filter(weekly_sent=False).all()
