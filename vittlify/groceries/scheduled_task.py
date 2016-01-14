@@ -1,13 +1,15 @@
 from groceries.models import Shopper, NotifyAction
 from groceries.utils import sendMail
 from django_cron import CronJobBase, Schedule
-from config.settings import CRON_JOB_FREQUENCY
 from datetime import datetime
 
-def run_emails():
+CRON_JOB_FREQUENCY = 1440
+CRON_WEEKLY_FREQUENCY = 10080
+
+def run_daily_emails():
     shoppers = Shopper.objects.all()
     for shopper in shoppers:
-        if shopper.email:
+        if shopper.email and shopper.receive_daily_email():
             msg = shopper.generateEmail()
             if msg:
                 sendMail(shopper.email,
@@ -17,6 +19,21 @@ def run_emails():
     actions = NotifyAction.objects.filter(sent=False).all()
     for action in actions:
         action.sent = True
+        action.save()
+
+def run_weekly_emails():
+    shoppers = Shopper.objects.all()
+    for shopper in shoppers:
+        if shopper.email and shopper.receive_weekly_email():
+            msg = shopper.generateEmail()
+            if msg:
+                sendMail(shopper.email,
+                         'Vittlify Digest',
+                         msg)
+
+    actions = NotifyAction.objects.filter(weekly_sent=False).all()
+    for action in actions:
+        action.weekly_sent = True
         action.save()
 
 def test_email(addr):
@@ -29,4 +46,11 @@ class EmailJob(CronJobBase):
     code = 'groceries.email_job'
 
     def do(self):
-        run_emails()
+        run_daily_emails()
+
+class EmailWeeklyJob(CronJobBase):
+    schedule = Schedule(run_every_mins=CRON_WEEKLY_FREQUENCY)
+    code = 'groceries.email_weekly_job'
+
+    def do(self):
+        run_weekly_emails()

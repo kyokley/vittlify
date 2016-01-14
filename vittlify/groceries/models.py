@@ -45,9 +45,17 @@ class Item(models.Model):
         return items
 
 class Shopper(models.Model):
+    DAILY = 'daily'
+    WEEKLY = 'weekly'
+    EMAIL_FREQUENCY_CHOICES = ((DAILY, 'Daily'),
+                               (WEEKLY, 'Weekly'),
+                               )
     user = models.OneToOneField('auth.User')
     shopping_lists = models.ManyToManyField('ShoppingList', blank=True, through='ShoppingListMember', related_name='members')
     email = models.EmailField(null=True, blank=True)
+    email_frequency = models.CharField(max_length=6,
+                                       choices=EMAIL_FREQUENCY_CHOICES,
+                                       default=DAILY)
 
     @property
     def username(self):
@@ -62,11 +70,14 @@ class Shopper(models.Model):
     def generateEmail(self):
         actionTemplate = ''
         for shopping_list in self.shopping_lists.all():
-            actions = list(NotifyAction.objects
-                                       .filter(shopping_list=shopping_list)
-                                       .filter(sent=False)
-                                       .order_by('date_added')
-                                       .all())
+            actions = NotifyAction.objects.filter(shopping_list=shopping_list)
+
+            if self.email_frequency == self.DAILY:
+                actions = actions.filter(sent=False)
+            elif self.email_frequency == self.WEEKLY:
+                actions = actions.filter(weekly_sent=False)
+
+            actions = list(actions.order_by('date_added').all())
 
             if actions:
                 actionTemplate += '<h1>%s</h1>\n' % shopping_list.name
@@ -76,6 +87,12 @@ class Shopper(models.Model):
         if actionTemplate:
             template = EMAIL_TEMPLATE.format(actions=actionTemplate)
         return template
+
+    def receive_daily_email(self):
+        return self.email_frequency == self.DAILY
+
+    def receive_weekly_email(self):
+        return self.email_frequency == self.WEEKLY
 
 class RecentlyCompletedShoppingList(object):
     def __init__(self,
@@ -138,17 +155,24 @@ class NotifyAction(models.Model):
     shopper = models.ForeignKey('Shopper', null=False)
     action = models.TextField(default='', blank=True)
     sent = models.BooleanField(null=False, default=False, db_index=True)
+    weekly_sent = models.BooleanField(null=False, default=False, db_index=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return 'S: {shopper_name} Act: {action} Snt: {sent} Added: {date_added} Edited: {date_edited}'.format(
+        return 'S: {shopper_name} Act: {action} Snt: {sent} Weekly_Snt: {weekly_sent} Added: {date_added} Edited: {date_edited}'.format(
                 shopper_name=self.shopper.username,
                 action=self.action,
                 sent=self.sent,
+                weekly_sent=self.weekly_sent,
                 date_added=self.date_added,
                 date_edited=self.date_edited)
 
-    def getActionRecord(self):
-        return 'At %s, %s' % (localtime(self.date_added).strftime('%H:%M'),
-                              self.action)
+    def getActionRecord(self, display_day=False):
+        if not display_day:
+            return 'At %s, %s' % (localtime(self.date_added).strftime('%I:%M%p'),
+                                  self.action)
+        else:
+            return 'At %s on %s, %s' % (localtime(self.date_added).strftime('%I:%M%p'),
+                                        localtime(self.date_added).strftime('%a %b %d'),
+                                        self.action)
