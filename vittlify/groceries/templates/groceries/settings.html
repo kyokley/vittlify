@@ -38,6 +38,13 @@
                 <input type="text" class="form-control" id="user-email-text" value="{% if owner.email and owner.email != 'None' %}{{ owner.email }}{% endif %}" />
               </div>
               <div class="form-group">
+                <label for="user-email-frequency-select">Frequency:</label>
+                <select class="form-control" id="user-email-frequency-select">
+                    <option value="daily" {% if owner.email_frequency == 'daily'%}selected{% endif %}>Daily</option>
+                    <option value="weekly" {% if owner.email_frequency == 'weekly'%}selected{% endif %}>Weekly</option>
+                </select>
+              </div>
+              <div class="form-group">
                 <button id="save-user-email-btn" class="btn btn-default" onclick="saveEmailText();">Save</button>
                 <button id="clear-user-email-btn" class="btn btn-default" onclick="clearEmailText();">Clear</button>
               </div>

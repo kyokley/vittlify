@@ -138,10 +138,14 @@ function saveEmailText(){
     var user_email_field = document.getElementById("user-email-text");
     var user_email = user_email_field.value;
 
+    var user_email_frequency_field = document.getElementById("user-email-frequency-select");
+    var user_email_frequency = user_email_frequency_field.value;
+
     jQuery.ajax({url: "/vittlify/shopper/" + owner_id + "/",
                  type: "PUT",
                  dataType: "json",
-                 data: {"email": user_email},
+                 data: {"email": user_email,
+                        "email_frequency": user_email_frequency},
                  success: function(json){
                     var res = jQuery("#email-saved-text");
                     var savedField = res[0];
