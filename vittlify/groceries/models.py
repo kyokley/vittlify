@@ -72,9 +72,9 @@ class Shopper(models.Model):
         for shopping_list in self.shopping_lists.all():
             actions = NotifyAction.objects.filter(shopping_list=shopping_list)
 
-            if self.email_frequency == self.DAILY:
+            if self.receive_daily_email():
                 actions = actions.filter(sent=False)
-            elif self.email_frequency == self.WEEKLY:
+            elif self.receive_weekly_email():
                 actions = actions.filter(weekly_sent=False)
 
             actions = list(actions.order_by('date_added').all())
@@ -82,7 +82,7 @@ class Shopper(models.Model):
             if actions:
                 actionTemplate += '<h1>%s</h1>\n' % shopping_list.name
                 for action in actions:
-                    actionTemplate += '<ul><li>%s</li></ul>\n' % action.getActionRecord()
+                    actionTemplate += '<ul><li>%s</li></ul>\n' % action.getActionRecord(display_day=self.receive_weekly_email())
         template = None
         if actionTemplate:
             template = EMAIL_TEMPLATE.format(actions=actionTemplate)
