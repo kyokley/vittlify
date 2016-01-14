@@ -132,6 +132,9 @@ function refreshSharedLists(){
 function clearEmailText(){
     var textbox = document.getElementById("user-email-text");
     textbox.value = "";
+
+    var user_email_frequency_field = document.getElementById("user-email-frequency-select");
+    user_email_frequency_field.value = "daily";
 }
 
 function saveEmailText(){
