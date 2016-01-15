@@ -17,7 +17,7 @@ function addShoppingList(owner_id){
                          refreshSharedLists();
                      },
                      error: function(){
-                         alert("An error has occurred");
+                         alert("An error has occurred. Please reload the page and try again.");
                      }
         });
     }
@@ -45,7 +45,7 @@ function deleteShoppingList(){
                          refreshSharedLists();
                      },
                      error: function(){
-                         alert("An error has occurred");
+                         alert("An error has occurred. Please reload the page and try again.");
                      }
         });
     }
@@ -72,7 +72,7 @@ function updateSharedList(){
                             console.log(json)
                          },
                          error: function(){
-                             alert("An error has occurred");
+                             alert("An error has occurred. Please reload the page and try again.");
                          }
             });
         } else {
@@ -83,7 +83,7 @@ function updateSharedList(){
                             console.log(json)
                          },
                          error: function(){
-                             alert("An error has occurred");
+                             alert("An error has occurred. Please reload the page and try again.");
                          }
             });
         }
@@ -123,7 +123,7 @@ function refreshSharedLists(){
                         sharing_select.bootstrapDualListbox('refresh');
                      },
                      error: function(){
-                         alert("An error has occurred");
+                         alert("An error has occurred. Please reload the page and try again.");
                      }
         });
     }
