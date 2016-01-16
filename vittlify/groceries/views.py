@@ -7,6 +7,7 @@ from .models import (Shopper,
                      ShoppingList,
                      ShoppingListMember,
                      )
+from config.settings import NODE_SERVER
 
 def home(request):
     context = {'loggedin': False}
@@ -18,6 +19,7 @@ def home(request):
         context['shopping_lists'] = shopping_lists
         recently_completed_list = RecentlyCompletedShoppingList(user)
         context['shopping_lists'].append(recently_completed_list)
+        context['node_server'] = NODE_SERVER
     return render(request, 'groceries/home.html', context)
 
 def settings(request):

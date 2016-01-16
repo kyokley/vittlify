@@ -128,4 +128,5 @@ ALEXA_LIST = 1
 CRON_CLASSES = ['groceries.scheduled_task.EmailJob',
                 'groceries.scheduled_task.EmailWeeklyJob']
 
+NODE_SERVER = 'localhost:4000'
 from .local_settings import *

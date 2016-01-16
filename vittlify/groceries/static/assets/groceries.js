@@ -1,6 +1,8 @@
 /*jslint browser:true */
 var tables = {};
 var deletedTable;
+var socket;
+var node_port;
 
 function updateRow(item_id, list_id, checked, row_elem){
     jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
@@ -153,5 +155,12 @@ function saveItem(shopping_list_id){
                      alert("An error has occurred!");
                      closeEditPanel(shopping_list_id);
                  }
+    });
+}
+
+function initSocketIO(){
+    socket = io.connect("localhost", {port:4000});
+    socket.on("connect", function(){
+        console.log("connect");
     });
 }
