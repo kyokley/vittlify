@@ -63,9 +63,20 @@
                     <ul class="nav nav-tabs">
                         {% for shopping_list in shopping_lists %}
                             {% if forloop.first %}
-                            <li class="active"><a data-toggle="tab" href="#shopping-list-{{ shopping_list.id }}">{{ shopping_list.name }}</a></li>
+                            <li class="active">
+                                <a data-toggle="tab" href="#shopping-list-{{ shopping_list.id }}">
+                                    {{ shopping_list.name }}
+
+                                    <span id="shopping-list-badge-{{shopping_list.id}}" class="badge alert-info">{{ shopping_list.count }}</span>
+                                </a>
+                            </li>
                             {% else %}
-                            <li><a data-toggle="tab" href="#shopping-list-{{ shopping_list.id }}">{{ shopping_list.name }}</a></li>
+                            <li>
+                                <a data-toggle="tab" href="#shopping-list-{{ shopping_list.id }}">
+                                    {{ shopping_list.name }}
+                                    <span id="shopping-list-badge-{{shopping_list.id}}" class="badge alert-info">{{ shopping_list.count }}</span>
+                                </a>
+                            </li>
                             {% endif %}
                         {% endfor %}
                     </ul>
