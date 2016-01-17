@@ -160,6 +160,7 @@ function saveItem(shopping_list_id){
 
 function initSocketIO(){
     socket = io.connect("localhost", {port:4000});
+    //socket = io.connect();
     socket.on("connect", function(){
         console.log("connect");
     });

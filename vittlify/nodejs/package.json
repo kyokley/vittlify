@@ -1,0 +1,9 @@
+{
+  "name": "vittlify-realtime-server",
+  "version": "0.0.1",
+  "description": "realtime message handling for vittlify",
+  "dependencies": {
+    "express": "~4.10.2",
+    "socket.io": "~1.4.4"
+  }
+}
