@@ -195,6 +195,8 @@
                     updateRow(item_id, list_id, checked, row_elem);
                 });
                 {% endfor %}
+
+                initSocketIO();
             });
         </script>
     {% endblock %}

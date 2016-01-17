@@ -163,4 +163,12 @@ function initSocketIO(){
     socket.on("connect", function(){
         console.log("connect");
     });
+
+    socket.on("message", function(message) {
+        console.log(message);
+    });
+
+    socket.emit("send_message", "Initialized", function(data){
+        console.log(data);
+    });
 }

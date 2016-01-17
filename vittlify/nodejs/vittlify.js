@@ -4,21 +4,21 @@ var io = require('socket.io').listen(server);
 var cookie_reader = require('cookie');
 var querystring = require('querystring');
 
-var redis = require('socket.io/node_modules/redis');
+var redis = require('./node_modules/redis');
 var sub = redis.createClient();
 
 sub.subscribe('vittlify');
 
-io.configure(function(){
-    io.set('authorization', function(data, accept){
-        if(data.headers.cookie){
-            data.cookie = cookie_reader.parse(data.headers.cookie);
-            return accept(null, true);
-        }
-        return accept('error', false);
-    });
-    io.set('log level', 1);
-});
+//io.configure(function(){
+//    io.set('authorization', function(data, accept){
+//        if(data.headers.cookie){
+//            data.cookie = cookie_reader.parse(data.headers.cookie);
+//            return accept(null, true);
+//        }
+//        return accept('error', false);
+//    });
+//    io.set('log level', 1);
+//});
 
 io.sockets.on('connection', function (socket) {
 
@@ -36,7 +36,7 @@ io.sockets.on('connection', function (socket) {
 
         var options = {
             host: 'localhost',
-            port: 3000,
+            port: 8000,
             path: '/node_api',
             method: 'POST',
             headers: {
@@ -55,6 +55,10 @@ io.sockets.on('connection', function (socket) {
                     console.log('Message: ' + message);
                 }
             });
+
+            res.statusCode = 200;
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         });
 
         req.write(values);

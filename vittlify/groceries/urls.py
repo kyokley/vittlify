@@ -18,4 +18,5 @@ urlpatterns = [
     url(r'^shopper/$', api_views.ShopperView.as_view()),
     url(r'^shared_lists/(?P<shopper_id>[0-9]+)/$', views.shared_lists),
     url(r'^shared_list_member/(?P<shopper_id>[0-9]+)/(?P<list_id>[0-9]+)/$', views.shared_list_member_json),
+    url(r'^node_api/$', views.node_api, name='node_api'),
 ]
