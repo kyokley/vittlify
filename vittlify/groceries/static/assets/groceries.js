@@ -10,37 +10,44 @@ function updateRow(item_id, list_id, checked, row_elem){
                  dataType: "json",
                  data: {done: checked},
                  success: function(json){
-                     console.log('Set item ' + item_id + ' to ' + checked);
-                     var table = tables["table-shopping_list-" + list_id];
-                     var hiddenInput = document.getElementById('done-checked-' + item_id);
-                     var button = document.getElementById('done-btn-' + list_id + '-' + item_id);
-                     var link_btn = document.getElementById('link-' + item_id);
-                     var row, rowNode;
-
-                     if(checked === "true"){
-                         row = table.row(row_elem);
-                         rowNode = row.node();
-
-                         row.remove().draw(false);
-                         deletedTable.row.add(rowNode).draw(false);
-                         button.innerHTML = "Undone";
-                         hiddenInput.value = "false";
-                         link_btn.disabled = true;
-                     } else {
-                         row = deletedTable.row(row_elem);
-                         rowNode = row.node();
-
-                         row.remove().draw(false);
-                         table.row.add(rowNode).draw(false);
-                         button.innerHTML = "Done";
-                         hiddenInput.value = "true";
-                         link_btn.disabled = false;
-                     }
+                     updateRowHelper(item_id, list_id, checked, row_elem);
+                     socket.emit("send_asyncUpdateRow", {item_id: item_id,
+                                                         list_id: list_id,
+                                                         checked: checked});
                  },
                  error: function(){
                      alert("An error has occurred");
                  }
     });
+}
+
+function updateRowHelper(item_id, list_id, checked, row_elem){
+     console.log('Set item ' + item_id + ' to ' + checked);
+     var table = tables["table-shopping_list-" + list_id];
+     var hiddenInput = document.getElementById('done-checked-' + item_id);
+     var button = document.getElementById('done-btn-' + list_id + '-' + item_id);
+     var link_btn = document.getElementById('link-' + item_id);
+     var row, rowNode;
+
+     if(checked === "true"){
+         row = table.row(row_elem);
+         rowNode = row.node();
+
+         row.remove().draw(false);
+         deletedTable.row.add(rowNode).draw(false);
+         button.innerHTML = "Undone";
+         hiddenInput.value = "false";
+         link_btn.disabled = true;
+     } else {
+         row = deletedTable.row(row_elem);
+         rowNode = row.node();
+
+         row.remove().draw(false);
+         table.row.add(rowNode).draw(false);
+         button.innerHTML = "Done";
+         hiddenInput.value = "true";
+         link_btn.disabled = false;
+     }
 }
 
 function addItem(list_id){
@@ -159,17 +166,20 @@ function saveItem(shopping_list_id){
 }
 
 function initSocketIO(){
-    socket = io.connect("localhost", {port:4000});
-    //socket = io.connect();
+    // WebSocket test settings
+    socket = io('http://127.0.0.1:3000');
     socket.on("connect", function(){
         console.log("connect");
     });
 
     socket.on("message", function(message) {
-        console.log(message);
+        console.log(message.message);
     });
 
-    socket.emit("send_message", "Initialized", function(data){
+    socket.on("asyncUpdateRow", function(data){
+        //var table = tables["table-shopping_list-" + data.list_id];
+        //var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
+        //updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
         console.log(data);
     });
 }
