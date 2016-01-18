@@ -1,9 +1,19 @@
-var app = require('express')()
-var http = require('http').createServer(app)
+var express = require('express');
+var app = express();
+var router = express.Router();
+var http = require('http').createServer(app);
 var sio = require('socket.io');
+var bodyParser = require('body-parser');
 
 var io = sio.listen(http, {origins: '*:*'});
 
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+
+router.route('/unsafe_item')
+      .post(function(req, res){
+
+      });
 io.on('connection', function(socket){
     console.log('got a connection');
     socket.emit('message', {'message': 'welcome'});
@@ -22,3 +32,4 @@ io.on('connection', function(socket){
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
+
