@@ -12,8 +12,12 @@ io.on('connection', function(socket){
         console.log(data);
         socket.broadcast.emit('asyncUpdateRow', data);
     });
-});
 
+    socket.on('send_asyncAddItem', function(data){
+        console.log(data);
+        socket.broadcast.emit('asyncAddItem', data);
+    });
+});
 
 http.listen(3000, function(){
   console.log('listening on *:3000');

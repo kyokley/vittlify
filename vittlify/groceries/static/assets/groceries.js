@@ -10,9 +10,9 @@ function updateRow(item_id, list_id, checked, row_elem){
                  dataType: "json",
                  data: {done: checked},
                  success: function(json){
-                     updateRowHelper(item_id, list_id, checked, row_elem);
-                     socket.emit("send_asyncUpdateRow", {item_id: item_id,
-                                                         list_id: list_id,
+                     updateRowHelper(json.pk, json.shopping_list_id, checked, row_elem);
+                     socket.emit("send_asyncUpdateRow", {item_id: json.pk,
+                                                         list_id: json.shopping_list_id,
                                                          checked: checked});
                  },
                  error: function(){
@@ -29,7 +29,7 @@ function updateRowHelper(item_id, list_id, checked, row_elem){
      var link_btn = document.getElementById('link-' + item_id);
      var row, rowNode;
 
-     if(checked === "true"){
+     if(checked === "true" || checked === "t"){
          row = table.row(row_elem);
          rowNode = row.node();
 
@@ -63,40 +63,44 @@ function addItem(list_id){
                             name: item_name.value,
                             comments: item_comments.value},
                      success: function(json){
-                         var table = tables["table-shopping_list-" + list_id];
-                         var done_button = '<input type="hidden" id="done-checked-' + json.pk + '" value=true />';
-                         done_button += '<button type="button" class="btn btn-info done-btn-class" id="done-btn-' + json.shopping_list_id + '-' + json.pk + '">';
-                         if(json.done){
-                             done_button += 'Undone';
-                         } else {
-                             done_button += 'Done';
-                         }
-                         done_button += '</button>';
-
-                         var link_name = '<button type="button" class="btn btn-link" id="link-' + json.pk + '" onclick="openItem(' + json.pk + ', ' + json.shopping_list_id + ');">';
-                         link_name = link_name + json.name;
-                         if(json.comments){
-                              link_name += ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
-                         }
-                         link_name += '</button>';
-
-                         var row = table.row.add([link_name, done_button]).draw(false);
-                         var rowNode = row.node();
                          item_name.value = "";
                          item_comments.value = "";
-
-                        var selectorID = "done-btn-" + json.shopping_list_id + "-" + json.pk;
-                        table.$('button[id="' + selectorID + '"]').click(function(){
-                               var checked = document.getElementById("done-checked-" + json.pk).value;
-                               var row_elem = $(this).parents('tr');
-                               updateRow(json.pk, json.shopping_list_id, checked, row_elem);
-                        });
+                         addItemHelper(json.shopping_list_id, json.pk, json.name, json.comments);
+                         socket.emit("send_asyncAddItem", {item_id: json.pk,
+                                                           list_id: json.shopping_list_id,
+                                                           name: json.name,
+                                                           comments: json.comments});
                      },
                      error: function(json){
                          alert("An error has occurred");
                      }
         });
     }
+}
+
+function addItemHelper(list_id, item_id, name, comments){
+     var table = tables["table-shopping_list-" + list_id];
+     var done_button = '<input type="hidden" id="done-checked-' + item_id + '" value=true />';
+     done_button += '<button type="button" class="btn btn-info done-btn-class" id="done-btn-' + list_id + '-' + item_id + '">';
+     done_button += 'Done';
+     done_button += '</button>';
+
+     var link_name = '<button type="button" class="btn btn-link" id="link-' + item_id + '" onclick="openItem(' + item_id + ', ' + list_id + ');">';
+     link_name = link_name + name;
+     if(comments){
+          link_name += ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
+     }
+     link_name += '</button>';
+
+     var row = table.row.add([link_name, done_button]).draw(false);
+     var rowNode = row.node();
+
+    var selectorID = "done-btn-" + list_id + "-" + item_id;
+    table.$('button[id="' + selectorID + '"]').click(function(){
+           var checked = document.getElementById("done-checked-" + item_id).value;
+           var row_elem = $(this).parents('tr');
+           updateRow(item_id, list_id, checked, row_elem);
+    });
 }
 
 function openItem(item_id, shopping_list_id){
@@ -177,9 +181,14 @@ function initSocketIO(){
     });
 
     socket.on("asyncUpdateRow", function(data){
-        //var table = tables["table-shopping_list-" + data.list_id];
-        //var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
-        //updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
+        var table = tables["table-shopping_list-" + data.list_id];
+        var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
+        updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
+        console.log(data);
+    });
+
+    socket.on("asyncAddItem", function(data){
+        addItemHelper(data.list_id, data.item_id, data.name, data.comments);
         console.log(data);
     });
 }
