@@ -10,10 +10,7 @@ function updateRow(item_id, list_id, checked, row_elem){
                  dataType: "json",
                  data: {done: checked},
                  success: function(json){
-                     updateRowHelper(json.pk, json.shopping_list_id, checked, row_elem);
-                     socket.emit("send_asyncUpdateRow", {item_id: json.pk,
-                                                         list_id: json.shopping_list_id,
-                                                         checked: checked});
+                     console.log("Successfully handled put for " + item_id)
                  },
                  error: function(){
                      alert("An error has occurred");
@@ -65,11 +62,7 @@ function addItem(list_id){
                      success: function(json){
                          item_name.value = "";
                          item_comments.value = "";
-                         addItemHelper(json.shopping_list_id, json.pk, json.name, json.comments);
-                         socket.emit("send_asyncAddItem", {item_id: json.pk,
-                                                           list_id: json.shopping_list_id,
-                                                           name: json.name,
-                                                           comments: json.comments});
+                         // We depend on the node server to actually call addItemHelper later
                      },
                      error: function(json){
                          alert("An error has occurred");

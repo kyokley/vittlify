@@ -13,18 +13,18 @@ io.on('connection', function(socket){
     console.log('got a connection');
     socket.emit('message', {'message': 'welcome'});
 
-    socket.on('send_asyncUpdateRow', function(data){
-        console.log(data);
-        socket.broadcast.emit('asyncUpdateRow', data);
-    });
+    //socket.on('send_asyncUpdateRow', function(data){
+    //    console.log(data);
+    //    socket.broadcast.emit('asyncUpdateRow', data);
+    //});
 
-    socket.on('send_asyncAddItem', function(data){
-        console.log(data);
-        socket.broadcast.emit('asyncAddItem', data);
-    });
+    //socket.on('send_asyncAddItem', function(data){
+    //    console.log(data);
+    //    socket.broadcast.emit('asyncAddItem', data);
+    //});
 });
 
-app.post('/unsafe_item', function(req, res){
+app.post('/item', function(req, res){
     var data = {item_id: req.body.item_id,
                 list_id: req.body.list_id,
                 name: req.body.name,
@@ -35,6 +35,18 @@ app.post('/unsafe_item', function(req, res){
 
     if(req.get('host') == 'localhost:3000'){
         io.emit('asyncAddItem', data);
+    } else {
+        console.log('Request came from an invalid source. Ignoring');
+    }
+    res.send('Success!');
+});
+
+app.put('/item/:id', function(req, res){
+    var data = {item_id: req.id,
+                list_id: req.body.list_id,
+                checked: req.body.checked}
+    if(req.get('host') == 'localhost:3000'){
+        io.emit('asyncUpdateRow', data);
     } else {
         console.log('Request came from an invalid source. Ignoring');
     }

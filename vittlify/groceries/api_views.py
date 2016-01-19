@@ -62,6 +62,12 @@ class ItemView(APIView):
                                 username=na.shopper.username)
                 na.save()
             serializer.save()
+
+            data = {'list_id': item.shopping_list.id,
+                    'checked': item.done}
+            node_resp = requests.put('http://localhost:3000/item/%s' % item.id, data=data)
+            node_resp.raise_for_status()
+
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -81,6 +87,14 @@ class ItemView(APIView):
                             username=na.shopper.username,
                             shopping_list=item.shopping_list.name)
             na.save()
+
+            data = {'item_id': item.id,
+                    'list_id': item.shopping_list.id,
+                    'name': item.name,
+                    'comments': item.comments}
+            node_resp = requests.post('http://localhost:3000/item', data=data)
+            node_resp.raise_for_status()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -109,7 +123,10 @@ class UnsafeItemView(ItemView):
                     'list_id': item.shopping_list.id,
                     'name': item.name,
                     'comments': item.comments}
-            requests.post('http://localhost:3000/unsafe_item', data=data)
+
+            node_resp = requests.post('http://localhost:3000/item', data=data)
+            node_resp.raise_for_status()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
