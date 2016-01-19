@@ -26,7 +26,9 @@ function updateRowHelper(item_id, list_id, checked, row_elem){
      var link_btn = document.getElementById('link-' + item_id);
      var row, rowNode;
 
-     if(checked === "true" || checked === "t"){
+     if(checked === "true" ||
+             checked === "t" ||
+             checked === "True"){
          row = table.row(row_elem);
          rowNode = row.node();
 

@@ -20,10 +20,9 @@ app.post('/item', function(req, res){
                 name: req.body.name,
                 comments: req.body.comments};
 
-    console.log(data);
-    console.log(req.get('host'));
-
     if(req.get('host') == 'localhost:3000'){
+        console.log('POST-ing');
+        console.log(data);
         io.emit('asyncAddItem', data);
     } else {
         console.log('Request came from an invalid source. Ignoring');
@@ -32,10 +31,12 @@ app.post('/item', function(req, res){
 });
 
 app.put('/item/:id', function(req, res){
-    var data = {item_id: req.id,
+    var data = {item_id: req.params.id,
                 list_id: req.body.list_id,
                 checked: req.body.checked}
     if(req.get('host') == 'localhost:3000'){
+        console.log('PUT-ing');
+        console.log(data);
         io.emit('asyncUpdateRow', data);
     } else {
         console.log('Request came from an invalid source. Ignoring');
