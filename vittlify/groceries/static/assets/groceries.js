@@ -164,7 +164,6 @@ function saveItem(shopping_list_id){
 
 function initSocketIO(){
     // WebSocket test settings
-    socket = io('http://127.0.0.1:3000');
     socket.on("connect", function(){
         console.log("connect");
     });

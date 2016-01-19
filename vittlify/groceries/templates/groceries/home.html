@@ -173,7 +173,7 @@
         <script src="{% static "datatables/dataTables.bootstrap.min.js" %}"></script>
         <script src="{% static "assets/ajaxSetup.js" %}"></script>
         <script src="{% static "assets/groceries.js" %}"></script>
-        <script src="http://{{node_server}}/socket.io/socket.io.js"></script>
+        <script src="{{node_server}}/socket.io/socket.io.js"></script>
     {% endblock %}
 
     {% block javascript %}
@@ -196,6 +196,7 @@
                 });
                 {% endfor %}
 
+                socket = io("{{node_server}}");
                 initSocketIO();
             });
         </script>

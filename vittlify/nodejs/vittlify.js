@@ -12,16 +12,6 @@ app.use(bodyParser.json());
 io.on('connection', function(socket){
     console.log('got a connection');
     socket.emit('message', {'message': 'welcome'});
-
-    //socket.on('send_asyncUpdateRow', function(data){
-    //    console.log(data);
-    //    socket.broadcast.emit('asyncUpdateRow', data);
-    //});
-
-    //socket.on('send_asyncAddItem', function(data){
-    //    console.log(data);
-    //    socket.broadcast.emit('asyncAddItem', data);
-    //});
 });
 
 app.post('/item', function(req, res){
