@@ -15,6 +15,7 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from django.http import Http404
 from config.settings import ALEXA_LIST
 from groceries.utils import queryDictToDict
+import requests
 
 class ShoppingListItemsView(APIView):
     def get_items(self, pk):
@@ -104,6 +105,11 @@ class UnsafeItemView(ItemView):
                             username=na.shopper.username,
                             shopping_list=item.shopping_list.name)
             na.save()
+            data = {'item_id': item.id,
+                    'list_id': item.shopping_list.id,
+                    'name': item.name,
+                    'comments': item.comments}
+            requests.post('http://localhost:3000/unsafe_item', data=data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
