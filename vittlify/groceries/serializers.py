@@ -3,6 +3,7 @@ from groceries.models import (Item,
                               ShoppingList,
                               Shopper,
                               ShoppingListMember,
+                              WebSocketToken,
                               )
 
 class ItemSerializer(serializers.Serializer):
@@ -72,3 +73,7 @@ class ShopperSerializer(serializers.ModelSerializer):
 class ShoppingListMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingListMember
+
+class WebSocketTokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WebSocketToken

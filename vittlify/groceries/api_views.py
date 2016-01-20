@@ -227,3 +227,35 @@ class ShopperView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class WebSocketTokenView(APIView):
+    authentication_classes = (UnsafeSessionAuthentication,)
+
+    def post(self, request, format=None):
+        data = queryDictToDict(request.data)
+        data['shopping_list_id'] = ALEXA_LIST
+        serializer = ItemSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+
+            item = serializer.instance
+            na = NotifyAction()
+            na.shopper = item.shopping_list.owner
+            na.shopping_list = item.shopping_list
+            na.item = item
+            template = '{item_name} has been added by {username}'
+            na.action = template.format(
+                            item_name=item.name,
+                            username=na.shopper.username,
+                            shopping_list=item.shopping_list.name)
+            na.save()
+            data = {'item_id': item.id,
+                    'list_id': item.shopping_list.id,
+                    'name': item.name,
+                    'comments': item.comments}
+
+            node_resp = requests.post('http://localhost:3000/item', data=data)
+            node_resp.raise_for_status()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
