@@ -44,6 +44,7 @@ class ItemView(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
+        modified_done = modified_comments = False
         item = self.get_item(pk)
         serializer = ItemSerializer(item, data=request.data)
         if serializer.is_valid():
@@ -61,10 +62,20 @@ class ItemView(APIView):
                                 item_name=item.name,
                                 username=na.shopper.username)
                 na.save()
+
+                modified_done = True
+
+            if ('comments' in serializer.validated_data and
+                    serializer.validated_data.get('comments') != item.comments):
+                modified_comments = True
             serializer.save()
 
             data = {'list_id': item.shopping_list.id,
-                    'checked': item.done}
+                    'checked': item.done,
+                    'comments': item.comments,
+                    'name': item.name,
+                    'modified_done': modified_done,
+                    'modified_comments': modified_comments}
             node_resp = requests.put('http://localhost:3000/item/%s' % item.id, data=data)
             node_resp.raise_for_status()
 

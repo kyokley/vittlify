@@ -33,11 +33,21 @@ app.post('/item', function(req, res){
 app.put('/item/:id', function(req, res){
     var data = {item_id: req.params.id,
                 list_id: req.body.list_id,
-                checked: req.body.checked}
+                checked: req.body.checked,
+                comments: req.body.comments,
+                name: req.body.name,
+                modified_done: req.body.modified_done,
+                modified_comments: req.body.modified_comments}
     if(req.get('host') == 'localhost:3000'){
         console.log('PUT-ing');
         console.log(data);
-        io.emit('asyncUpdateRow', data);
+        if(data.modified_done === 'True'){
+            io.emit('asyncUpdateRow', data);
+        }
+
+        if(data.modified_comments === 'True'){
+            io.emit('asyncComments', data);
+        }
     } else {
         console.log('Request came from an invalid source. Ignoring');
     }

@@ -149,12 +149,6 @@ function saveItem(shopping_list_id){
                  dataType: "json",
                  data: {comments: edit_item_comment_elem.value},
                  success: function(json){
-                     var link_id = document.getElementById("link-" + json.pk);
-                     if(edit_item_comment_elem.value){
-                         link_id.innerHTML = json.name + ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
-                     } else {
-                         link_id.innerHTML = json.name;
-                     }
                      closeEditPanel(shopping_list_id);
                  },
                  error: function(){
@@ -162,6 +156,15 @@ function saveItem(shopping_list_id){
                      closeEditPanel(shopping_list_id);
                  }
     });
+}
+
+function saveCommentsHelper(item_id, item_name, item_comments){
+     var link_id = document.getElementById("link-" + item_id);
+     if(item_comments){
+         link_id.innerHTML = item_name + ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
+     } else {
+         link_id.innerHTML = item_name;
+     }
 }
 
 function initSocketIO(){
@@ -178,7 +181,12 @@ function initSocketIO(){
         var table = tables["table-shopping_list-" + data.list_id];
         var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
         updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
+
         console.log(data);
+    });
+
+    socket.on("asyncComments", function(data){
+        saveCommentsHelper(data.item_id, data.name, data.comments);
     });
 
     socket.on("asyncAddItem", function(data){
