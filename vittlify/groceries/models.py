@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.timezone import utc, localtime
 from datetime import datetime
 from email_template import EMAIL_TEMPLATE
+from groceries.utils import createToken
 
 RECENTLY_COMPLETED_DAYS = 14
 LARGE_INT = 999999999
@@ -176,3 +177,19 @@ class NotifyAction(models.Model):
             return 'At %s on %s, %s' % (localtime(self.date_added).strftime('%I:%M%p'),
                                         localtime(self.date_added).strftime('%a %b %d'),
                                         self.action)
+
+class WebSocketToken(models.Model):
+    guid = models.CharField(max_length=32, default=createToken, unique=True)
+    shopper = models.ForeignKey('Shopper', null=False, blank=False)
+    active = models.BooleanField()
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_edited = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'id: %s guid: %s u: %s act: %s added: %s edited: %s' % (self.id,
+                                                                       self.guid,
+                                                                       self.shopper.username,
+                                                                       self.active,
+                                                                       self.date_added,
+                                                                       self.date_edited)
+
