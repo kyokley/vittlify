@@ -13,6 +13,7 @@ from .models import (Shopper,
                      RecentlyCompletedShoppingList,
                      ShoppingList,
                      ShoppingListMember,
+                     WebSocketToken,
                      )
 from config.settings import NODE_SERVER
 
@@ -23,12 +24,19 @@ def home(request):
     user = request.user
     if user and user.is_authenticated():
         context['loggedin'] = True
-
-        shopping_lists = list(Shopper.objects.filter(user=user).first().shopping_lists.all())
+        shopper = Shopper.objects.filter(user=user).first()
+        shopping_lists = list(shopper.shopping_lists.all())
         context['shopping_lists'] = shopping_lists
         recently_completed_list = RecentlyCompletedShoppingList(user)
         context['shopping_lists'].append(recently_completed_list)
         context['node_server'] = NODE_SERVER
+
+        token = WebSocketToken()
+        token.active = True
+        token.shopper = shopper
+        token.save()
+
+        context['token_guid'] = token.guid
     return render(request, 'groceries/home.html', context)
 
 def settings(request):
