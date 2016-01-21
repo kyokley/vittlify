@@ -79,9 +79,9 @@ class ItemView(APIView):
                     'modified_done': modified_done,
                     'modified_comments': modified_comments}
 
-            shoppers = ShoppingListMember.objects.filter(shopping_list=item.shopping_list).all()
-            for shopper in shoppers:
-                socket_tokens = WebSocketToken.objects.filter(shopper=shopper).filter(active=True).all()
+            shopping_list_members = ShoppingListMember.objects.filter(shopping_list=item.shopping_list).all()
+            for shopping_list_member in shopping_list_members:
+                socket_tokens = WebSocketToken.objects.filter(shopper=shopping_list_member.shopper).filter(active=True).all()
                 for socket_token in socket_tokens:
                     data['socket_token'] = socket_token.guid
                     node_resp = requests.put('http://localhost:3000/item/%s' % item.id, data=data)
@@ -112,9 +112,9 @@ class ItemView(APIView):
                     'name': item.name,
                     'comments': item.comments}
 
-            shoppers = ShoppingListMember.objects.filter(shopping_list=item.shopping_list).all()
-            for shopper in shoppers:
-                socket_tokens = WebSocketToken.objects.filter(shopper=shopper).filter(active=True).all()
+            shopping_list_members = ShoppingListMember.objects.filter(shopping_list=item.shopping_list).all()
+            for shopping_list_member in shopping_list_members:
+                socket_tokens = WebSocketToken.objects.filter(shopper=shopping_list_member.shopper).filter(active=True).all()
                 for socket_token in socket_tokens:
                     data['socket_token'] = socket_token.guid
                     node_resp = requests.post('http://localhost:3000/item', data=data)
@@ -149,9 +149,9 @@ class UnsafeItemView(ItemView):
                     'name': item.name,
                     'comments': item.comments}
 
-            shoppers = ShoppingListMember.objects.filter(shopping_list=item.shopping_list).all()
-            for shopper in shoppers:
-                socket_tokens = WebSocketToken.objects.filter(shopper=shopper).filter(active=True).all()
+            shopping_list_members = ShoppingListMember.objects.filter(shopping_list=item.shopping_list).all()
+            for shopping_list_member in shopping_list_members:
+                socket_tokens = WebSocketToken.objects.filter(shopper=shopping_list_member.shopper).filter(active=True).all()
                 for socket_token in socket_tokens:
                     data['socket_token'] = socket_token.guid
                     node_resp = requests.post('http://localhost:3000/item', data=data)

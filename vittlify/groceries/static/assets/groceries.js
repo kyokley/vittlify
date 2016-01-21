@@ -179,7 +179,12 @@ function initSocketIO(){
     });
 
     socket.on("asyncUpdateRow_" + socket_token, function(data){
-        var table = tables["table-shopping_list-" + data.list_id];
+        var table;
+        if(data.checked === "True"){
+            table = tables["table-shopping_list-" + data.list_id];
+        } else {
+            table = deletedTable;
+        }
         var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
         updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
 
