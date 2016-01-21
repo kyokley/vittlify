@@ -180,6 +180,7 @@
         <script type="text/javascript">
             $(document).ready(function(){
                 token = '{{ csrf_token }}';
+                socket_token = '{{ socket_token }}';
                 {% for shopping_list in shopping_lists %}
                     tables['table-shopping_list-{{shopping_list.id}}'] = $('#table-shopping_list-{{ shopping_list.id }}').DataTable();
 

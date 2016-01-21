@@ -181,9 +181,12 @@ class NotifyAction(models.Model):
 class WebSocketToken(models.Model):
     guid = models.CharField(max_length=32, default=createToken, unique=True)
     shopper = models.ForeignKey('Shopper', null=False, blank=False)
-    active = models.BooleanField()
+    active = models.BooleanField(null=False, default=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        index_together = ['shopper', 'active']
 
     def __str__(self):
         return 'id: %s guid: %s u: %s act: %s added: %s edited: %s' % (self.id,

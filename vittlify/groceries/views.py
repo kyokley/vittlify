@@ -36,7 +36,7 @@ def home(request):
         token.shopper = shopper
         token.save()
 
-        context['token_guid'] = token.guid
+        context['socket_token'] = token.guid
     return render(request, 'groceries/home.html', context)
 
 def settings(request):

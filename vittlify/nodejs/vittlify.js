@@ -20,10 +20,11 @@ app.post('/item', function(req, res){
                 name: req.body.name,
                 comments: req.body.comments};
 
+    var socket_token = req.body.socket_token;
     if(req.get('host') == 'localhost:3000'){
         console.log('POST-ing');
         console.log(data);
-        io.emit('asyncAddItem', data);
+        io.emit('asyncAddItem_' + socket_token, data);
     } else {
         console.log('Request came from an invalid source. Ignoring');
     }
@@ -37,12 +38,13 @@ app.put('/item/:id', function(req, res){
                 comments: req.body.comments,
                 name: req.body.name,
                 modified_done: req.body.modified_done,
-                modified_comments: req.body.modified_comments}
+                modified_comments: req.body.modified_comments};
+    var socket_token = req.body.socket_token;
     if(req.get('host') == 'localhost:3000'){
         console.log('PUT-ing');
         console.log(data);
         if(data.modified_done === 'True'){
-            io.emit('asyncUpdateRow', data);
+            io.emit('asyncUpdateRow_' + socket_token, data);
         }
 
         if(data.modified_comments === 'True'){

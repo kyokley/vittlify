@@ -3,6 +3,7 @@ var tables = {};
 var deletedTable;
 var socket;
 var node_port;
+var socket_token;
 
 function updateRow(item_id, list_id, checked, row_elem){
     jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
@@ -177,20 +178,21 @@ function initSocketIO(){
         console.log(message.message);
     });
 
-    socket.on("asyncUpdateRow", function(data){
+    socket.on("asyncUpdateRow_" + socket_token, function(data){
         var table = tables["table-shopping_list-" + data.list_id];
         var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
         updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
 
-        console.log(data);
+        console.log("updateRowHelper " + data);
     });
 
-    socket.on("asyncComments", function(data){
+    socket.on("asyncComments_" + socket_token, function(data){
         saveCommentsHelper(data.item_id, data.name, data.comments);
+        console.log("saveCommentsHelper " + data);
     });
 
-    socket.on("asyncAddItem", function(data){
+    socket.on("asyncAddItem_" + socket_token, function(data){
         addItemHelper(data.list_id, data.item_id, data.name, data.comments);
-        console.log(data);
+        console.log("addItemHelper " + data);
     });
 }
