@@ -38,6 +38,7 @@ function updateRowHelper(item_id, list_id, checked, row_elem){
          button.innerHTML = "Undone";
          hiddenInput.value = "false";
          link_btn.disabled = true;
+         decrementShoppingListBadgeCount(list_id);
      } else {
          row = deletedTable.row(row_elem);
          rowNode = row.node();
@@ -47,7 +48,20 @@ function updateRowHelper(item_id, list_id, checked, row_elem){
          button.innerHTML = "Done";
          hiddenInput.value = "true";
          link_btn.disabled = false;
+         incrementShoppingListBadgeCount(list_id);
      }
+}
+
+function incrementShoppingListBadgeCount(list_id){
+    var badge = document.getElementById("shopping-list-badge-" + list_id);
+    var newCount = Number(badge.innerHTML) + 1;
+    badge.innerHTML = newCount;
+}
+
+function decrementShoppingListBadgeCount(list_id){
+    var badge = document.getElementById("shopping-list-badge-" + list_id);
+    var newCount = Number(badge.innerHTML) - 1;
+    badge.innerHTML = newCount;
 }
 
 function addItem(list_id){

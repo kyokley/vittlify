@@ -136,6 +136,9 @@ class ShoppingList(models.Model):
     def displayItems(self):
         return self.items.filter(_done=False)
 
+    def count(self):
+        return self.items.filter(_done=False).count()
+
 class ShoppingListMember(models.Model):
     shopper = models.ForeignKey('Shopper')
     shopping_list = models.ForeignKey('ShoppingList')
