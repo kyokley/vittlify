@@ -4,24 +4,26 @@ var http = require('http').createServer(app);
 var http_local = require('http');
 var sio = require('socket.io');
 var bodyParser = require('body-parser');
+var querystring = require('querystring');
 
 var io = sio.listen(http, {origins: '*:*'});
+
+var socket_tokens = {};
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 io.on('connection', function(socket){
     console.log('got a connection');
-    var socket_token;
     socket.emit('message', {'message': 'welcome'});
 
     socket.on('send_token', function(token, fn){
-        socket_token = token;
-        console.log(socket_token);
+        socket_tokens[socket] = token;
         fn('Token received');
+        console.log(token);
     });
 
-    var jsonObject = JSON.stringify({
+    var form_data = querystring.stringify({
         "pass" : "ALEXA_PASS",
     });
 
@@ -29,18 +31,24 @@ io.on('connection', function(socket){
         // Send deactivate message to django server
         var options = {host: 'localhost',
                        port: 8000,
-                       path: '/vittlify/socket/' + socket_token + '/',
-                       method: 'PUT'};
+                       path: '/vittlify/socket/' + socket_tokens[socket] + '/',
+                       method: 'PUT',
+                       headers: {'Content-Type': 'application/x-www-form-urlencoded',
+                                 'Content-Length': Buffer.byteLength(form_data)
+                                }
+                      };
 
         var reqPut = http_local.request(options, function(res){
             console.log("statusCode: ", res.statusCode);
         });
-        console.log(jsonObject);
-        reqPut.write(jsonObject);
+        console.log(form_data);
+        reqPut.write(form_data);
         reqPut.end();
         reqPut.on('error', function(e){
             console.error(e);
         });
+
+        delete socket_tokens[socket];
     });
 });
 
