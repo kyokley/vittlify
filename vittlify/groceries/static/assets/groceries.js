@@ -187,6 +187,9 @@ function initSocketIO(){
     // WebSocket test settings
     socket.on("connect", function(){
         console.log("connect");
+        socket.emit('send_token', socket_token, function(data){
+            console.log(data);
+        });
     });
 
     socket.on("message", function(message) {

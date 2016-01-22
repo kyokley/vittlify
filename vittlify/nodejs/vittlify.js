@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var http = require('http').createServer(app);
+var http_local = require('http');
 var sio = require('socket.io');
 var bodyParser = require('body-parser');
 
@@ -11,7 +12,36 @@ app.use(bodyParser.json());
 
 io.on('connection', function(socket){
     console.log('got a connection');
+    var socket_token;
     socket.emit('message', {'message': 'welcome'});
+
+    socket.on('send_token', function(token, fn){
+        socket_token = token;
+        console.log(socket_token);
+        fn('Token received');
+    });
+
+    var jsonObject = JSON.stringify({
+        "pass" : "ALEXA_PASS",
+    });
+
+    socket.on('disconnect', function(){
+        // Send deactivate message to django server
+        var options = {host: 'localhost',
+                       port: 8000,
+                       path: '/vittlify/socket/' + socket_token + '/',
+                       method: 'PUT'};
+
+        var reqPut = http_local.request(options, function(res){
+            console.log("statusCode: ", res.statusCode);
+        });
+        console.log(jsonObject);
+        reqPut.write(jsonObject);
+        reqPut.end();
+        reqPut.on('error', function(e){
+            console.error(e);
+        });
+    });
 });
 
 app.post('/item', function(req, res){

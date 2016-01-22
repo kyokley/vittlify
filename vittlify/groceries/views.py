@@ -17,8 +17,6 @@ from .models import (Shopper,
                      )
 from config.settings import NODE_SERVER
 
-import redis
-
 def home(request):
     context = {'loggedin': False}
     user = request.user
@@ -131,20 +129,3 @@ def shared_list_member_json(request, shopper_id, list_id):
         else:
             slm.delete()
             return JsonResponse({}, status=200)
-
-@csrf_exempt
-def node_api(request):
-    try:
-        #Get User from sessionid
-        session = Session.objects.get(session_key=request.POST.get('sessionid'))
-        user_id = session.get_decoded().get('_auth_user_id')
-        user = User.objects.get(id=user_id)
-        shopper = Shopper.objects.get(user=user)
-
-        #Once comment has been created post it to the chat channel
-        r = redis.StrictRedis(host='localhost', port=6379, db=0)
-        r.publish('chat', shopper.username + ': ' + request.POST.get('comment'))
-
-        return HttpResponse("Everything worked :)")
-    except Exception, e:
-        return HttpResponseServerError(str(e))
