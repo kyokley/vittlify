@@ -111,6 +111,7 @@ function addItemHelper(list_id, item_id, name, comments){
            var row_elem = $(this).parents('tr');
            updateRow(item_id, list_id, checked, row_elem);
     });
+    incrementShoppingListBadgeCount(list_id);
 }
 
 function openItem(item_id, shopping_list_id){
