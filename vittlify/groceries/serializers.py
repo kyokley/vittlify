@@ -75,5 +75,14 @@ class ShoppingListMemberSerializer(serializers.ModelSerializer):
         model = ShoppingListMember
 
 class WebSocketTokenSerializer(serializers.ModelSerializer):
+    guid = serializers.CharField(read_only=True)
+    active = serializers.BooleanField(required=False)
+    shopper = ShopperSerializer(read_only=True)
+
     class Meta:
         model = WebSocketToken
+
+    def update(self, instance, validated_data):
+        instance.active = validated_data.get('active')
+        instance.save()
+        return instance

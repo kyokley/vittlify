@@ -1,6 +1,7 @@
 from groceries.serializers import (ItemSerializer,
                                    ShoppingListSerializer,
                                    ShopperSerializer,
+                                   WebSocketTokenSerializer,
                                    )
 from groceries.models import (Item,
                               ShoppingList,
@@ -9,7 +10,9 @@ from groceries.models import (Item,
                               ShoppingListMember,
                               WebSocketToken,
                               )
-from groceries.auth import UnsafeSessionAuthentication
+from groceries.auth import (UnsafeSessionAuthentication,
+                            LocalSessionAuthentication,
+                            )
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -250,10 +253,22 @@ class ShopperView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class WebSocketTokenView(APIView):
-    authentication_classes = (UnsafeSessionAuthentication,)
+    authentication_classes = (LocalSessionAuthentication,)
+    def get_token(self, guid):
+        try:
+            return WebSocketToken.objects.filter(guid=guid).first()
+        except WebSocketToken.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        socket_token = self.get_token(pk)
+        serializer = WebSocketTokenSerializer(socket_token)
+        return Response(serializer.data)
 
     def put(self, request, pk, format=None):
-        socket_token = WebSocketToken.objects.filter(guid=pk).first()
-        socket_token.active = False
-        socket_token.save()
-        return Response(status=status.HTTP_200_OK)
+        socket_token = self.get_token(pk)
+        serializer = WebSocketTokenSerializer(socket_token, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -196,6 +196,11 @@ function initSocketIO(){
         console.log(message.message);
     });
 
+    socket.on("refresh", function(message) {
+        console.log(message.message);
+        location.reload(true);
+    });
+
     socket.on("asyncUpdateRow_" + socket_token, function(data){
         var table;
         if(data.checked === "True"){
