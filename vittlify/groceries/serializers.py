@@ -83,6 +83,8 @@ class WebSocketTokenSerializer(serializers.ModelSerializer):
         model = WebSocketToken
 
     def update(self, instance, validated_data):
+        shopper = Shopper.objects.get(pk=validated_data.get('shopper', instance.shopper.id))
+        instance.shopper = shopper
         instance.active = validated_data.get('active')
         instance.save()
         return instance
