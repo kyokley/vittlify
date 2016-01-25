@@ -138,7 +138,7 @@ app.put('/item/:id', function(req, res){
         }
 
         if(data.modified_comments === 'True'){
-            io.emit('asyncComments', data);
+            io.emit('asyncComments_' + socket_token, data);
         }
     } else {
         console.log('Request came from an invalid source. Ignoring');

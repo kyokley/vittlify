@@ -9,10 +9,10 @@ import os
 from config.settings import EMAIL_FROM_ADDR
 from binascii import hexlify
 
-def getSomewhatUniqueID(numBytes=4):
+def getSomewhatUniqueID(numBytes=8):
     return hexlify(os.urandom(numBytes))
 def createToken():
-    return getSomewhatUniqueID(numBytes=16)
+    return getSomewhatUniqueID(numBytes=8)
 
 def sendMail(to_addr, subject, text, from_addr=EMAIL_FROM_ADDR, files=None, server='localhost'):
     if type(to_addr) is not list:
