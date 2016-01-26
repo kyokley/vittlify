@@ -22,9 +22,16 @@ function updateRow(item_id, list_id, checked, row_elem){
 function updateRowHelper(item_id, list_id, checked, row_elem){
      console.log('Set item ' + item_id + ' to ' + checked);
      var table = tables["table-shopping_list-" + list_id];
-     var hiddenInput = document.getElementById('done-checked-' + item_id);
-     var button = document.getElementById('done-btn-' + list_id + '-' + item_id);
-     var link_btn = document.getElementById('link-' + item_id);
+     // var hiddenInput = document.getElementById('done-checked-' + item_id);
+     // var button = document.getElementById('done-btn-' + list_id + '-' + item_id);
+     // if(!button){
+     //     debugger;
+     // }
+     // var link_btn = document.getElementById('link-' + item_id);
+     var hiddenInput = row_elem.find("input")[0];
+     var buttons = row_elem.find("button");
+     var link_btn = buttons[0];
+     var button = buttons[1];
      var row, rowNode;
 
      if(checked === "true" ||
@@ -36,7 +43,7 @@ function updateRowHelper(item_id, list_id, checked, row_elem){
          row.remove().draw(false);
          deletedTable.row.add(rowNode).draw(false);
          button.innerHTML = "Undone";
-         hiddenInput.value = "false";
+         hiddenInput.value = false;
          link_btn.disabled = true;
          decrementShoppingListBadgeCount(list_id);
      } else {
@@ -46,7 +53,7 @@ function updateRowHelper(item_id, list_id, checked, row_elem){
          row.remove().draw(false);
          table.row.add(rowNode).draw(false);
          button.innerHTML = "Done";
-         hiddenInput.value = "true";
+         hiddenInput.value = true;
          link_btn.disabled = false;
          incrementShoppingListBadgeCount(list_id);
      }
@@ -203,6 +210,8 @@ function initSocketIO(){
     });
 
     socket.on("asyncUpdateRow_" + socket_token, function(data){
+        console.log("asyncUpdateRow");
+        console.log(data);
         var table;
         if(data.checked === "True"){
             table = tables["table-shopping_list-" + data.list_id];
@@ -210,18 +219,21 @@ function initSocketIO(){
             table = deletedTable;
         }
         var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
+        console.log("updateRowHelper");
         updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
 
-        console.log("updateRowHelper " + data);
     });
 
     socket.on("asyncComments_" + socket_token, function(data){
+        console.log("asyncComments");
+        console.log(data);
         saveCommentsHelper(data.item_id, data.name, data.comments);
         console.log("saveCommentsHelper " + data);
     });
 
     socket.on("asyncAddItem_" + socket_token, function(data){
+        console.log("addItemHelper");
+        console.log(data);
         addItemHelper(data.list_id, data.item_id, data.name, data.comments);
-        console.log("addItemHelper " + data);
     });
 }

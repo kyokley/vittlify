@@ -34,6 +34,7 @@ io.on('connection', function(socket){
     socket.on('send_token', function(token, fn){
         socket_token_get_request['path'] = '/vittlify/socket/' + token + '/';
         var reqGet = http_local.request(socket_token_get_request, function(response){
+            delete socket_token_get_request['path'];
             var body = "";
             response.on('data', function(chunk){
                 body += chunk;
@@ -41,8 +42,8 @@ io.on('connection', function(socket){
 
             response.on('end', function(){
                 var res = JSON.parse(body);
-                console.log(res);
-                if(res.active){
+                console.log("res: ", res);
+                if(res.active === true){
                     fn('Valid token received');
                     socket_tokens[socket] = token;
                     console.log(token);
@@ -54,6 +55,7 @@ io.on('connection', function(socket){
                     socket_token_put_request['path'] = '/vittlify/socket/' + token + '/';
                     socket_token_put_request['headers']['Content-Length'] = Buffer.byteLength(data)
                     var reqPut = http_local.request(socket_token_put_request, function(res){
+                        delete socket_token_put_request['path'];
                         if(res.statusCode == "200"){
                             fn('Token has been re-activated');
                             socket_tokens[socket] = token;
@@ -88,7 +90,8 @@ io.on('connection', function(socket){
 
         var reqPut = http_local.request(socket_token_put_request, function(res){
             console.log("statusCode: ", res.statusCode);
-            if(res.statusCode == "200"){
+            delete socket_token_put_request['path'];
+            if(res.statusCode === "200"){
                 console.log("Token deactivated successfully");
                 console.log(socket_tokens[socket]);
                 delete socket_tokens[socket];
