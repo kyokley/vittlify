@@ -1,13 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.contrib.sessions.models import Session
 from django.http import (HttpResponseRedirect,
                          JsonResponse,
-                         HttpResponse,
-                         HttpResponseServerError,
                          )
-from django.views.decorators.csrf import csrf_exempt
 from .forms import SignInForm
 from .models import (Shopper,
                      RecentlyCompletedShoppingList,
@@ -44,6 +39,7 @@ def settings(request):
     if not user or not user.is_authenticated():
         return HttpResponseRedirect('/vittlify')
 
+    context['node_server'] = NODE_SERVER
     context['loggedin'] = True
     context['owner'] = Shopper.objects.filter(user=user).first()
     owned_lists = list(Shopper.objects.filter(user=user)
@@ -56,10 +52,11 @@ def settings(request):
     return render(request, 'groceries/settings.html', context)
 
 def signin(request):
+    context = {}
+    context['node_server'] = NODE_SERVER
     if request.method == 'POST':
         form = SignInForm(request.POST)
         if form.is_valid():
-            context = {}
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
@@ -78,11 +75,13 @@ def signin(request):
     else:
         form = SignInForm()
 
-    return render(request, 'groceries/signin.html', {'form': form})
+    context['form'] = form
+    return render(request, 'groceries/signin.html', context)
 
 def signout(request):
     logout(request)
     context = {}
+    context['node_server'] = NODE_SERVER
     return render(request, 'groceries/signout.html', context)
 
 def shared_lists(request, shopper_id):

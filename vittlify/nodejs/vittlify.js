@@ -29,10 +29,15 @@ var socket_token_get_request = {host: 'localhost',
 
 io.on('connection', function(socket){
     console.log('got a connection');
-    socket.emit('message', {'message': 'welcome'});
+    socket.emit('message', {'message': 'Welcome to Vittlify!'});
 
     socket.on('send_token', function(token, fn){
+        if(!token){
+            return;
+        }
+
         socket_token_get_request['path'] = '/vittlify/socket/' + token + '/';
+        console.log("Sending GET request to: ", socket_token_get_request['path']);
         var reqGet = http_local.request(socket_token_get_request, function(response){
             delete socket_token_get_request['path'];
             var body = "";
@@ -46,9 +51,10 @@ io.on('connection', function(socket){
                 if(res.active === true){
                     fn('Valid token received');
                     socket_tokens[socket] = token;
-                    console.log(token);
+                    console.log("Token is valid: ", token);
                 } else {
-                    console.log(res.active);
+                    console.log("Token is inactive: ", token);
+                    console.log("Attempting to reactivate: ", token);
                     var data = querystring.stringify({
                         "active": true
                     });
@@ -60,12 +66,11 @@ io.on('connection', function(socket){
                                 res.statusCode === 200){
                             fn('Token has been re-activated');
                             socket_tokens[socket] = token;
-                            console.log("Token has been re-activated");
-                            console.log(token);
+                            console.log("Token has been re-activated: ", token);
                         } else {
                             fn('Invalid token');
                             socket.emit("refresh", {"message": "Invalid token!"});
-                            console.log("Invalid token, forcing refresh");
+                            console.log("Invalid token, forcing refresh: ", token);
                         }
                     });
                     reqPut.write(data);
