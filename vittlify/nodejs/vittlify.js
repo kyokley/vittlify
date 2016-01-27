@@ -88,6 +88,11 @@ io.on('connection', function(socket){
 
     socket.on('disconnect', function(){
         // Send deactivate message to django server
+
+        if(!socket_tokens[socket]){
+            return;
+        }
+
         console.log("Got disconnect from: ", socket_tokens[socket]);
         var data = querystring.stringify({
             "active": false
