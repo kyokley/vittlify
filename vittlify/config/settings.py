@@ -126,7 +126,8 @@ ALEXA_PASS = 'ALEXA_PASS'
 ALEXA_LIST = 1
 
 CRON_CLASSES = ['groceries.scheduled_task.EmailJob',
-                'groceries.scheduled_task.EmailWeeklyJob']
+                'groceries.scheduled_task.EmailWeeklyJob',
+                'groceries.scheduled_task.CleanUpTokensJob']
 
 NODE_SERVER = 'http://localhost:3000'
 from .local_settings import *

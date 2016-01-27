@@ -1,9 +1,12 @@
-from groceries.models import Shopper, NotifyAction
+from groceries.models import (Shopper,
+                              NotifyAction,
+                              WebSocketToken,
+                              )
 from groceries.utils import sendMail
 from django_cron import CronJobBase, Schedule
 from datetime import datetime
 
-CRON_JOB_FREQUENCY = 1440
+CRON_DAILY_FREQUENCY = 1440
 CRON_WEEKLY_FREQUENCY = 10080
 
 def run_daily_emails():
@@ -42,7 +45,7 @@ def test_email(addr):
              'This is a test email from vittlify.')
 
 class EmailJob(CronJobBase):
-    schedule = Schedule(run_every_mins=CRON_JOB_FREQUENCY)
+    schedule = Schedule(run_every_mins=CRON_DAILY_FREQUENCY)
     code = 'groceries.email_job'
 
     def do(self):
@@ -54,3 +57,10 @@ class EmailWeeklyJob(CronJobBase):
 
     def do(self):
         run_weekly_emails()
+
+class CleanUpTokensJob(CronJobBase):
+    schedule = Schedule(run_every_mins=CRON_DAILY_FREQUENCY)
+    code = 'groceries.cleanup_tokens_job'
+
+    def do(self):
+        WebSocketToken.objects.filter(active=False).delete()
