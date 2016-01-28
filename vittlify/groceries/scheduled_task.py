@@ -6,8 +6,9 @@ from groceries.utils import sendMail
 from django_cron import CronJobBase, Schedule
 from datetime import datetime
 
-CRON_DAILY_FREQUENCY = 1440
-CRON_WEEKLY_FREQUENCY = 10080
+# Reducing Cron frequencies by a couple of hours to prevent race conditions
+CRON_DAILY_FREQUENCY = 1320 # 22 hours
+CRON_WEEKLY_FREQUENCY = 9360 # 6 days 12 hours
 
 def run_daily_emails():
     shoppers = Shopper.objects.all()
