@@ -97,28 +97,30 @@ function addItem(list_id){
 
 function addItemHelper(list_id, item_id, name, comments){
      var table = tables["table-shopping_list-" + list_id];
-     var done_button = '<input type="hidden" id="done-checked-' + item_id + '" value=true />';
-     done_button += '<button type="button" class="btn btn-info done-btn-class" id="done-btn-' + list_id + '-' + item_id + '">';
-     done_button += 'Done';
-     done_button += '</button>';
+     if(table){
+         var done_button = '<input type="hidden" id="done-checked-' + item_id + '" value=true />';
+         done_button += '<button type="button" class="btn btn-info done-btn-class" id="done-btn-' + list_id + '-' + item_id + '">';
+         done_button += 'Done';
+         done_button += '</button>';
 
-     var link_name = '<button type="button" class="btn btn-link" id="link-' + item_id + '" onclick="openItem(' + item_id + ', ' + list_id + ');">';
-     link_name = link_name + name;
-     if(comments){
-          link_name += ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
+         var link_name = '<button type="button" class="btn btn-link" id="link-' + item_id + '" onclick="openItem(' + item_id + ', ' + list_id + ');">';
+         link_name = link_name + name;
+         if(comments){
+              link_name += ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
+         }
+         link_name += '</button>';
+
+         var row = table.row.add([link_name, done_button]).draw(false);
+         var rowNode = row.node();
+
+        var selectorID = "done-btn-" + list_id + "-" + item_id;
+        table.$('button[id="' + selectorID + '"]').click(function(){
+               var checked = document.getElementById("done-checked-" + item_id).value;
+               var row_elem = $(this).parents('tr');
+               updateRow(item_id, list_id, checked, row_elem);
+        });
+        incrementShoppingListBadgeCount(list_id);
      }
-     link_name += '</button>';
-
-     var row = table.row.add([link_name, done_button]).draw(false);
-     var rowNode = row.node();
-
-    var selectorID = "done-btn-" + list_id + "-" + item_id;
-    table.$('button[id="' + selectorID + '"]').click(function(){
-           var checked = document.getElementById("done-checked-" + item_id).value;
-           var row_elem = $(this).parents('tr');
-           updateRow(item_id, list_id, checked, row_elem);
-    });
-    incrementShoppingListBadgeCount(list_id);
 }
 
 function openItem(item_id, shopping_list_id){
@@ -183,10 +185,12 @@ function saveItem(shopping_list_id){
 
 function saveCommentsHelper(item_id, item_name, item_comments){
      var link_id = document.getElementById("link-" + item_id);
-     if(item_comments){
-         link_id.innerHTML = item_name + ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
-     } else {
-         link_id.innerHTML = item_name;
+     if(link_id){
+         if(item_comments){
+             link_id.innerHTML = item_name + ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
+         } else {
+             link_id.innerHTML = item_name;
+         }
      }
 }
 
@@ -218,9 +222,12 @@ function initSocketIO(){
         } else {
             table = deletedTable;
         }
-        var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
-        console.log("updateRowHelper");
-        updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
+
+        if(table){
+            var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
+            console.log("updateRowHelper");
+            updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
+        }
 
     });
 
