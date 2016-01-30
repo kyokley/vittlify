@@ -17,7 +17,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
-from django.http import Http404
+from django.http import (Http404,
+                         )
+from django.core.exceptions import PermissionDenied
 from config.settings import ALEXA_LIST
 from groceries.utils import queryDictToDict
 import requests
@@ -37,20 +39,25 @@ class ShoppingListItemsView(APIView):
 class ItemView(APIView):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
 
-    def get_item(self, pk):
+    def get_item(self, pk, user):
+        shopper = Shopper.objects.filter(user=user).first()
+
         try:
-            return Item.objects.get(pk=pk)
+            item = Item.objects.get(pk=pk)
+            if item.shopping_list not in shopper.shopping_lists.all():
+                raise PermissionDenied
+            return item
         except Item.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
-        item = self.get_item(pk)
+        item = self.get_item(pk, request.user)
         serializer = ItemSerializer(item)
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
         modified_done = modified_comments = False
-        item = self.get_item(pk)
+        item = self.get_item(pk, request.user)
         serializer = ItemSerializer(item, data=request.data)
         if serializer.is_valid():
             if ('done' in serializer.validated_data and
@@ -95,12 +102,17 @@ class ItemView(APIView):
 
     def post(self, request, format=None):
         serializer = ItemSerializer(data=request.data)
+
         if serializer.is_valid():
+            shopping_list = ShoppingList.objects.get(pk=serializer.validated_data['shopping_list_id'])
+            shopper = Shopper.objects.filter(user=request.user).first()
+            if shopping_list not in shopper.shopping_lists.all():
+                raise PermissionDenied
             serializer.save()
 
             item = serializer.instance
             na = NotifyAction()
-            na.shopper = Shopper.objects.filter(user=request.user).first()
+            na.shopper = shopper
             na.shopping_list = item.shopping_list
             na.item = item
             template = '{item_name} has been added to {shopping_list} by {username}'

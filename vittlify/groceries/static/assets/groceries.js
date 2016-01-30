@@ -10,6 +10,11 @@ function updateRow(item_id, list_id, checked, row_elem){
                  type: "PUT",
                  dataType: "json",
                  data: {done: checked},
+                 statusCode: {
+                     403: function() {
+                         alert("You don't have access to this list.\nTry refreshing the page.");
+                     }
+                 },
                  success: function(json){
                      console.log("Successfully handled put for " + item_id)
                  },
@@ -83,6 +88,11 @@ function addItem(list_id){
                      data: {shopping_list_id: list_id,
                             name: item_name.value,
                             comments: item_comments.value},
+                     statusCode: {
+                         403: function() {
+                             alert("You don't have access to this list.\nTry refreshing the page.");
+                         }
+                     },
                      success: function(json){
                          item_name.value = "";
                          item_comments.value = "";
@@ -173,6 +183,11 @@ function saveItem(shopping_list_id){
                  type: "PUT",
                  dataType: "json",
                  data: {comments: edit_item_comment_elem.value},
+                 statusCode: {
+                     403: function() {
+                         alert("You don't have access to this list.\nTry refreshing the page.");
+                     }
+                 },
                  success: function(json){
                      closeEditPanel(shopping_list_id);
                  },
