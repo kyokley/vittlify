@@ -89,7 +89,7 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         // Send deactivate message to django server
 
-        if(!socket_tokens[socket] || !socket_tokens[socket].connected){
+        if(!socket_tokens[socket] || socket_tokens[socket].connected){
             return;
         }
 
