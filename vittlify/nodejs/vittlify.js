@@ -1,7 +1,6 @@
 var express = require('express');
 var app = express();
 var http = require('http').createServer(app);
-var http_local = require('http');
 var sio = require('socket.io');
 var bodyParser = require('body-parser');
 var querystring = require('querystring');
@@ -14,6 +13,13 @@ var socket_tokens = {};
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
+var http_local;
+
+if(config.protocol === 'http'){
+    http_local = require('http');
+} else {
+    http_local = require('https');
+}
 var socket_token_put_request = {host: config.host,
                                 port: config.port,
                                 // path: '/vittlify/socket/' + socket_tokens[socket] + '/',

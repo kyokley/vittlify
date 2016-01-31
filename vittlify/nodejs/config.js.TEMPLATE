@@ -1,5 +1,6 @@
 var config = {};
 config.host = 'localhost';
 config.port = 8000;
+config.protocol = 'http';
 
 module.exports = config;
