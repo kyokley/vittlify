@@ -16,8 +16,8 @@ class UnsafeSessionAuthentication(SessionAuthentication):
 
 class LocalSessionAuthentication(SessionAuthentication):
     def authenticate(self, request):
-        if 'localhost' not in request.META['HTTP_HOST']:
-            raise Exception('External request is being made for internal-only service')
+        #if 'localhost' not in request.META['HTTP_HOST']:
+            #raise Exception('External request is being made for internal-only service')
 
         http_request = request._request
         user = getattr(http_request, 'user', None)
