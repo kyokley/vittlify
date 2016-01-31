@@ -5,6 +5,7 @@ var http_local = require('http');
 var sio = require('socket.io');
 var bodyParser = require('body-parser');
 var querystring = require('querystring');
+var config = require('./config');
 
 var io = sio.listen(http, {origins: '*:*'});
 
@@ -13,16 +14,16 @@ var socket_tokens = {};
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-var socket_token_put_request = {host: 'localhost',
-                                port: 8000,
+var socket_token_put_request = {host: config.host,
+                                port: config.port,
                                 // path: '/vittlify/socket/' + socket_tokens[socket] + '/',
                                 method: 'PUT',
                                 headers: {'Content-Type': 'application/x-www-form-urlencoded'
                                          }
                                 };
 
-var socket_token_get_request = {host: 'localhost',
-                                port: 8000,
+var socket_token_get_request = {host: config.host,
+                                port: config.port,
                                 // path: '/vittlify/socket/' + socket_tokens[socket] + '/',
                                 method: 'GET'
                                 };

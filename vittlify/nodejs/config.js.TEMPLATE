@@ -1,0 +1,5 @@
+var config = {};
+config.host = 'localhost';
+config.port = 8000;
+
+module.exports = config;
