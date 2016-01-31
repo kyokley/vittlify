@@ -20,7 +20,9 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from django.http import (Http404,
                          )
 from django.core.exceptions import PermissionDenied
-from config.settings import ALEXA_LIST
+from config.settings import (ALEXA_LIST,
+                             NODE_SERVER,
+                             )
 from groceries.utils import queryDictToDict
 import requests
 
@@ -94,7 +96,8 @@ class ItemView(APIView):
                 socket_tokens = WebSocketToken.objects.filter(shopper=shopping_list_member.shopper).filter(active=True).all()
                 for socket_token in socket_tokens:
                     data['socket_token'] = socket_token.guid
-                    node_resp = requests.put('http://localhost:3000/item/%s' % item.id, data=data)
+                    node_resp = requests.put('%s/item/%s' % (NODE_SERVER,
+                                                             item.id), data=data)
                     node_resp.raise_for_status()
 
             return Response(serializer.data)
@@ -132,7 +135,7 @@ class ItemView(APIView):
                 socket_tokens = WebSocketToken.objects.filter(shopper=shopping_list_member.shopper).filter(active=True).all()
                 for socket_token in socket_tokens:
                     data['socket_token'] = socket_token.guid
-                    node_resp = requests.post('http://localhost:3000/item', data=data)
+                    node_resp = requests.post('%s/item' % NODE_SERVER, data=data)
                     node_resp.raise_for_status()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -169,7 +172,7 @@ class UnsafeItemView(ItemView):
                 socket_tokens = WebSocketToken.objects.filter(shopper=shopping_list_member.shopper).filter(active=True).all()
                 for socket_token in socket_tokens:
                     data['socket_token'] = socket_token.guid
-                    node_resp = requests.post('http://localhost:3000/item', data=data)
+                    node_resp = requests.post('%s/item' % NODE_SERVER, data=data)
                     node_resp.raise_for_status()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
