@@ -199,3 +199,15 @@ class WebSocketToken(models.Model):
                                                                        self.date_added,
                                                                        self.date_edited)
 
+class ShoppingListCategory(models.Model):
+    shopping_list = models.ForeignKey('ShoppingList', related_name='categories')
+    name = models.CharField(max_length=200, null=False, blank=False)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('date_added',)
+
+    def __str__(self):
+        return 'id: {id} n: {name}'.format(id=self.id,
+                                           name=self.name,
+                                           )
