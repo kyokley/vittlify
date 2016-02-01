@@ -147,6 +147,7 @@ class UnsafeItemView(ItemView):
     def post(self, request, format=None):
         data = queryDictToDict(request.data)
         data['shopping_list_id'] = ALEXA_LIST
+        data['name'] = data['name'].title()
         serializer = ItemSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
