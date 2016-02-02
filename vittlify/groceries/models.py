@@ -126,6 +126,10 @@ class ShoppingList(models.Model):
                 }
 
     @property
+    def has_categories(self):
+        return bool(len(self.categories))
+
+    @property
     def has_comments(self):
         for item in self.items.all():
             if item.comments:
@@ -201,13 +205,15 @@ class WebSocketToken(models.Model):
 
 class ShoppingListCategory(models.Model):
     shopping_list = models.ForeignKey('ShoppingList', related_name='categories')
-    name = models.CharField(max_length=200, null=False, blank=False)
+    name = models.CharField(max_length=200, null=False, blank=False, default='None')
     date_added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ('date_added',)
+        unique_together = ('name', 'shopping_list')
 
     def __str__(self):
-        return 'id: {id} n: {name}'.format(id=self.id,
-                                           name=self.name,
-                                           )
+        return 'id: {id} l: {shopping_list} n: {name}'.format(id=self.id,
+                                                              shopping_list=self.shopping_list.name,
+                                                              name=self.name,
+                                                              )
