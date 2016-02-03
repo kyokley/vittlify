@@ -110,6 +110,7 @@ class ShoppingList(models.Model):
     name = models.CharField(max_length=200, default='')
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
+    category = models.ForeignKey('ShoppingListCategory', null=True)
 
     class Meta:
         ordering = ('date_added',)
@@ -127,7 +128,7 @@ class ShoppingList(models.Model):
 
     @property
     def has_categories(self):
-        return bool(len(self.categories))
+        return bool(self.categories.count())
 
     @property
     def has_comments(self):
@@ -211,6 +212,7 @@ class ShoppingListCategory(models.Model):
     class Meta:
         ordering = ('date_added',)
         unique_together = ('name', 'shopping_list')
+        verbose_name_plural = 'Shopping list categories'
 
     def __str__(self):
         return 'id: {id} l: {shopping_list} n: {name}'.format(id=self.id,
