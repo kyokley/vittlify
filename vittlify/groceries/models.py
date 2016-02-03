@@ -15,6 +15,7 @@ class Item(models.Model):
     comments = models.TextField(default='', blank=True)
     _done = models.BooleanField(db_column='done', default=False)
     date_completed = models.DateTimeField(null=True, blank=True)
+    category = models.ForeignKey('ShoppingListCategory', null=True)
 
     class Meta:
         #unique_together = ('name', 'shopping_list')
@@ -110,7 +111,6 @@ class ShoppingList(models.Model):
     name = models.CharField(max_length=200, default='')
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
-    category = models.ForeignKey('ShoppingListCategory', null=True)
 
     class Meta:
         ordering = ('date_added',)
