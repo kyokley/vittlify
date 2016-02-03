@@ -27,12 +27,6 @@ function updateRow(item_id, list_id, checked, row_elem){
 function updateRowHelper(item_id, list_id, checked, row_elem){
      console.log('Set item ' + item_id + ' to ' + checked);
      var table = tables["table-shopping_list-" + list_id];
-     // var hiddenInput = document.getElementById('done-checked-' + item_id);
-     // var button = document.getElementById('done-btn-' + list_id + '-' + item_id);
-     // if(!button){
-     //     debugger;
-     // }
-     // var link_btn = document.getElementById('link-' + item_id);
      var hiddenInput = row_elem.find("input")[0];
      var buttons = row_elem.find("button");
      var link_btn = buttons[0];
@@ -120,7 +114,9 @@ function addItemHelper(list_id, item_id, name, comments){
          }
          link_name += '</button>';
 
-         var row = table.row.add([link_name, done_button]).draw(false);
+         var category_name = 'None';
+
+         var row = table.row.add([link_name, category_name, done_button]).draw(false);
          var rowNode = row.node();
 
         var selectorID = "done-btn-" + list_id + "-" + item_id;

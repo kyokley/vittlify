@@ -95,6 +95,7 @@
                                     <thead>
                                         <tr>
                                             <th>Item</th>
+                                            <th>Category</th>
                                             <th>Done</th>
                                         </tr>
                                     </thead>
@@ -112,6 +113,13 @@
                                                 <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
                                                 {% endif %}
                                                 </button>
+                                            </td>
+                                            <td>
+                                                {% if item.category %}
+                                                    {{item.category.name}}
+                                                {% else %}
+                                                    None
+                                                {% endif %}
                                             </td>
                                             <td class="checkbox-div">
                                                 <input type="hidden" id="done-checked-{{ item.id }}" value={% if not item.done %}true{% else %}false{% endif %} />
