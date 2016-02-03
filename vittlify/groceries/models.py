@@ -15,7 +15,7 @@ class Item(models.Model):
     comments = models.TextField(default='', blank=True)
     _done = models.BooleanField(db_column='done', default=False)
     date_completed = models.DateTimeField(null=True, blank=True)
-    category = models.ForeignKey('ShoppingListCategory', null=True)
+    _category = models.ForeignKey('ShoppingListCategory', null=True, db_column='category')
 
     class Meta:
         #unique_together = ('name', 'shopping_list')
@@ -23,6 +23,14 @@ class Item(models.Model):
 
     def __str__(self):
         return 'id: {id} n: {name}'.format(id=self.id, name=self.name)
+
+    def _get_category(self):
+        return self._category
+    def _set_category(self, val):
+        if val.shopping_list != self.shopping_list:
+            raise Exception('Invalid category for this item')
+        self._category = val
+    category = property(fget=_get_category, fset=_set_category)
 
     def _get_done(self):
         return self._done
