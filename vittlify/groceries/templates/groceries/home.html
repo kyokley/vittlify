@@ -144,6 +144,18 @@
                                         <input type="text" class="form-control" id="edit-item-name-{{ shopping_list.id }}" disabled/>
                                     </div>
                                     <div class="form-group">
+                                        <label for="category-item">Category:</label>
+                                        <select class="form-control" id="category-item-{{ shopping_list.id }}">
+                                            {% if shopping_list.has_categories %}
+                                                {% for category in shopping_list.categories.all %}
+                                                <option value="{{ category.id }}" {% if forloop.first%}selected{% endif %}>{{ category.name }}</option>
+                                                {% endfor %}
+                                            {% else %}
+                                                <option value="None" selected>None</option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
                                         <label for="edit-item-comment">Comments:</label>
                                         <textarea class="form-control" id="edit-item-comment-{{ shopping_list.id }}" rows="3"></textarea>
                                     </div>
