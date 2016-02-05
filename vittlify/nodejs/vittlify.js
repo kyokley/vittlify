@@ -130,7 +130,9 @@ app.post('/item', function(req, res){
     var data = {item_id: req.body.item_id,
                 list_id: req.body.list_id,
                 name: req.body.name,
-                comments: req.body.comments};
+                comments: req.body.comments,
+                category_id: req.body.category_id,
+                category_name: req.body.category_name};
 
     var socket_token = req.body.socket_token;
     if(req.get('host') == 'localhost:3000'){
@@ -150,7 +152,9 @@ app.put('/item/:id', function(req, res){
                 comments: req.body.comments,
                 name: req.body.name,
                 modified_done: req.body.modified_done,
-                modified_comments: req.body.modified_comments};
+                modified_comments: req.body.modified_comments,
+                category_id: req.body.category_id,
+                category_name: req.body.category_name};
     var socket_token = req.body.socket_token;
     if(req.get('host') == 'localhost:3000'){
         console.log('PUT-ing to ' + socket_token);

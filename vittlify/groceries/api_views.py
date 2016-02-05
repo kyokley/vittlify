@@ -86,6 +86,7 @@ class ItemView(APIView):
 
             data = {'list_id': item.shopping_list.id,
                     'category_id': item.category and item.category.id,
+                    'category_name': item.category and item.category.name,
                     'checked': item.done,
                     'comments': item.comments,
                     'name': item.name,
@@ -128,6 +129,7 @@ class ItemView(APIView):
 
             data = {'item_id': item.id,
                     'category_id': item.category and item.category.id,
+                    'category_name': item.category and item.category.name,
                     'list_id': item.shopping_list.id,
                     'name': item.name,
                     'comments': item.comments}
@@ -168,6 +170,7 @@ class UnsafeItemView(ItemView):
             data = {'item_id': item.id,
                     'list_id': item.shopping_list.id,
                     'category_id': item.category and item.category.id,
+                    'category_name': item.category and item.category.name,
                     'name': item.name,
                     'comments': item.comments}
 

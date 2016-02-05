@@ -117,8 +117,10 @@
                                             <td>
                                                 {% if item.category %}
                                                     {{item.category.name}}
+                                                    <span class="hidden-span" id="item-category-id-{{item.id}}">{{item.category.id}}</span>
                                                 {% else %}
                                                     None
+                                                    <span class="hidden-span" id="item-category-id-{{item.id}}"></span>
                                                 {% endif %}
                                             </td>
                                             <td class="checkbox-div">

@@ -73,6 +73,8 @@ function decrementShoppingListBadgeCount(list_id){
 function addItem(list_id){
     var item_name = document.getElementById("new-item-name-" + list_id);
     var item_comments = document.getElementById("new-item-comment-" + list_id);
+    var item_category = document.getElementById("new-item-category-" + list_id);
+
     if(!item_name.value){
         alert('Name is a required field for new items');
     } else {
@@ -81,7 +83,8 @@ function addItem(list_id){
                      dataType: "json",
                      data: {shopping_list_id: list_id,
                             name: item_name.value,
-                            comments: item_comments.value},
+                            comments: item_comments.value,
+                            category_id: item_category.value},
                      statusCode: {
                          403: function() {
                              alert("You don't have access to this list.\nPlease try refreshing the page.");
@@ -90,6 +93,7 @@ function addItem(list_id){
                      success: function(json){
                          item_name.value = "";
                          item_comments.value = "";
+                         item_category.value = "";
                          // We depend on the node server to actually call addItemHelper later
                      },
                      error: function(json){
@@ -99,7 +103,7 @@ function addItem(list_id){
     }
 }
 
-function addItemHelper(list_id, item_id, name, comments){
+function addItemHelper(list_id, item_id, name, comments, category_id, category_name){
      var table = tables["table-shopping_list-" + list_id];
      if(table){
          var done_button = '<input type="hidden" id="done-checked-' + item_id + '" value=true />';
@@ -114,9 +118,10 @@ function addItemHelper(list_id, item_id, name, comments){
          }
          link_name += '</button>';
 
-         var category_name = 'None';
+         var category = category_name;
+         category += '<span class="hidden-span" id="item-category-id-' + item_id + '">' + category_id + '</span>';
 
-         var row = table.row.add([link_name, category_name, done_button]).draw(false);
+         var row = table.row.add([link_name, category, done_button]).draw(false);
          var rowNode = row.node();
 
         var selectorID = "done-btn-" + list_id + "-" + item_id;
@@ -237,7 +242,10 @@ function initSocketIO(){
         if(table){
             var row_elem = table.$("#done-btn-" + data.list_id + "-" + data.item_id).parents("tr");
             console.log("updateRowHelper");
-            updateRowHelper(data.item_id, data.list_id, data.checked, row_elem);
+            updateRowHelper(data.item_id,
+                            data.list_id,
+                            data.checked,
+                            row_elem);
         }
 
     });
@@ -252,6 +260,11 @@ function initSocketIO(){
     socket.on("asyncAddItem_" + socket_token, function(data){
         console.log("addItemHelper");
         console.log(data);
-        addItemHelper(data.list_id, data.item_id, data.name, data.comments);
+        addItemHelper(data.list_id,
+                      data.item_id,
+                      data.name,
+                      data.comments,
+                      data.category_id,
+                      data.category_name);
     });
 }
