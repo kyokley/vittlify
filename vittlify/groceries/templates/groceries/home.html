@@ -83,11 +83,11 @@
                 </div>
                 <div class="tab-content">
                 {% for shopping_list in shopping_lists %}
-                {% if forloop.first %}
-                <div id="shopping-list-{{ shopping_list.id }}" class="tab-pane fade in active">
-                {% else %}
-                <div id="shopping-list-{{ shopping_list.id }}" class="tab-pane fade">
-                {% endif %}
+                    {% if forloop.first %}
+                        <div id="shopping-list-{{ shopping_list.id }}" class="tab-pane fade in active">
+                    {% else %}
+                        <div id="shopping-list-{{ shopping_list.id }}" class="tab-pane fade">
+                    {% endif %}
                     <div class="row">
                         <div class="col-xs-12 col-md-7 shopping_list-tab">
                             <div id="div-{{ shopping_list.id }}" class="table-responsive shopping_list-table">
@@ -146,12 +146,11 @@
                                     <div class="form-group">
                                         <label for="category-item">Category:</label>
                                         <select class="form-control" id="category-item-{{ shopping_list.id }}">
+                                            <option value="" selected>None</option>
                                             {% if shopping_list.has_categories %}
                                                 {% for category in shopping_list.categories.all %}
-                                                <option value="{{ category.id }}" {% if forloop.first%}selected{% endif %}>{{ category.name }}</option>
+                                                <option value="{{ category.id }}">{{ category.name }}</option>
                                                 {% endfor %}
-                                            {% else %}
-                                                <option value="None" selected>None</option>
                                             {% endif %}
                                         </select>
                                     </div>
@@ -175,6 +174,17 @@
                                     <div class="form-group">
                                         <label for="new-item-name-{{shopping_list.id}}">Name:</label>
                                         <input type="text" class="form-control" id="new-item-name-{{shopping_list.id}}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="new-item-category-{{shopping_list.id}}">Category:</label>
+                                        <select class="form-control" id="new-item-category-{{ shopping_list.id }}">
+                                            <option value="" selected>None</option>
+                                            {% if shopping_list.has_categories %}
+                                                {% for category in shopping_list.categories.all %}
+                                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                                {% endfor %}
+                                            {% endif %}
+                                        </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="new-item-comment-{{shopping_list.id}}">Comments:</label>
