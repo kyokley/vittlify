@@ -4,6 +4,7 @@ from groceries.models import (Item,
                               Shopper,
                               ShoppingListMember,
                               WebSocketToken,
+                              ShoppingListCategory,
                               )
 
 class ItemSerializer(serializers.Serializer):
@@ -12,6 +13,7 @@ class ItemSerializer(serializers.Serializer):
     comments = serializers.CharField(required=False, allow_blank=True)
     name = serializers.CharField(required=False)
     done = serializers.BooleanField(default=False)
+    category_id = serializers.IntegerField(required=False)
 
     def create(self, validated_data):
         if not validated_data.get('name'):
@@ -24,6 +26,8 @@ class ItemSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         shopping_list = ShoppingList.objects.get(pk=validated_data.get('shopping_list_id', instance.shopping_list.id))
         instance.shopping_list = shopping_list
+        category = ShoppingListCategory.objects.get(pk=validated_data.get('category_id', instance.category.id))
+        instance.category = category
         instance.comments = validated_data.get('comments', instance.comments)
         instance.name = validated_data.get('name', instance.name)
         instance.done = validated_data.get('done', instance.done)

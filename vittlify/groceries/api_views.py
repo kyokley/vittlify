@@ -85,6 +85,7 @@ class ItemView(APIView):
             serializer.save()
 
             data = {'list_id': item.shopping_list.id,
+                    'category_id': item.category and item.category.id,
                     'checked': item.done,
                     'comments': item.comments,
                     'name': item.name,
@@ -126,6 +127,7 @@ class ItemView(APIView):
             na.save()
 
             data = {'item_id': item.id,
+                    'category_id': item.category and item.category.id,
                     'list_id': item.shopping_list.id,
                     'name': item.name,
                     'comments': item.comments}
@@ -165,6 +167,7 @@ class UnsafeItemView(ItemView):
             na.save()
             data = {'item_id': item.id,
                     'list_id': item.shopping_list.id,
+                    'category_id': item.category and item.category.id,
                     'name': item.name,
                     'comments': item.comments}
 
