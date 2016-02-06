@@ -5,11 +5,16 @@ var socket;
 var node_port;
 var socket_token;
 
-function updateRow(item_id, list_id, checked, row_elem){
+function updateRow(item_id,
+                   list_id,
+                   checked,
+                   row_elem,
+                   category_id){
     jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
                  type: "PUT",
                  dataType: "json",
-                 data: {done: checked},
+                 data: {done: checked,
+                        category_id: category_id},
                  statusCode: {
                      403: function() {
                          alert("You don't have access to this list.\nPlease try refreshing the page.");
@@ -128,7 +133,12 @@ function addItemHelper(list_id, item_id, name, comments, category_id, category_n
         table.$('button[id="' + selectorID + '"]').click(function(){
                var checked = document.getElementById("done-checked-" + item_id).value;
                var row_elem = $(this).parents('tr');
-               updateRow(item_id, list_id, checked, row_elem);
+               var category_id = document.getElementById("item-category-id-" + item_id).innerHTML;
+               updateRow(item_id,
+                         list_id,
+                         checked,
+                         row_elem,
+                         category_id);
         });
         incrementShoppingListBadgeCount(list_id);
      }
@@ -230,9 +240,7 @@ function saveItem(shopping_list_id){
 
 function saveCommentsHelper(item_id,
                             item_name,
-                            item_comments,
-                            item_category_id,
-                            item_category_name){
+                            item_comments){
      var link_id = document.getElementById("link-" + item_id);
      if(link_id){
          if(item_comments){
@@ -241,7 +249,11 @@ function saveCommentsHelper(item_id,
              link_id.innerHTML = item_name;
          }
      }
+}
 
+function saveCategoryHelper(item_id,
+                            item_category_id,
+                            item_category_name){
      var item_category_id_elem = document.getElementById("item-category-id-" + item_id);
      if(item_category_id){
          item_category_id_elem.innerHTML = item_category_id;
@@ -302,10 +314,17 @@ function initSocketIO(){
         console.log(data);
         saveCommentsHelper(data.item_id,
                            data.name,
-                           data.comments,
+                           data.comments);
+        console.log("saveCommentsHelper " + data);
+    });
+
+    socket.on("asyncCategory_" + socket_token, function(data){
+        console.log("asyncCategory");
+        console.log(data);
+        saveCategoryHelper(data.item_id,
                            data.category_id,
                            data.category_name);
-        console.log("saveCommentsHelper " + data);
+        console.log("saveCategoryHelper " + data);
     });
 
     socket.on("asyncAddItem_" + socket_token, function(data){

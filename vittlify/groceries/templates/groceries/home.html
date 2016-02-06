@@ -236,7 +236,12 @@
                     var list_id = this.id.match('[0-9]+');
                     var checked = document.getElementById("done-checked-" + item_id).value;
                     var row_elem = $(this).parents('tr');
-                    updateRow(item_id, list_id, checked, row_elem);
+                    var category_id = document.getElementById("item-category-id-" + item_id).innerHTML;
+                    updateRow(item_id,
+                              list_id,
+                              checked,
+                              row_elem,
+                              category_id);
                 });
                 {% endfor %}
 

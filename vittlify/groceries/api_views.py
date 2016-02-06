@@ -58,7 +58,7 @@ class ItemView(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
-        modified_done = modified_comments = False
+        modified_category = modified_done = modified_comments = False
         item = self.get_item(pk, request.user)
         serializer = ItemSerializer(item, data=request.data)
         if serializer.is_valid():
@@ -79,20 +79,24 @@ class ItemView(APIView):
 
                 modified_done = True
 
-            if (('comments' in serializer.validated_data and
-                    serializer.validated_data.get('comments') != item.comments) or
-                    serializer.validated_data.get('category_id') != item.category_id):
+            if ('comments' in serializer.validated_data and
+                    serializer.validated_data.get('comments') != item.comments):
                 modified_comments = True
+
+            if ('category_id' in serializer.validated_data and
+                    serializer.validated_data.get('category_id') != item.category_id):
+                modified_category = True
             serializer.save()
 
             data = {'list_id': item.shopping_list.id,
-                    'category_id': item.category and item.category.id,
-                    'category_name': item.category and item.category.name,
+                    'category_id': item.category and item.category.id or '',
+                    'category_name': item.category and item.category.name or 'None',
                     'checked': item.done,
                     'comments': item.comments,
                     'name': item.name,
                     'modified_done': modified_done,
-                    'modified_comments': modified_comments}
+                    'modified_comments': modified_comments,
+                    'modified_category': modified_category}
 
             shopping_list_members = ShoppingListMember.objects.filter(shopping_list=item.shopping_list).all()
             for shopping_list_member in shopping_list_members:
@@ -129,8 +133,8 @@ class ItemView(APIView):
             na.save()
 
             data = {'item_id': item.id,
-                    'category_id': item.category and item.category.id,
-                    'category_name': item.category and item.category.name,
+                    'category_id': item.category and item.category.id or '',
+                    'category_name': item.category and item.category.name or 'None',
                     'list_id': item.shopping_list.id,
                     'name': item.name,
                     'comments': item.comments}

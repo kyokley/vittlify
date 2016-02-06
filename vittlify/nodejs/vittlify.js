@@ -153,6 +153,7 @@ app.put('/item/:id', function(req, res){
                 name: req.body.name,
                 modified_done: req.body.modified_done,
                 modified_comments: req.body.modified_comments,
+                modified_category: req.body.modified_category,
                 category_id: req.body.category_id,
                 category_name: req.body.category_name};
     var socket_token = req.body.socket_token;
@@ -165,6 +166,10 @@ app.put('/item/:id', function(req, res){
 
         if(data.modified_comments === 'True'){
             io.emit('asyncComments_' + socket_token, data);
+        }
+
+        if(data.modified_category === 'True'){
+            io.emit('asyncCategory_' + socket_token, data);
         }
     } else {
         console.log('Request came from an invalid source. Ignoring');
