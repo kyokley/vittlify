@@ -21,7 +21,15 @@ class ItemSerializer(serializers.Serializer):
         if not validated_data.get('shopping_list_id'):
             raise ValueError('Shopping_list_id must be provided for a new Item object')
         validated_data['name'] = validated_data['name'].strip()
-        return Item.objects.create(**validated_data)
+        category = None
+        if 'category_id' in validated_data:
+            category = ShoppingListCategory.objects.get(pk=validated_data.get('category_id'))
+            del validated_data['category_id']
+
+        item =  Item.objects.create(**validated_data)
+        item.category = category
+        item.save()
+        return item
 
     def update(self, instance, validated_data):
         shopping_list = ShoppingList.objects.get(pk=validated_data.get('shopping_list_id', instance.shopping_list.id))
