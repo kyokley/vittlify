@@ -79,8 +79,9 @@ class ItemView(APIView):
 
                 modified_done = True
 
-            if ('comments' in serializer.validated_data and
-                    serializer.validated_data.get('comments') != item.comments):
+            if (('comments' in serializer.validated_data and
+                    serializer.validated_data.get('comments') != item.comments) or
+                    serializer.validated_data.get('category_id') != item.category_id):
                 modified_comments = True
             serializer.save()
 

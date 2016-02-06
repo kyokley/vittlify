@@ -118,7 +118,7 @@ function addItemHelper(list_id, item_id, name, comments, category_id, category_n
          }
          link_name += '</button>';
 
-         var category = category_name;
+         var category = '<span id="item-category-name-' + item_id + '">' + category_name + '</span>';
          category += '<span class="hidden-span" id="item-category-id-' + item_id + '">' + category_id + '</span>';
 
          var row = table.row.add([link_name, category, done_button]).draw(false);
@@ -156,20 +156,24 @@ function openItem(item_id, shopping_list_id){
                      edit_item_name_elem.value = json.name;
                      edit_item_comment_elem.value = json.comments;
 
-                     var found = false;
-                     for(i=0; i < edit_item_category.length; i++){
-                         if(edit_item_category.options[i].value == json.category_id){
-                             edit_item_category.options[i].checked = true;
-                             found = true;
+                     if(json.category_id){
+                         var found = false;
+                         for(i=0; i < edit_item_category.length; i++){
+                             if(edit_item_category.options[i].value == json.category_id){
+                                 edit_item_category.options[i].selected = true;
+                                 found = true;
+                             }
                          }
-                     }
 
-                     if(!found){
-                         var opt = document.createElement('option');
-                         opt.appendChild(document.createTextNode(json.category_name));
-                         opt.value = json.category_id;
-                         edit_item_category.appendChild(opt);
-                         edit_item_category.options[edit_item_category.length].checked = true;
+                         if(!found){
+                             var opt = document.createElement('option');
+                             opt.appendChild(document.createTextNode(json.category_name));
+                             opt.value = json.category_id;
+                             edit_item_category.appendChild(opt);
+                             edit_item_category.options[edit_item_category.length].selected = true;
+                         }
+                     } else {
+                         edit_item_category.options[0].selected = true;
                      }
                  },
                  error: function(){
@@ -194,13 +198,21 @@ function closeEditPanel(shopping_list_id){
 function saveItem(shopping_list_id){
      var edit_item_comment_elem = document.getElementById("edit-item-comment-" + shopping_list_id);
     var edit_item_id_elem = document.getElementById("edit-item-id");
+    var edit_item_category = document.getElementById("category-item-" + shopping_list_id);
+    var category_id;
+    if(edit_item_category.value){
+        category_id = edit_item_category.value;
+    } else {
+        category_id = '';
+    }
 
     var item_id = edit_item_id_elem.value;
 
     jQuery.ajax({url: "/vittlify/item/" + item_id + "/",
                  type: "PUT",
                  dataType: "json",
-                 data: {comments: edit_item_comment_elem.value},
+                 data: {comments: edit_item_comment_elem.value,
+                        category_id: category_id},
                  statusCode: {
                      403: function() {
                          alert("You don't have access to this list.\nPlease try refreshing the page.");
@@ -216,7 +228,11 @@ function saveItem(shopping_list_id){
     });
 }
 
-function saveCommentsHelper(item_id, item_name, item_comments){
+function saveCommentsHelper(item_id,
+                            item_name,
+                            item_comments,
+                            item_category_id,
+                            item_category_name){
      var link_id = document.getElementById("link-" + item_id);
      if(link_id){
          if(item_comments){
@@ -224,6 +240,20 @@ function saveCommentsHelper(item_id, item_name, item_comments){
          } else {
              link_id.innerHTML = item_name;
          }
+     }
+
+     var item_category_id_elem = document.getElementById("item-category-id-" + item_id);
+     if(item_category_id){
+         item_category_id_elem.innerHTML = item_category_id;
+     }else{
+         item_category_id_elem.innerHTML = "";
+     }
+
+     var item_category_name_elem = document.getElementById("item-category-name-" + item_id);
+     if(item_category_name){
+         item_category_name_elem.innerHTML = item_category_name;
+     }else{
+         item_category_name_elem.innerHTML = "None";
      }
 }
 
@@ -270,7 +300,11 @@ function initSocketIO(){
     socket.on("asyncComments_" + socket_token, function(data){
         console.log("asyncComments");
         console.log(data);
-        saveCommentsHelper(data.item_id, data.name, data.comments);
+        saveCommentsHelper(data.item_id,
+                           data.name,
+                           data.comments,
+                           data.category_id,
+                           data.category_name);
         console.log("saveCommentsHelper " + data);
     });
 

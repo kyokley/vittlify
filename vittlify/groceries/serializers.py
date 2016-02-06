@@ -14,6 +14,7 @@ class ItemSerializer(serializers.Serializer):
     name = serializers.CharField(required=False)
     done = serializers.BooleanField(default=False)
     category_id = serializers.IntegerField(required=False)
+    category_name = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
         if not validated_data.get('name'):
@@ -34,7 +35,10 @@ class ItemSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         shopping_list = ShoppingList.objects.get(pk=validated_data.get('shopping_list_id', instance.shopping_list.id))
         instance.shopping_list = shopping_list
-        category = ShoppingListCategory.objects.get(pk=validated_data.get('category_id', instance.category.id))
+        if not validated_data.get('category_id'):
+            category = None
+        else:
+            category = ShoppingListCategory.objects.get(pk=validated_data.get('category_id'))
         instance.category = category
         instance.comments = validated_data.get('comments', instance.comments)
         instance.name = validated_data.get('name', instance.name)

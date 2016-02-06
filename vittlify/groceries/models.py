@@ -27,10 +27,24 @@ class Item(models.Model):
     def _get_category(self):
         return self._category
     def _set_category(self, val):
-        if val.shopping_list != self.shopping_list:
+        if val and val.shopping_list != self.shopping_list:
             raise Exception('Invalid category for this item')
         self._category = val
     category = property(fget=_get_category, fset=_set_category)
+
+    def _get_category_id(self):
+        return self.category and self.category.id
+    def _set_category_id(self, val):
+        if val:
+            category = ShoppingListCategory.objects.get(pk=val)
+        else:
+            category = None
+        self.category = category
+    category_id = property(fget=_get_category_id, fset=_set_category_id)
+
+    def _get_category_name(self):
+        return self.category and self.category.name
+    category_name = property(fget=_get_category_name)
 
     def _get_done(self):
         return self._done
