@@ -151,9 +151,26 @@ function openItem(item_id, shopping_list_id){
                  success: function(json){
                      var edit_item_name_elem = document.getElementById("edit-item-name-" + shopping_list_id);
                      var edit_item_comment_elem = document.getElementById("edit-item-comment-" + shopping_list_id);
+                     var edit_item_category = document.getElementById("category-item-" + shopping_list_id);
 
                      edit_item_name_elem.value = json.name;
                      edit_item_comment_elem.value = json.comments;
+
+                     var found = false;
+                     for(i=0; i < edit_item_category.length; i++){
+                         if(edit_item_category.options[i].value == json.category_id){
+                             edit_item_category.options[i].checked = true;
+                             found = true;
+                         }
+                     }
+
+                     if(!found){
+                         var opt = document.createElement('option');
+                         opt.appendChild(document.createTextNode(json.category_name));
+                         opt.value = json.category_id;
+                         edit_item_category.appendChild(opt);
+                         edit_item_category.options[edit_item_category.length].checked = true;
+                     }
                  },
                  error: function(){
                      alert("An error has occurred!");
