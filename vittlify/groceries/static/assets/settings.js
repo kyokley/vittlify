@@ -209,3 +209,32 @@ function loadCategories(){
         });
     }
 }
+
+function addCategory(){
+    var category_name_elem = document.getElementById("new-category-name");
+    var category_name = category_name_elem.value.trim();
+    if(!category_name){
+        alert("Category must not be blank");
+    } else {
+        var list = document.getElementById("owned-lists-select");
+        if(list.selectedIndex >= 0){
+            var sel = list.options[list.selectedIndex];
+            var list_id = sel.value.match('[0-9]+')[0];
+
+            jQuery.ajax({url: "/vittlify/category/",
+                         type: "POST",
+                         dataType: "json",
+                         data: {"name": category_name,
+                                "shopping_list": list_id},
+                         success: function(json){
+                             category_name_elem.value = "";
+                             clearCategories();
+                             loadCategories();
+                         },
+                        error: function(){
+                            alert("An error has occurred. Please reload the page and try again.");
+                        }
+            });
+        }
+    }
+}

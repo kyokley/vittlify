@@ -227,7 +227,7 @@ class WebSocketToken(models.Model):
                                                                        self.date_edited)
 
 class ShoppingListCategory(models.Model):
-    shopping_list = models.ForeignKey('ShoppingList', related_name='categories')
+    shopping_list = models.ForeignKey('ShoppingList', related_name='categories', null=False, blank=False)
     name = models.CharField(max_length=200, null=False, blank=False, default='None')
     date_added = models.DateTimeField(auto_now_add=True)
 
