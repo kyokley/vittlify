@@ -177,8 +177,9 @@ function saveEmailText(){
 function clearCategories(){
     var category_select = document.getElementById("list-categories-select");
     var i;
-    for(i=0; i < category_select.options.length; i++){
-        category_select.remove(i);
+    var item_count = category_select.options.length;
+    for(i=0; i < item_count; i++){
+        category_select.remove(0);
     }
 }
 
