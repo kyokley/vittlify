@@ -60,7 +60,9 @@ class ItemView(APIView):
     def put(self, request, pk, format=None):
         modified_category = modified_done = modified_comments = False
         item = self.get_item(pk, request.user)
-        serializer = ItemSerializer(item, data=request.data)
+        request_data = queryDictToDict(request.data)
+        request_data['category_id'] = request_data.get('category_id') or None
+        serializer = ItemSerializer(item, data=request_data)
         if serializer.is_valid():
             if ('done' in serializer.validated_data and
                     serializer.validated_data.get('done') != item.done):

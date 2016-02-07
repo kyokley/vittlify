@@ -13,7 +13,7 @@ class ItemSerializer(serializers.Serializer):
     comments = serializers.CharField(required=False, allow_blank=True)
     name = serializers.CharField(required=False)
     done = serializers.BooleanField(default=False)
-    category_id = serializers.IntegerField(required=False)
+    category_id = serializers.IntegerField(required=False, allow_null=True)
     category_name = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
