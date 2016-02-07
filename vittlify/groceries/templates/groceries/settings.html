@@ -63,14 +63,14 @@
           <div class="col-xs-12 col-md-7">
               <div class="form-group">
                 <label for="owned-lists-select">Active lists:</label>
-                <select id="owned-lists-select" name="owned-lists" size="5" class="form-control">
+                <select id="owned-lists-select" name="owned-lists" size="5" class="form-control" onchange="loadCategories();">
                     {% for owned_list in owned_lists %}
                         <option value="owned_list_opt-{{ owned_list.id }}">{{ owned_list.name }}</option>
                     {% endfor %}
                 </select>
               </div>
               <div class="form-group">
-                <button id="delete-list-btn" class="btn btn-default" onclick="deleteShoppingList();">Delete</button>
+                <button id="delete-list-btn" class="btn btn-default" onclick="deleteShoppingList();">Delete List</button>
               </div>
           </div>
           <div class="col-xs-12 col-md-5">
@@ -79,7 +79,25 @@
                     <input type="text" class="form-control" id="new-list-name">
               </div>
               <div class="form-group">
-                  <button id="add-list-btn" class="btn btn-default" onclick="addShoppingList({{owner.id}});">Add</button>
+                  <button id="add-list-btn" class="btn btn-default" onclick="addShoppingList({{owner.id}});">Add List</button>
+              </div>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-xs-12 col-md-7">
+              <div class="form-group">
+                <label for="list-categories-select">List Categories:</label>
+                <select id="list-categories-select" size="5" class="form-control">
+                </select>
+              </div>
+          </div>
+          <div class="col-xs-12 col-md-5">
+              <div class="form-group">
+                  <label for="new-category-name">New Category:</label>
+                  <input type="text" class="form-control" id="new-category-name"/>
+              </div>
+              <div class="form-group">
+                  <button id="add-category-btn" class="btn btn-default" onclick="">Add Category</button>
               </div>
           </div>
       </div>

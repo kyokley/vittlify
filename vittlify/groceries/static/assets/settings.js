@@ -173,3 +173,39 @@ function saveEmailText(){
                  }
     });
 }
+
+function clearCategories(){
+    var category_select = document.getElementById("list-categories-select");
+    var i;
+    for(i=0; i < category_select.options.length; i++){
+        category_select.remove(i);
+    }
+}
+
+function loadCategories(){
+    clearCategories();
+
+    var list = document.getElementById("owned-lists-select");
+    if(list.selectedIndex >= 0){
+        var sel = list.options[list.selectedIndex];
+        var list_id = sel.value.match('[0-9]+');
+
+        jQuery.ajax({url: "/vittlify/shopping_list/" + list_id + "/",
+                     type: "GET",
+                     dataType: "json",
+                     success: function(json){
+                         var category_select = document.getElementById("list-categories-select");
+                         var i;
+                         for(i = 0; i < json.categories.length; i++){
+                             var opt = document.createElement('option');
+                             opt.appendChild(document.createTextNode(json.categories[i].name));
+                             category_select.appendChild(opt);
+                         }
+
+                     },
+                     error: function(){
+                         alert("An error has occurred. Please reload the page and try again.");
+                     }
+        });
+    }
+}

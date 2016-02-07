@@ -49,10 +49,15 @@ class ItemSerializer(serializers.Serializer):
         instance.save()
         return instance
 
+class ShoppingListCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShoppingListCategory
+
 class ShoppingListSerializer(serializers.Serializer):
     pk = serializers.IntegerField(read_only=True)
     owner_id = serializers.IntegerField()
     name = serializers.CharField()
+    categories = ShoppingListCategorySerializer(many=True)
 
     def create(self, validated_data):
         if not validated_data.get('name'):
