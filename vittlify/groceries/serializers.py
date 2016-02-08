@@ -24,7 +24,8 @@ class ItemSerializer(serializers.Serializer):
         validated_data['name'] = validated_data['name'].strip()
         category = None
         if 'category_id' in validated_data:
-            category = ShoppingListCategory.objects.get(pk=validated_data.get('category_id'))
+            if validated_data.get('category_id'):
+                category = ShoppingListCategory.objects.get(pk=validated_data.get('category_id'))
             del validated_data['category_id']
 
         item =  Item.objects.create(**validated_data)
