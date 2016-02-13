@@ -206,7 +206,7 @@ function closeEditPanel(shopping_list_id){
 }
 
 function saveItem(shopping_list_id){
-     var edit_item_comment_elem = document.getElementById("edit-item-comment-" + shopping_list_id);
+    var edit_item_comment_elem = document.getElementById("edit-item-comment-" + shopping_list_id);
     var edit_item_id_elem = document.getElementById("edit-item-id");
     var edit_item_category = document.getElementById("category-item-" + shopping_list_id);
     var category_id;
@@ -239,34 +239,53 @@ function saveItem(shopping_list_id){
 }
 
 function saveCommentsHelper(item_id,
+                            list_id,
                             item_name,
                             item_comments){
-     var link_id = document.getElementById("link-" + item_id);
+     var innerHTML;
+     var table = tables["table-shopping_list-" + list_id];
+
+     if(!table){
+         return;
+     }
+
+     var link_id = table.$("#link-" + item_id);
      if(link_id){
          if(item_comments){
-             link_id.innerHTML = item_name + ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
+             innerHTML = item_name + ' <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>';
          } else {
-             link_id.innerHTML = item_name;
+             innerHTML = item_name;
          }
      }
+     link_id.html(innerHTML);
 }
 
 function saveCategoryHelper(item_id,
+                            list_id,
                             item_category_id,
                             item_category_name){
-     var item_category_id_elem = document.getElementById("item-category-id-" + item_id);
-     if(item_category_id){
-         item_category_id_elem.innerHTML = item_category_id;
-     }else{
-         item_category_id_elem.innerHTML = "";
+     var innerHTML;
+     var table = tables["table-shopping_list-" + list_id];
+
+     if(!table){
+         return;
      }
 
-     var item_category_name_elem = document.getElementById("item-category-name-" + item_id);
-     if(item_category_name){
-         item_category_name_elem.innerHTML = item_category_name;
+     var item_category_id_elem = table.$("#item-category-id-" + item_id);
+     if(item_category_id){
+         innerHTML = item_category_id;
      }else{
-         item_category_name_elem.innerHTML = "None";
+         innerHTML = "";
      }
+     item_category_id_elem.html(innerHTML);
+
+     var item_category_name_elem = table.$("#item-category-name-" + item_id);
+     if(item_category_name){
+         innerHTML = item_category_name;
+     }else{
+         innerHTML = "None";
+     }
+     item_category_name_elem.html(innerHTML);
 }
 
 function initSocketIO(){
@@ -313,6 +332,7 @@ function initSocketIO(){
         console.log("asyncComments");
         console.log(data);
         saveCommentsHelper(data.item_id,
+                           data.list_id,
                            data.name,
                            data.comments);
         console.log("saveCommentsHelper " + data);
@@ -322,6 +342,7 @@ function initSocketIO(){
         console.log("asyncCategory");
         console.log(data);
         saveCategoryHelper(data.item_id,
+                           data.list_id,
                            data.category_id,
                            data.category_name);
         console.log("saveCategoryHelper " + data);

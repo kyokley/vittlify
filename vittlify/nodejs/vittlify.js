@@ -91,39 +91,6 @@ io.on('connection', function(socket){
 
         }).end();
     });
-
-
-    //socket.on('disconnect', function(){
-    //    // Send deactivate message to django server
-
-    //    if(!socket_tokens[socket] || socket_tokens[socket].connected){
-    //        return;
-    //    }
-
-    //    console.log("Got disconnect from: ", socket_tokens[socket]);
-    //    var data = querystring.stringify({
-    //        "active": false
-    //    });
-    //    socket_token_put_request['path'] = '/vittlify/socket/' + socket_tokens[socket] + '/';
-    //    socket_token_put_request['headers']['Content-Length'] = Buffer.byteLength(data)
-
-    //    var reqPut = http_local.request(socket_token_put_request, function(res){
-    //        console.log("statusCode: ", res.statusCode);
-    //        delete socket_token_put_request['path'];
-    //        if(res.statusCode === "200" ||
-    //                res.statusCode === 200){
-    //            console.log("Token deactivated successfully: ", socket_tokens[socket]);
-    //            delete socket_tokens[socket];
-    //        }
-    //    });
-
-    //    reqPut.write(data);
-    //    reqPut.end();
-    //    reqPut.on('error', function(e){
-    //        console.error(e);
-    //    });
-
-    //});
 });
 
 app.post('/item', function(req, res){
@@ -164,12 +131,12 @@ app.put('/item/:id', function(req, res){
             io.emit('asyncUpdateRow_' + socket_token, data);
         }
 
-        if(data.modified_comments === 'True'){
-            io.emit('asyncComments_' + socket_token, data);
-        }
-
         if(data.modified_category === 'True'){
             io.emit('asyncCategory_' + socket_token, data);
+        }
+
+        if(data.modified_comments === 'True'){
+            io.emit('asyncComments_' + socket_token, data);
         }
     } else {
         console.log('Request came from an invalid source. Ignoring');
