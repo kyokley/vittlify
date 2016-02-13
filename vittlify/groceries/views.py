@@ -27,6 +27,7 @@ def home(request):
         token = WebSocketToken()
         token.active = True
         token.shopper = shopper
+        token.removeOldTokens(shopper)
         token.save()
 
         context['socket_token'] = token.guid

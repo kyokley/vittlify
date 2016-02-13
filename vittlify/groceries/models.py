@@ -6,6 +6,7 @@ from groceries.utils import createToken
 
 RECENTLY_COMPLETED_DAYS = 14
 LARGE_INT = 999999999
+ACTIVE_TOKENS = 5
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
@@ -225,6 +226,15 @@ class WebSocketToken(models.Model):
                                                                        self.active,
                                                                        self.date_added,
                                                                        self.date_edited)
+
+    @classmethod
+    def removeOldTokens(cls, shopper):
+        tokens = list(cls.objects.filter(shopper=shopper).order_by('-date_added'))
+        if len(tokens) < ACTIVE_TOKENS:
+            return
+
+        for token in tokens[5:]:
+            token.delete()
 
 class ShoppingListCategory(models.Model):
     shopping_list = models.ForeignKey('ShoppingList', related_name='categories', null=False, blank=False)
