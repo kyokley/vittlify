@@ -18,6 +18,9 @@ function updateRow(item_id,
                  statusCode: {
                      403: function() {
                          alert("You don't have access to this list.\nPlease try refreshing the page.");
+                     },
+                     404: function() {
+                         alert("Could not find the list.\nPlease try refreshing the page.");
                      }
                  },
                  success: function(json){
@@ -32,6 +35,9 @@ function updateRow(item_id,
 function updateRowHelper(item_id, list_id, checked, row_elem){
      console.log('Set item ' + item_id + ' to ' + checked);
      var table = tables["table-shopping_list-" + list_id];
+     if(!table){
+         return;
+     }
      var hiddenInput = row_elem.find("input")[0];
      var buttons = row_elem.find("button");
      var link_btn = buttons[0];
