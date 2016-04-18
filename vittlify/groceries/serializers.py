@@ -87,8 +87,9 @@ class ShopperSerializer(serializers.ModelSerializer):
         model = Shopper
 
     def update(self, instance, validated_data):
-        instance.email = validated_data.get('email')
-        instance.email_frequency = validated_data.get('email_frequency')
+        instance.email = validated_data.get('email', instance.email)
+        instance.email_frequency = validated_data.get('email_frequency', instance.email_frequency)
+        instance.theme = validated_data.get('theme', instance.theme)
         instance.save()
         return instance
 

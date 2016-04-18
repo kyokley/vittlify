@@ -239,3 +239,50 @@ function addCategory(){
         }
     }
 }
+
+function setThemeRadios(theme_setting){
+    if(theme_setting === 'default'){
+        document.getElementById("theme_radio_default").checked = true;
+    } else if(theme_setting === 'darkly'){
+        document.getElementById("theme_radio_darkly").checked = true;
+    } else if(theme_setting === 'journal'){
+        document.getElementById("theme_radio_journal").checked = true;
+    } else if(theme_setting === 'readable'){
+        document.getElementById("theme_radio_readable").checked = true;
+    } else if(theme_setting === 'united'){
+        document.getElementById("theme_radio_united").checked = true;
+    }
+}
+
+function saveThemeRadio(){
+    var theme_radio_val = jQuery("input[name='theme_radio']:checked").val();
+
+    jQuery.ajax({url: "/vittlify/shopper/" + owner_id + "/",
+                 type: "PUT",
+                 dataType: "json",
+                 data: {"theme": theme_radio_val},
+                 success: function(json){
+                    var res = jQuery("#theme-saved-text");
+                    var savedField = res[0];
+                    savedField.style.color = "Black";
+                    savedField.innerText = "Saved Successfully";
+                    res.fadeOut(2000, function() {
+                        savedField.innerText = "";
+                        res.show(0);
+                    });
+                    location.reload(true);
+                 },
+                 error: function(json){
+                     console.log(json);
+                    var res = jQuery("#theme-saved-text");
+                    var savedField = res[0];
+                    savedField.style.color = "Red";
+                    savedField.innerText = "Save failed: " + json.responseJSON["email"];
+                    res.fadeOut(2000, function() {
+                        savedField.style.color = "Black";
+                        savedField.innerText = "";
+                        res.show(0);
+                    });
+                 }
+    });
+}

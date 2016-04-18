@@ -3,29 +3,7 @@
 <!DOCTYPE html>
 {% load staticfiles %}
 
-{% block header %}
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Grocery lists in the cloud!">
-    <meta name="author" content="Kevin Yokley">
-    <link rel="shortcut icon" type="image/png" href="{% static "assets/favicon.ico" %}"/>
-    <link href="{% static "bootstrap-dist/css/bootstrap.css" %}" rel="stylesheet">
-    <link href="{% static "bootstrap-dist/css/bootstrap-theme.css" %}" rel="stylesheet">
-    <link href="{% static "datatables/dataTables.bootstrap.min.css" %}" rel="stylesheet">
-    <link href="{% static "bootstrap-duallistbox-master/bootstrap-duallistbox.min.css" %}" rel="stylesheet">
-    {% if theme == 'darkly' %}
-        <link href="{% static "assets/css/darkly.min.css" %}" rel="stylesheet">
-    {% elif theme == 'journal' %}
-        <link href="{% static "assets/css/journal.css" %}" rel="stylesheet">
-    {% elif theme == 'readable' %}
-        <link href="{% static "assets/css/readable.css" %}" rel="stylesheet">
-    {% elif theme == 'united' %}
-        <link href="{% static "assets/css/united.css" %}" rel="stylesheet">
-    {% else %}
-        <link href="{% static "assets/css/home.css" %}" rel="stylesheet">
-    {% endif %}
-{% endblock %}
+{% include header %}
 
 {% include title %}
 
@@ -64,7 +42,56 @@
           </div>
       </div>
   </div>
-</div><div class="panel panel-default">
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Theme</h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-1">
+            </div>
+            <div class="col-xs-5">
+                <div class="form-group">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" checked name="theme_radio" value="default" id="theme_radio_default"/>
+                            <span>Default</span>
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="theme_radio" value="darkly" id="theme_radio_darkly"/>
+                            <span>Darkly</span>
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="theme_radio" value="journal" id="theme_radio_journal"/>
+                            <span>Journal</span>
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="theme_radio" value="readable" id="theme_radio_readable"/>
+                            <span>Readable</span>
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="theme_radio" value="united" id="theme_radio_united"/>
+                            <span>United</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <span id="theme-saved-text"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Your lists</h3>
   </div>
@@ -158,7 +185,12 @@
               showFilterInputs: false
             });
 
+            $("input[type=radio][name='theme_radio']").change(function(){
+                saveThemeRadio();
+            });
+
             refreshSharedLists();
+            setThemeRadios('{{ theme }}');
         });
     </script>
 {% endblock %}
