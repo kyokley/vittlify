@@ -81,6 +81,7 @@ class Shopper(models.Model):
     email_frequency = models.CharField(max_length=6,
                                        choices=EMAIL_FREQUENCY_CHOICES,
                                        default=DAILY)
+    theme = models.TextField(default='default', blank=False, null=False)
 
     @property
     def username(self):

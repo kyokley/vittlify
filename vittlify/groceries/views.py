@@ -31,6 +31,7 @@ def home(request):
         token.save()
 
         context['socket_token'] = token.guid
+        context['theme'] = shopper.theme
     return render(request, 'groceries/home.html', context)
 
 def settings(request):
@@ -42,7 +43,9 @@ def settings(request):
 
     context['node_server'] = NODE_SERVER
     context['loggedin'] = True
-    context['owner'] = Shopper.objects.filter(user=user).first()
+    owner = Shopper.objects.filter(user=user).first()
+    context['owner'] = owner
+    context['theme'] = owner.theme
     owned_lists = list(Shopper.objects.filter(user=user)
                                       .first()
                                       .owned_lists
