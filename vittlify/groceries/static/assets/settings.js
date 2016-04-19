@@ -265,7 +265,7 @@ function saveThemeRadio(){
                     var res = jQuery("#theme-saved-text");
                     var savedField = res[0];
                     savedField.style.color = "Black";
-                    savedField.innerText = "Saved Successfully";
+                    savedField.innerText = "Saved Successfully. Reloading page.";
                     res.fadeOut(2000, function() {
                         savedField.innerText = "";
                         res.show(0);

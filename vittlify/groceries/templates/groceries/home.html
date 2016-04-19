@@ -10,11 +10,10 @@
         <meta name="author" content="Kevin Yokley">
         <link rel="shortcut icon" type="image/png" href="{% static "assets/favicon.ico" %}"/>
         <link href="{% static "bootstrap-dist/css/bootstrap.css" %}" rel="stylesheet">
-        <link href="{% static "bootstrap-dist/css/bootstrap-theme.css" %}" rel="stylesheet">
         <link href="{% static "datatables/dataTables.bootstrap.min.css" %}" rel="stylesheet">
         <link href="{% static "bootstrap-duallistbox-master/bootstrap-duallistbox.min.css" %}" rel="stylesheet">
         {% if theme == 'darkly' %}
-            <link href="{% static "assets/css/darkly.min.css" %}" rel="stylesheet">
+            <link href="{% static "assets/css/darkly.css" %}" rel="stylesheet">
         {% elif theme == 'journal' %}
             <link href="{% static "assets/css/journal.css" %}" rel="stylesheet">
         {% elif theme == 'readable' %}
@@ -22,8 +21,9 @@
         {% elif theme == 'united' %}
             <link href="{% static "assets/css/united.css" %}" rel="stylesheet">
         {% else %}
-            <link href="{% static "assets/css/home.css" %}" rel="stylesheet">
+            <link href="{% static "bootstrap-dist/css/bootstrap-theme.css" %}" rel="stylesheet">
         {% endif %}
+        <link href="{% static "assets/css/home.css" %}" rel="stylesheet">
         {% endblock %}
 
         {% block title %}
