@@ -1,5 +1,9 @@
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import (authenticate,
+                                 login,
+                                 logout,
+                                 )
+from django.contrib.auth.models import User
 from django.http import (HttpResponseRedirect,
                          JsonResponse,
                          )
@@ -61,12 +65,14 @@ def signin(request):
     if request.method == 'POST':
         form = SignInForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username'].lower()
+            username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            user = authenticate(username=username, password=password)
+            user = User.objects.filter(username__iexact=username).first()
 
-            if user and user.is_active:
+            if (user and
+                    user.is_active and
+                    user.check_password(password)):
                 login(request, user)
                 context['loggedin'] = True
                 context['user'] = request.user
