@@ -1,3 +1,7 @@
 from django.test import TestCase
 
-# Create your tests here.
+from groceries.views import signin
+
+class test_signin(TestCase):
+    def setUp(self):
+        pass

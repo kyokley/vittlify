@@ -61,7 +61,7 @@ def signin(request):
     if request.method == 'POST':
         form = SignInForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
+            username = form.cleaned_data['username'].lower()
             password = form.cleaned_data['password']
 
             user = authenticate(username=username, password=password)
