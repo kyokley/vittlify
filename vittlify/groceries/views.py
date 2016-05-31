@@ -68,11 +68,13 @@ def signin(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
+            # Use a case insensitive search to find the right user
             user = User.objects.filter(username__iexact=username).first()
 
-            if (user and
-                    user.is_active and
-                    user.check_password(password)):
+            # Django requires a call to authenticate
+            user = authenticate(username=user.username, password=password)
+
+            if user and user.is_active:
                 login(request, user)
                 context['loggedin'] = True
                 context['user'] = request.user
