@@ -36,14 +36,20 @@ class TestSignIn(TestCase):
         self.assertFalse(mock_authenticate.called)
         self.assertFalse(mock_login.called)
 
+    @mock.patch('groceries.views.login')
     @mock.patch('groceries.views.authenticate')
     @mock.patch('groceries.views.SignInForm')
     def test_case_insensitive_username(self,
                                        mock_SignInForm,
-                                       mock_authenticate):
+                                       mock_authenticate,
+                                       mock_login):
         self.form.is_valid.return_value = True
+        self.form.cleaned_data = {'username': self.new_username.upper(),
+                                  'password': self.password}
+
         mock_SignInForm.return_value = self.form
 
         signin(self.request)
         mock_authenticate.assert_called_once_with(username=self.new_username,
                                                   password=self.password)
+        self.assertTrue(mock_login.called)
