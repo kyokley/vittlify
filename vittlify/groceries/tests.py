@@ -29,6 +29,8 @@ class TestSignIn(TestCase):
                              mock_authenticate,
                              mock_login):
         self.form.is_valid.return_value = False
+        mock_SignInForm.return_value = self.form
+
         signin(self.request)
 
         self.assertFalse(mock_authenticate.called)
