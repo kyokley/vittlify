@@ -71,6 +71,9 @@ def signin(request):
             # Use a case insensitive search to find the right user
             user = User.objects.filter(username__iexact=username).first()
 
+            if not user:
+                raise Exception('Invalid User')
+
             # Django requires a call to authenticate
             user = authenticate(username=user.username, password=password)
 

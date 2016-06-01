@@ -79,3 +79,28 @@ class TestSignIn(TestCase):
         mock_authenticate.assert_called_once_with(username=self.new_username,
                                                   password=self.password)
         self.assertFalse(mock_login.called)
+
+    @mock.patch('groceries.views.login')
+    @mock.patch('groceries.views.authenticate')
+    @mock.patch('groceries.views.SignInForm')
+    def test_user_does_not_exist(self,
+                                 mock_SignInForm,
+                                 mock_authenticate,
+                                 mock_login):
+        authenticated_user = mock.MagicMock()
+        authenticated_user.is_active = False
+
+        mock_authenticate.return_value = authenticated_user
+
+        self.form.is_valid.return_value = True
+        self.form.cleaned_data = {'username': 'some_test_user_that_does_not_exist',
+                                  'password': self.password}
+
+        mock_SignInForm.return_value = self.form
+
+        self.assertRaisesMessage(Exception,
+                                 'Invalid User',
+                                 signin,
+                                 self.request)
+        self.assertFalse(mock_authenticate.called)
+        self.assertFalse(mock_login.called)
