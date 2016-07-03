@@ -105,6 +105,14 @@ function addItem(list_id){
                          item_name.value = "";
                          item_comments.value = "";
                          item_category.value = "";
+                         var saved_message = jQuery('#saved-item-' + list_id);
+                         var saved_message_field = saved_message[0];
+                         saved_message_field.innerText = 'Item added successfully';
+
+                         saved_message.fadeOut(2000, function() {
+                             saved_message_field.innerText = "";
+                             saved_message.show(0);
+                         });
                          // We depend on the node server to actually call addItemHelper later
                      },
                      error: function(json){
