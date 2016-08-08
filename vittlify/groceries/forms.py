@@ -18,3 +18,6 @@ class SignInForm(forms.Form):
         user = authenticate(username=user.username, password=password)
         if not user or not user.is_active:
             raise forms.ValidationError('Invalid username or password')
+
+class ImportFileForm(forms.Form):
+    file = forms.FileField()

@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.http import (HttpResponseRedirect,
                          JsonResponse,
                          )
-from .forms import SignInForm
+from .forms import SignInForm, ImportFileForm
 from .models import (Shopper,
                      RecentlyCompletedShoppingList,
                      ShoppingList,
@@ -143,3 +143,9 @@ def shared_list_member_json(request, shopper_id, list_id):
         else:
             slm.delete()
             return JsonResponse({}, status=200)
+
+def import_file(request):
+    if request.method == 'POST':
+        form = ImportFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            pass
