@@ -46,5 +46,8 @@ def queryDictToDict(data):
     ret = dict()
     for key, val in data.items():
         ret[key] = val
-
     return ret
+
+def generate_items_from_file(f):
+    for chunk in f.chunks():
+        pass

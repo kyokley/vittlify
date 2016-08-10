@@ -1,6 +1,10 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from .models import (ShoppingList,
+                     Shopper,
+                     ShoppingListMember,
+                     )
 
 class SignInForm(forms.Form):
     username = forms.CharField(max_length=100, label='Username')
@@ -21,3 +25,11 @@ class SignInForm(forms.Form):
 
 class ImportFileForm(forms.Form):
     file = forms.FileField()
+    shopping_list = forms.ModelChoiceField(queryset=ShoppingList.objects.all())
+
+    def __init__(self, *args, **kwargs):
+        shopper_id = kwargs.pop('shopper_id', None)
+        super(ImportFileForm, self).__init__(*args, **kwargs)
+        if shopper_id:
+            shopper = Shopper.objects.get(pk=shopper_id)
+            self.fields['shopping_list'].queryset = ShoppingList.objects.filter(shoppinglistmember__shopper=shopper)

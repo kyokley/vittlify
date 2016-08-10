@@ -22,6 +22,18 @@ class Item(models.Model):
         #unique_together = ('name', 'shopping_list')
         ordering = ('name',)
 
+    @classmethod
+    def new(cls,
+            name,
+            shopping_list,
+            comments=None,
+            ):
+        new_item = cls()
+        new_item.name = name
+        new_item.shopping_list = shopping_list
+        new_item.comments = comments
+        return new_item
+
     def __str__(self):
         return 'id: {id} n: {name}'.format(id=self.id, name=self.name)
 
