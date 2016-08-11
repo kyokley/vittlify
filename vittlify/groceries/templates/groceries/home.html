@@ -49,6 +49,7 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
                     {% if loggedin %}
+                        <li><a href="/vittlify/import_file/">Import</a></li>
                         <p class="navbar-text">Signed in as <a href="/vittlify/settings/" class="navbar-link">{{ user.username }}</a></p>
                         <li><a href="/vittlify/signout/">Log out</a></li>
                     {% else %}
