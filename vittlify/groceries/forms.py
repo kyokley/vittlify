@@ -24,7 +24,7 @@ class SignInForm(forms.Form):
             raise forms.ValidationError('Invalid username or password')
 
 class ImportFileForm(forms.Form):
-    file = forms.FileField()
+    import_file = forms.FileField()
     shopping_list = forms.ModelChoiceField(queryset=ShoppingList.objects.all())
 
     def __init__(self, *args, **kwargs):

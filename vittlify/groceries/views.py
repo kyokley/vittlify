@@ -148,15 +148,15 @@ def shared_list_member_json(request, shopper_id, list_id):
 def import_file(request):
     user = request.user
     context = {}
+    shopper = Shopper.objects.filter(user=user).first()
     if request.method == 'POST':
         form = ImportFileForm(request.POST,
                               request.FILES,
-                              shopper_id=request.POST.get('shopper_id'))
+                              shopper_id=shopper.id)
         if form.is_valid():
-            generate_items_from_file(request.FILES['file'])
+            generate_items_from_file(request.FILES['import_file'])
             return HttpResponseRedirect('/')
     else:
-        shopper = Shopper.objects.filter(user=user).first()
         shopping_lists = list(shopper.shopping_lists.all())
         context['shopping_lists'] = shopping_lists
         return render(request, 'groceries/upload.html', context)
