@@ -26,7 +26,7 @@ class Item(models.Model):
     def new(cls,
             name,
             shopping_list,
-            comments=None,
+            comments='',
             ):
         new_item = cls()
         new_item.name = name

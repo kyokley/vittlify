@@ -15,7 +15,6 @@ from .models import (Shopper,
                      WebSocketToken,
                      )
 from config.settings import NODE_SERVER
-from .utils import generate_items_from_file
 
 def home(request):
     context = {'loggedin': False}
@@ -146,15 +145,20 @@ def shared_list_member_json(request, shopper_id, list_id):
             return JsonResponse({}, status=200)
 
 def import_file(request):
+    context = {'loggedin': False}
     user = request.user
-    context = {}
+
+    if not user or not user.is_authenticated():
+        return HttpResponseRedirect('/vittlify')
+
+    context = {'loggedin': True}
     shopper = Shopper.objects.filter(user=user).first()
     if request.method == 'POST':
         form = ImportFileForm(request.POST,
                               request.FILES,
                               shopper_id=shopper.id)
         if form.is_valid():
-            generate_items_from_file(request.FILES['import_file'])
+            form.generate_items_from_file()
             return HttpResponseRedirect('/')
     else:
         shopping_lists = list(shopper.shopping_lists.all())

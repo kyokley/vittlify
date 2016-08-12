@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from .models import (ShoppingList,
                      Shopper,
-                     ShoppingListMember,
+                     Item,
                      )
 
 class SignInForm(forms.Form):
@@ -33,3 +33,9 @@ class ImportFileForm(forms.Form):
         if shopper_id:
             shopper = Shopper.objects.get(pk=shopper_id)
             self.fields['shopping_list'].queryset = ShoppingList.objects.filter(shoppinglistmember__shopper=shopper)
+
+    def generate_items_from_file(self):
+        for line in self.cleaned_data['import_file']:
+            new_item = Item.new(line,
+                                self.cleaned_data['shopping_list'])
+            new_item.save()
