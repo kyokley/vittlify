@@ -28,8 +28,17 @@ class Item(models.Model):
             shopping_list,
             comments='',
             ):
+        trimmed_name = name.strip()
+        existing = (cls.objects
+                       .filter(shopping_list=shopping_list)
+                       .filter(name__iexact=trimmed_name)
+                       .filter(_done=False)
+                       .first())
+        if existing:
+            return existing
+
         new_item = cls()
-        new_item.name = name
+        new_item.name = trimmed_name
         new_item.shopping_list = shopping_list
         new_item.comments = comments
         return new_item
