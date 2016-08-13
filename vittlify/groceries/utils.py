@@ -46,5 +46,4 @@ def queryDictToDict(data):
     ret = dict()
     for key, val in data.items():
         ret[key] = val
-
     return ret

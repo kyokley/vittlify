@@ -22,6 +22,27 @@ class Item(models.Model):
         #unique_together = ('name', 'shopping_list')
         ordering = ('name',)
 
+    @classmethod
+    def new(cls,
+            name,
+            shopping_list,
+            comments='',
+            ):
+        trimmed_name = name.strip()
+        existing = (cls.objects
+                       .filter(shopping_list=shopping_list)
+                       .filter(name__iexact=trimmed_name)
+                       .filter(_done=False)
+                       .first())
+        if existing:
+            return existing
+
+        new_item = cls()
+        new_item.name = trimmed_name
+        new_item.shopping_list = shopping_list
+        new_item.comments = comments
+        return new_item
+
     def __str__(self):
         return 'id: {id} n: {name}'.format(id=self.id, name=self.name)
 

@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.http import (HttpResponseRedirect,
                          JsonResponse,
                          )
-from .forms import SignInForm
+from .forms import SignInForm, ImportFileForm
 from .models import (Shopper,
                      RecentlyCompletedShoppingList,
                      ShoppingList,
@@ -143,3 +143,29 @@ def shared_list_member_json(request, shopper_id, list_id):
         else:
             slm.delete()
             return JsonResponse({}, status=200)
+
+def import_file(request):
+    context = {'loggedin': False}
+    user = request.user
+
+    if not user or not user.is_authenticated():
+        return HttpResponseRedirect('/vittlify')
+
+    context = {'loggedin': True}
+    shopper = Shopper.objects.filter(user=user).first()
+    shopping_lists = list(shopper.shopping_lists.all())
+    context['shopping_lists'] = shopping_lists
+
+    if request.method == 'POST':
+        form = ImportFileForm(request.POST,
+                              request.FILES,
+                              shopper_id=shopper.id)
+        if form.is_valid():
+            form.generate_items_from_file()
+            context['shopping_list'] = form.cleaned_data['shopping_list']
+            return render(request, 'groceries/upload_success.html', context)
+        else:
+            context['form'] = form
+            return render(request, 'groceries/upload_fail.html', context)
+
+    return render(request, 'groceries/upload.html', context)

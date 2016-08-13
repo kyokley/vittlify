@@ -1,0 +1,55 @@
+{% extends "groceries/home.html" %}
+
+<!DOCTYPE html>
+{% load staticfiles %}
+
+{% include header %}
+
+{% include title %}
+
+{% include navbar %}
+
+{% block main %}
+<div class="page-header">
+  <h1>Import Items from File</h1>
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Upload File</h3>
+  </div>
+  <div class="panel-body">
+      <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="shopping-list-select">Select Shopping List</label>
+            <select id="shopping-list-select" name="shopping_list" class="form-control">
+                {% for shopping_list in shopping_lists %}
+                    <option value="{{ shopping_list.id }}">{{ shopping_list.name }}</option>
+                {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <input name="import_file" type="file">
+              {{ form.import_file.errors }}
+          </div>
+          <button class="btn btn-lg btn-primary" type="submit">Submit</button>
+      </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript_imports %}
+    <script src="{% static "jquery/jquery-2.1.4.min.js" %}"></script>
+    <script src="{% static "bootstrap-dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "datatables/jquery.dataTables.min.js" %}"></script>
+    <script src="{% static "datatables/dataTables.bootstrap.min.js" %}"></script>
+    <script src="{% static "assets/ajaxSetup.js" %}"></script>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            token = '{{ csrf_token }}';
+        });
+    </script>
+{% endblock %}
