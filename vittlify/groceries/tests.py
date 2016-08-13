@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 
 from groceries.views import signin
+from groceries.forms import ImportFileForm
+from groceries.models import ShoppingList
 import mock
 
 class TestSignIn(TestCase):
@@ -104,3 +106,24 @@ class TestSignIn(TestCase):
                                  self.request)
         self.assertFalse(mock_authenticate.called)
         self.assertFalse(mock_login.called)
+
+class TestImportFile(TestCase):
+    def setUp(self):
+        #self.form = mock.create_autospec(ImportFileForm)
+        self.form = ImportFileForm()
+        self.shopping_list = mock.create_autospec(ShoppingList)
+        self.form.cleaned_data = {'import_file': ('first',
+                                                  'second',
+                                                  'third',
+                                                  'fourth'),
+                                  'shopping_list': self.shopping_list}
+
+    @mock.patch('groceries.forms.Item')
+    def test_generate_items_from_file(self, mock_item):
+        self.form.generate_items_from_file()
+
+        mock_item.new.assert_any_call('first', self.shopping_list)
+        mock_item.new.assert_any_call('second', self.shopping_list)
+        mock_item.new.assert_any_call('third', self.shopping_list)
+        mock_item.new.assert_any_call('fourth', self.shopping_list)
+        self.assertEqual(mock_item.new.call_count, 4)
