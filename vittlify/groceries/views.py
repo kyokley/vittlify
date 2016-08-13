@@ -153,6 +153,9 @@ def import_file(request):
 
     context = {'loggedin': True}
     shopper = Shopper.objects.filter(user=user).first()
+    shopping_lists = list(shopper.shopping_lists.all())
+    context['shopping_lists'] = shopping_lists
+
     if request.method == 'POST':
         form = ImportFileForm(request.POST,
                               request.FILES,
@@ -160,7 +163,8 @@ def import_file(request):
         if form.is_valid():
             form.generate_items_from_file()
             return HttpResponseRedirect('/')
-    else:
-        shopping_lists = list(shopper.shopping_lists.all())
-        context['shopping_lists'] = shopping_lists
-        return render(request, 'groceries/upload.html', context)
+        else:
+            context['form'] = form
+            return render(request, 'groceries/upload_fail.html', context)
+
+    return render(request, 'groceries/upload.html', context)
