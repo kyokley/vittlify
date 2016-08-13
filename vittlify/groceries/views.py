@@ -154,6 +154,7 @@ def import_file(request):
     context = {'loggedin': True}
     shopper = Shopper.objects.filter(user=user).first()
     shopping_lists = list(shopper.shopping_lists.all())
+    context['theme'] = shopper.theme
     context['shopping_lists'] = shopping_lists
 
     if request.method == 'POST':
