@@ -162,7 +162,8 @@ def import_file(request):
                               shopper_id=shopper.id)
         if form.is_valid():
             form.generate_items_from_file()
-            return HttpResponseRedirect('/')
+            context['shopping_list'] = form.cleaned_data['shopping_list']
+            return render(request, 'groceries/upload_success.html', context)
         else:
             context['form'] = form
             return render(request, 'groceries/upload_fail.html', context)
