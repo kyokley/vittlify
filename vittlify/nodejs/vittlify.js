@@ -53,39 +53,46 @@ io.on('connection', function(socket){
             });
 
             response.on('end', function(){
-                var res = JSON.parse(body);
-                console.log("res: ", res);
-                if(res.active === true){
-                    fn('Valid token received');
-                    socket_tokens[socket] = token;
-                    console.log("Token is valid: ", token);
-                } else {
-                    console.log("Token is inactive: ", token);
-                    console.log("Attempting to reactivate: ", token);
-                    var data = querystring.stringify({
-                        "active": true
-                    });
-                    socket_token_put_request['path'] = '/vittlify/socket/' + token + '/';
-                    socket_token_put_request['headers']['Content-Length'] = Buffer.byteLength(data)
-                    var reqPut = http_local.request(socket_token_put_request, function(res){
-                        delete socket_token_put_request['path'];
-                        if(res.statusCode === "200" ||
-                                res.statusCode === 200){
-                            fn('Token has been re-activated');
-                            socket_tokens[socket] = token;
-                            console.log("Token has been re-activated: ", token);
-                        } else {
-                            fn('Invalid token');
+                try{
+                    var res = JSON.parse(body);
+                    console.log("res: ", res);
+                    if(res.active === true){
+                        fn('Valid token received');
+                        socket_tokens[socket] = token;
+                        console.log("Token is valid: ", token);
+                    } else {
+                        console.log("Token is inactive: ", token);
+                        console.log("Attempting to reactivate: ", token);
+                        var data = querystring.stringify({
+                            "active": true
+                        });
+                        socket_token_put_request['path'] = '/vittlify/socket/' + token + '/';
+                        socket_token_put_request['headers']['Content-Length'] = Buffer.byteLength(data)
+                        var reqPut = http_local.request(socket_token_put_request, function(res){
+                            delete socket_token_put_request['path'];
+                            if(res.statusCode === "200" ||
+                                    res.statusCode === 200){
+                                fn('Token has been re-activated');
+                                socket_tokens[socket] = token;
+                                console.log("Token has been re-activated: ", token);
+                            } else {
+                                fn('Invalid token');
+                                socket.emit("refresh", {"message": "Invalid token!"});
+                                console.log("Invalid token, forcing refresh: ", token);
+                            }
+                        });
+                        reqPut.write(data);
+                        reqPut.end();
+                        reqPut.on('error', function(e){
+                            console.error(e);
                             socket.emit("refresh", {"message": "Invalid token!"});
-                            console.log("Invalid token, forcing refresh: ", token);
-                        }
-                    });
-                    reqPut.write(data);
-                    reqPut.end();
-                    reqPut.on('error', function(e){
-                        console.error(e);
-                        socket.emit("refresh", {"message": "Invalid token!"});
-                    });
+                        });
+                    }
+                }
+                catch(e)
+                {
+                    console.log(e);
+                    console.log(body);
                 }
             });
 
