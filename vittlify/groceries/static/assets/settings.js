@@ -277,8 +277,8 @@ function saveThemeRadio(){
                     var res = jQuery("#theme-saved-text");
                     var savedField = res[0];
                     savedField.style.color = "Red";
-                    savedField.innerText = "Save failed: " + json.responseJSON["email"];
-                    res.fadeOut(2000, function() {
+                    savedField.innerText = "Save failed";
+                    res.fadeOut(5000, function() {
                         savedField.style.color = "Black";
                         savedField.innerText = "";
                         res.show(0);
