@@ -53,6 +53,7 @@ class ItemSerializer(serializers.Serializer):
 class ShoppingListCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingListCategory
+        fields = '__all__'
 
 class ShoppingListSerializer(serializers.Serializer):
     pk = serializers.IntegerField(read_only=True)
@@ -85,6 +86,7 @@ class ShopperSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Shopper
+        fields = ('shopping_lists', 'email', 'user', 'email_frequency', 'theme')
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email', instance.email)
@@ -96,6 +98,7 @@ class ShopperSerializer(serializers.ModelSerializer):
 class ShoppingListMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingListMember
+        fields = '__all__'
 
 class WebSocketTokenSerializer(serializers.ModelSerializer):
     guid = serializers.CharField(read_only=True)
@@ -104,6 +107,7 @@ class WebSocketTokenSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WebSocketToken
+        fields = ('guid', 'active', 'shopper')
 
     def update(self, instance, validated_data):
         shopper = Shopper.objects.get(pk=validated_data.get('shopper', instance.shopper.id))
