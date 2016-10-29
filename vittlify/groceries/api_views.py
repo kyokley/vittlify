@@ -177,8 +177,8 @@ class UnsafeItemView(ItemView):
             na.save()
             data = {'item_id': item.id,
                     'list_id': item.shopping_list.id,
-                    'category_id': item.category and item.category.id,
-                    'category_name': item.category and item.category.name,
+                    'category_id': item.category and item.category.id or '',
+                    'category_name': item.category and item.category.name or 'None',
                     'name': item.name,
                     'comments': item.comments}
 
