@@ -3,7 +3,12 @@ from django.contrib.auth.models import User
 
 from groceries.views import signin
 from groceries.forms import ImportFileForm
-from groceries.models import ShoppingList
+from groceries.models import (ShoppingList,
+                              Shopper,
+                              )
+
+from rest_framework import status
+from rest_framework.test import APITestCase
 import mock
 
 class TestSignIn(TestCase):
@@ -109,7 +114,6 @@ class TestSignIn(TestCase):
 
 class TestImportFile(TestCase):
     def setUp(self):
-        #self.form = mock.create_autospec(ImportFileForm)
         self.form = ImportFileForm()
         self.shopping_list = mock.create_autospec(ShoppingList)
         self.form.cleaned_data = {'import_file': ('first',
@@ -127,3 +131,38 @@ class TestImportFile(TestCase):
         mock_item.new.assert_any_call('third', self.shopping_list)
         mock_item.new.assert_any_call('fourth', self.shopping_list)
         self.assertEqual(mock_item.new.call_count, 4)
+
+class TestShopperNew(TestCase):
+    def setUp(self):
+        self.test_user = User()
+        self.test_user.username = 'some_user'
+        self.test_user.email = 'test@user.com'
+
+    def test_noUser_noUsername_noEmail(self):
+        self.assertRaisesMessage(ValueError,
+                                 'Either a user object or username and email must be provided',
+                                 Shopper.new)
+
+    def test_noUser_username_noEmail(self):
+        self.assertRaisesMessage(ValueError,
+                                 'Either a user object or username and email must be provided',
+                                 Shopper.new,
+                                 username='some_user')
+
+    def test_noUser_noUsername_email(self):
+        self.assertRaisesMessage(ValueError,
+                                 'Either a user object or username and email must be provided',
+                                 Shopper.new,
+                                 email='test@user.com')
+
+    def test_noUser_username_email(self):
+        actual = Shopper.new(username='some_user',
+                             email='test@user.com',
+                             )
+        self.assertEqual(actual.username, 'some_user')
+        self.assertEqual(actual.email, 'test@user.com')
+        self.assertEqual(actual.email_frequency, Shopper.WEEKLY)
+
+class TestShoppingListItemsView(APITestCase):
+    def setUp(self):
+        pass

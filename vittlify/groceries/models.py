@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.timezone import utc, localtime
+from django.contrib.auth.models import User
 from datetime import datetime
 from email_template import EMAIL_TEMPLATE
 from groceries.utils import createToken
@@ -108,13 +109,31 @@ class Shopper(models.Model):
             username=None,
             email=None,
             user=None,
-            theme=None,
+            email_frequency=WEEKLY,
             ):
-        pass
+        if not (user or (username and email)):
+            raise ValueError('Either a user object or username and email must be provided')
 
-    @property
-    def username(self):
+        obj = cls()
+
+        if not user:
+            user = User()
+            user.username = username
+            user.email = email
+            user.save()
+
+        obj.user = user
+        obj.email_frequency = email_frequency
+        obj.save()
+        return obj
+
+    def _get_username(self):
         return self.user.username
+
+    def _set_username(self, username):
+        self.user.username = username
+
+    username = property(fget=_get_username, fset=_set_username)
 
     def _get_email(self):
         return self.user.email
