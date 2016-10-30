@@ -42,6 +42,7 @@ class Item(models.Model):
         new_item.name = trimmed_name
         new_item.shopping_list = shopping_list
         new_item.comments = comments
+        new_item.save()
         return new_item
 
     def __str__(self):
@@ -107,6 +108,7 @@ class Shopper(models.Model):
     @classmethod
     def new(cls,
             username=None,
+            password=None,
             email=None,
             user=None,
             email_frequency=WEEKLY,
@@ -120,6 +122,8 @@ class Shopper(models.Model):
             user = User()
             user.username = username
             user.email = email
+            if password:
+                user.set_password(password)
             user.save()
 
         obj.user = user
@@ -202,6 +206,7 @@ class ShoppingList(models.Model):
         obj = cls()
         obj.name = name
         obj.owner = owner
+        obj.save()
         return obj
 
     def __str__(self):

@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -5,6 +6,7 @@ from groceries.views import signin
 from groceries.forms import ImportFileForm
 from groceries.models import (ShoppingList,
                               Shopper,
+                              Item,
                               )
 
 from rest_framework import status
@@ -135,8 +137,9 @@ class TestImportFile(TestCase):
 class TestShopperNew(TestCase):
     def setUp(self):
         self.test_user = User()
-        self.test_user.username = 'some_user'
+        self.test_user.username = 'test_user'
         self.test_user.email = 'test@user.com'
+        self.test_user.save()
 
     def test_noUser_noUsername_noEmail(self):
         self.assertRaisesMessage(ValueError,
@@ -163,6 +166,31 @@ class TestShopperNew(TestCase):
         self.assertEqual(actual.email, 'test@user.com')
         self.assertEqual(actual.email_frequency, Shopper.WEEKLY)
 
+    def test_user_noUsername_noEmail(self):
+        actual = Shopper.new(user=self.test_user)
+        self.assertEqual(actual.username, 'test_user')
+        self.assertEqual(actual.email, 'test@user.com')
+        self.assertEqual(actual.email_frequency, Shopper.WEEKLY)
+
 class TestShoppingListItemsView(APITestCase):
     def setUp(self):
-        pass
+        self.test_shopper = Shopper.new(username='test_user',
+                                        password='password',
+                                        email='test@user.com')
+        self.shopping_list = ShoppingList.new('test shopping list',
+                                              self.test_shopper)
+        self.item = Item.new('test item',
+                             self.shopping_list)
+        self.client.login(username='test_user', password='password')
+
+    def test_(self):
+        expected = {'done': False,
+                    'name': u'test item',
+                    'pk': 1,
+                    'shopping_list_id': 1,
+                    'category_id': None,
+                    'comments': u'',
+                    'category_name': None}
+        response = self.client.get(reverse('groceries:shopping_list_items', args=[self.item.id]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(dict(response.data[0]), expected)
