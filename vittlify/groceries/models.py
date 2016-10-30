@@ -98,15 +98,31 @@ class Shopper(models.Model):
                                )
     user = models.OneToOneField('auth.User')
     shopping_lists = models.ManyToManyField('ShoppingList', blank=True, through='ShoppingListMember', related_name='members')
-    email = models.EmailField(null=True, blank=True)
     email_frequency = models.CharField(max_length=6,
                                        choices=EMAIL_FREQUENCY_CHOICES,
                                        default=DAILY)
     theme = models.TextField(default='default', blank=False, null=False)
 
+    @classmethod
+    def new(cls,
+            username=None,
+            email=None,
+            user=None,
+            theme=None,
+            ):
+        pass
+
     @property
     def username(self):
         return self.user.username
+
+    def _get_email(self):
+        return self.user.email
+
+    def _set_email(self, email):
+        self.user.email = email
+
+    email = property(fget=_get_email, fset=_set_email)
 
     def __str__(self):
         return 'id: {id} u: {name}'.format(id=self.id, name=self.user.username)
@@ -159,6 +175,15 @@ class ShoppingList(models.Model):
 
     class Meta:
         ordering = ('date_added',)
+
+    @classmethod
+    def new(cls,
+            name,
+            owner):
+        obj = cls()
+        obj.name = name
+        obj.owner = owner
+        return obj
 
     def __str__(self):
         return 'id: {id} n: {name} o: {username}'.format(id=self.id,
