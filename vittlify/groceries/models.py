@@ -1,3 +1,7 @@
+import tempfile
+import shlex
+import hashlib
+from subprocess import Popen, PIPE
 from django.db import models
 from django.utils.timezone import utc, localtime
 from datetime import datetime
@@ -7,6 +11,9 @@ from groceries.utils import createToken
 RECENTLY_COMPLETED_DAYS = 14
 LARGE_INT = 999999999
 ACTIVE_TOKENS = 5
+
+RSA_BEGIN = '-----BEGIN RSA PUBLIC KEY-----'
+RSA_END = '-----END RSA PUBLIC KEY-----'
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
@@ -273,3 +280,48 @@ class ShoppingListCategory(models.Model):
                                                               shopping_list=self.shopping_list.name,
                                                               name=self.name,
                                                               )
+
+class SshKey(models.Model):
+    shopper = models.ForeignKey('Shopper', null=False, blank=False)
+    ssh_format = models.TextField(null=False, blank=False)
+    pem_format = models.TextField(null=False, blank=False)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_edited = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'id: {id} u: {username} f: {fingerprint}'.format(id=self.id,
+                                                                username=self.shopper.username,
+                                                                fingerprint=self.fingerprint(),
+                                                                )
+
+    @classmethod
+    def new(cls,
+            shopper,
+            ssh_format):
+        new_key = cls()
+        new_key.shopper = shopper
+        new_key.ssh_format = ssh_format
+
+        temp = tempfile.NamedTemporaryFile()
+        temp.write(new_key.ssh_format)
+        temp.flush()
+        process = Popen(shlex.split('ssh-keygen -f {} -e -m pem'.format(temp.name)),
+                        stdout=PIPE,
+                        stderr=PIPE)
+        result = process.communicate()
+        temp.close()
+
+        if RSA_BEGIN not in result[0] or RSA_END not in result[0]:
+            raise Exception(result[1])
+
+        new_key.pem_format = result[0]
+        return new_key
+
+    def hash_md5(self):
+        """ Calculate md5 fingerprint.
+        Shamelessly copied from http://stackoverflow.com/questions/6682815/deriving-an-ssh-fingerprint-from-a-public-key-in-python
+        For specification, see RFC4716, section 4.
+        """
+        fp_plain = hashlib.md5(self.ssh_format).hexdigest()
+        return "MD5 " + ':'.join(a + b for a, b in zip(fp_plain[::2], fp_plain[1::2])) + ' RSA'
+    fingerprint = hash_md5
