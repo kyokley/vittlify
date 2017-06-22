@@ -24,6 +24,7 @@ class Item(models.Model):
     _done = models.BooleanField(db_column='done', default=False)
     date_completed = models.DateTimeField(null=True, blank=True)
     _category = models.ForeignKey('ShoppingListCategory', null=True, db_column='category')
+    guid = models.CharField(max_length=32, default=createToken, unique=True, null=False)
 
     class Meta:
         #unique_together = ('name', 'shopping_list')
