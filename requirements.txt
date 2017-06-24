@@ -3,4 +3,4 @@ psycopg2
 djangorestframework
 django-cron
 requests
-rsa
+cryptography

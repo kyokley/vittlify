@@ -21,4 +21,6 @@ urlpatterns = [
     url(r'^shared_list_member/(?P<shopper_id>[0-9]+)/(?P<list_id>[0-9]+)/$', views.shared_list_member_json),
     url(r'^socket/(?P<pk>[0-9a-z]+)/$', api_views.WebSocketTokenView.as_view(), name='socket'),
     url(r'^category/$', api_views.ShoppingListCategoryView.as_view()),
+    url(r'^sshkey/$', api_views.SshKeyView.as_view()),
+    url(r'^sshkey/(?P<pk>[0-9]+)/$', api_views.SshKeyView.as_view()),
 ]

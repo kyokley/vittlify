@@ -1,8 +1,8 @@
-import tempfile
-import shlex
 import hashlib
-import rsa
-from subprocess import Popen, PIPE
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.exceptions import InvalidSignature
 from django.db import models
 from django.utils.timezone import utc, localtime
 from datetime import datetime
@@ -290,9 +290,11 @@ class SshKey(models.Model):
     shopper = models.ForeignKey('Shopper', null=False, blank=False)
     title = models.TextField(null=False, blank=False)
     ssh_format = models.TextField(null=False, blank=False)
-    pem_format = models.TextField(null=False, blank=False)
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('shopper', 'title')
 
     def __str__(self):
         return 'id: {id} u: {username} t: {title} f: {fingerprint}'.format(id=self.id,
@@ -314,19 +316,6 @@ class SshKey(models.Model):
         new_key.ssh_format = ssh_format
         new_key.title = title
 
-        temp = tempfile.NamedTemporaryFile()
-        temp.write(new_key.ssh_format)
-        temp.flush()
-        process = Popen(shlex.split('ssh-keygen -f {} -e -m pem'.format(temp.name)),
-                        stdout=PIPE,
-                        stderr=PIPE)
-        result = process.communicate()
-        temp.close()
-
-        if RSA_BEGIN not in result[0] or RSA_END not in result[0]:
-            raise Exception(result[1])
-
-        new_key.pem_format = result[0]
         return new_key
 
     def hash_md5(self):
@@ -334,17 +323,22 @@ class SshKey(models.Model):
         Shamelessly copied from http://stackoverflow.com/questions/6682815/deriving-an-ssh-fingerprint-from-a-public-key-in-python
         For specification, see RFC4716, section 4.
         """
-        fp_plain = hashlib.md5(self.pem_format).hexdigest()
-        return "MD5 " + ':'.join(a + b for a, b in zip(fp_plain[::2], fp_plain[1::2])) + ' RSA'
+        fp_plain = hashlib.md5(self.ssh_format).hexdigest()
+        return "MD5 " + ':'.join(a + b for a, b in zip(fp_plain[::2], fp_plain[1::2]))
     fingerprint = hash_md5
 
     @property
     def rsaObj(self):
-        return rsa.PublicKey.load_pkcs1(self.pem_format)
+        return serialization.load_ssh_public_key(self.ssh_format, default_backend())
 
     def verify(self, message, signature):
         try:
-            rsa.verify(message, signature, self.rsaObj)
+            self.rsaObj.verify(signature,
+                               message,
+                               padding.PSS(mgf=padding.MGF1(hashes.SHA512()),
+                                           salt_length=padding.PSS.MAX_LENGTH),
+                               hashes.SHA512())
+
             return True
-        except rsa.pkcs1.VerificationError:
+        except InvalidSignature:
             return False
