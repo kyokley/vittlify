@@ -3,6 +3,7 @@ from groceries.serializers import (ItemSerializer,
                                    ShopperSerializer,
                                    WebSocketTokenSerializer,
                                    ShoppingListCategorySerializer,
+                                   SshKeySerializer,
                                    )
 from groceries.models import (Item,
                               ShoppingList,
@@ -236,7 +237,7 @@ class ShoppingListView(APIView):
     def put(self, request, pk, format=None):
         shopper = Shopper.objects.filter(user=request.user).first()
         if request.data['owner_id'] != shopper.id:
-            raise ValueError('Cannot create shopping list owned by another user')
+            raise ValueError('Cannot modify shopping list owned by another user')
         shopping_list = self.get_shopping_list(pk)
         serializer = ShoppingListSerializer(shopping_list, data=request.data)
         if serializer.is_valid():
@@ -313,3 +314,11 @@ class ShoppingListCategoryView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SshKeyView(APIView):
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+
+    def get(self, request, pk, format=None):
+        shopper = Shopper.objects.filter(user=request.user).first()
+        serializer = SshKeySerializer(shopper.sshkey_set.all(), many=True)
+        return Response(serializer.data)

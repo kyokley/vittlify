@@ -5,6 +5,7 @@ from groceries.models import (Item,
                               ShoppingListMember,
                               WebSocketToken,
                               ShoppingListCategory,
+                              SshKey,
                               )
 
 class ItemSerializer(serializers.Serializer):
@@ -115,3 +116,8 @@ class WebSocketTokenSerializer(serializers.ModelSerializer):
         instance.active = validated_data.get('active')
         instance.save()
         return instance
+
+class SshKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SshKey
+        fields = '__all__'

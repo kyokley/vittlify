@@ -57,6 +57,7 @@ def settings(request):
     context['owned_lists'] = owned_lists
     context['shoppers'] = [shopper for shopper in Shopper.objects.select_related('user').all()
                                 if shopper.user != user]
+    context['sshkeys'] = list(owner.sshkey_set.all())
     return render(request, 'groceries/settings.html', context)
 
 def signin(request):
