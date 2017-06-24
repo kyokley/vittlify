@@ -315,6 +315,7 @@ class SshKey(models.Model):
         new_key.shopper = shopper
         new_key.ssh_format = ssh_format
         new_key.title = title
+        new_key.rsaObj
 
         return new_key
 

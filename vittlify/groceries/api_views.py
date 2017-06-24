@@ -324,7 +324,10 @@ class SshKeyView(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = SshKeySerializer(data=request.data)
+        shopper = Shopper.objects.filter(user=request.user).first()
+        serializer = SshKeySerializer(data={'shopper': shopper.id,
+                                            'title': request.data['title'],
+                                            'ssh_format': request.data['ssh_format']})
 
         if serializer.is_valid():
             serializer.save()

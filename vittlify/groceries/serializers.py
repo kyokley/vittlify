@@ -123,11 +123,6 @@ class SshKeySerializer(serializers.ModelSerializer):
         fields = ('shopper', 'title', 'ssh_format')
 
     def create(self, validated_data):
-        if not validated_data.get('title'):
-            raise ValueError('Title must be provided to create an SSH Key')
-        if not validated_data.get('ssh_format'):
-            raise ValueError('An SSH formatted public key must be provided')
-        import pdb; pdb.set_trace()
         key = SshKey.new(**validated_data)
         key.save()
         return key
