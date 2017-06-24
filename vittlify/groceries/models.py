@@ -15,6 +15,9 @@ ACTIVE_TOKENS = 5
 RSA_BEGIN = '-----BEGIN RSA PUBLIC KEY-----'
 RSA_END = '-----END RSA PUBLIC KEY-----'
 
+RSA_PRIVATE_BEGIN = '-----BEGIN RSA PRIVATE KEY-----'
+RSA_PRIVATE_END = '-----END RSA PRIVATE KEY-----'
+
 class Item(models.Model):
     name = models.CharField(max_length=200)
     shopping_list = models.ForeignKey('ShoppingList', related_name='items')
@@ -299,6 +302,9 @@ class SshKey(models.Model):
     def new(cls,
             shopper,
             ssh_format):
+        if RSA_PRIVATE_BEGIN in ssh_format or RSA_PRIVATE_END in ssh_format:
+            raise ValueError('Only SSH formatted public keys are allowed')
+
         new_key = cls()
         new_key.shopper = shopper
         new_key.ssh_format = ssh_format
@@ -323,6 +329,6 @@ class SshKey(models.Model):
         Shamelessly copied from http://stackoverflow.com/questions/6682815/deriving-an-ssh-fingerprint-from-a-public-key-in-python
         For specification, see RFC4716, section 4.
         """
-        fp_plain = hashlib.md5(self.ssh_format).hexdigest()
+        fp_plain = hashlib.md5(self.pem_format).hexdigest()
         return "MD5 " + ':'.join(a + b for a, b in zip(fp_plain[::2], fp_plain[1::2])) + ' RSA'
     fingerprint = hash_md5
