@@ -1,6 +1,7 @@
 import tempfile
 import shlex
 import hashlib
+import rsa
 from subprocess import Popen, PIPE
 from django.db import models
 from django.utils.timezone import utc, localtime
@@ -332,3 +333,14 @@ class SshKey(models.Model):
         fp_plain = hashlib.md5(self.pem_format).hexdigest()
         return "MD5 " + ':'.join(a + b for a, b in zip(fp_plain[::2], fp_plain[1::2])) + ' RSA'
     fingerprint = hash_md5
+
+    @property
+    def rsaObj(self):
+        return rsa.PublicKey.load_pkcs1(self.pem_format)
+
+    def verify(self, message, signature):
+        try:
+            rsa.verify(message, signature, self.rsaObj)
+            return True
+        except rsa.pkcs1.VerificationError:
+            return False
