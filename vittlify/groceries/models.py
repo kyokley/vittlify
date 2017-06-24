@@ -288,20 +288,23 @@ class ShoppingListCategory(models.Model):
 
 class SshKey(models.Model):
     shopper = models.ForeignKey('Shopper', null=False, blank=False)
+    title = models.TextField(null=False, blank=False)
     ssh_format = models.TextField(null=False, blank=False)
     pem_format = models.TextField(null=False, blank=False)
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return 'id: {id} u: {username} f: {fingerprint}'.format(id=self.id,
-                                                                username=self.shopper.username,
-                                                                fingerprint=self.fingerprint(),
-                                                                )
+        return 'id: {id} u: {username} t: {title} f: {fingerprint}'.format(id=self.id,
+                                                                           title=self.title,
+                                                                           username=self.shopper.username,
+                                                                           fingerprint=self.fingerprint(),
+                                                                           )
 
     @classmethod
     def new(cls,
             shopper,
+            title,
             ssh_format):
         if RSA_PRIVATE_BEGIN in ssh_format or RSA_PRIVATE_END in ssh_format:
             raise ValueError('Only SSH formatted public keys are allowed')
@@ -309,6 +312,7 @@ class SshKey(models.Model):
         new_key = cls()
         new_key.shopper = shopper
         new_key.ssh_format = ssh_format
+        new_key.title = title
 
         temp = tempfile.NamedTemporaryFile()
         temp.write(new_key.ssh_format)
