@@ -9,6 +9,8 @@ from datetime import datetime
 from email_template import EMAIL_TEMPLATE
 from groceries.utils import createToken
 
+from django.contrib.auth.models import User
+
 RECENTLY_COMPLETED_DAYS = 14
 LARGE_INT = 999999999
 ACTIVE_TOKENS = 5
@@ -152,6 +154,11 @@ class Shopper(models.Model):
 
     def receive_weekly_email(self):
         return self.email_frequency == self.WEEKLY
+
+    @classmethod
+    def get_by_username(cls, username):
+        user = User.objects.filter(username__iexact=username).first()
+        return cls.objects.filter(user=user).first()
 
 class RecentlyCompletedShoppingList(object):
     def __init__(self,

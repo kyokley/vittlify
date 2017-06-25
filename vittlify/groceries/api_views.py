@@ -15,6 +15,7 @@ from groceries.models import (Item,
                               )
 from groceries.auth import (UnsafeSessionAuthentication,
                             LocalSessionAuthentication,
+                            SshSessionAuthentication,
                             )
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -342,3 +343,13 @@ class SshKeyView(APIView):
             raise ValueError('Cannot delete SSH key not owned by the current user')
         sshkey.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CliShoppingListItemsView(ShoppingListItemsView):
+    authentication_classes = (SshSessionAuthentication,)
+
+    def get(self, request, format=None):
+        shopper = Shopper.objects.filter(user=request.user).first()
+
+        serializer = ShoppingListSerializer(shopper.shopping_lists, many=True)
+        return Response(serializer.data)
+

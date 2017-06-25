@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^category/$', api_views.ShoppingListCategoryView.as_view()),
     url(r'^sshkey/$', api_views.SshKeyView.as_view()),
     url(r'^sshkey/(?P<pk>[0-9]+)/$', api_views.SshKeyView.as_view()),
+    url(r'^vt/$', api_views.CliShoppingListItemsView.as_view()),
 ]
