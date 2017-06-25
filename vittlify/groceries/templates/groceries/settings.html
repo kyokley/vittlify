@@ -166,7 +166,10 @@
   <div class="panel-body">
     <ul class="list-group">
       {% for sshkey in sshkeys %}
-          <li class="list-group-item">{{sshkey.title}} {{sshkey.fingerprint}}</li>
+          <li class="list-group-item">
+          <button id='delete-ssh-{{sshkey.id}}' class='btn btn-danger' onclick="deleteSSH({{sshkey.id}});">Delete</button>
+          {{sshkey.title}}   {{sshkey.fingerprint}}
+          </li>
       {% endfor %}
     </ul>
       <div class="form-group">
@@ -179,6 +182,7 @@
       </div>
       <div class="form-group">
           <button id="add-ssh-btn" class="btn btn-default" onclick="addSSH();">Add SSH Key</button>
+            <span id="ssh-status-text"></span>
       </div>
   </div>
 </div>

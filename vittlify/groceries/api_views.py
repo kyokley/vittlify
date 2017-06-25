@@ -11,6 +11,7 @@ from groceries.models import (Item,
                               NotifyAction,
                               ShoppingListMember,
                               WebSocketToken,
+                              SshKey,
                               )
 from groceries.auth import (UnsafeSessionAuthentication,
                             LocalSessionAuthentication,
@@ -333,3 +334,11 @@ class SshKeyView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        shopper = Shopper.objects.filter(user=request.user).first()
+        sshkey = SshKey.objects.get(pk=pk)
+        if sshkey.shopper.id != shopper.id:
+            raise ValueError('Cannot delete SSH key not owned by the current user')
+        sshkey.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
