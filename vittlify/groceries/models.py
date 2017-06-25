@@ -175,6 +175,7 @@ class ShoppingList(models.Model):
     name = models.CharField(max_length=200, default='')
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
+    guid = models.CharField(max_length=32, default=createToken, unique=True, null=False)
 
     class Meta:
         ordering = ('date_added',)
