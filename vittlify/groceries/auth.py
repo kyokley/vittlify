@@ -1,5 +1,6 @@
 from rest_framework.authentication import SessionAuthentication
 from config.settings import ALEXA_PASS
+from groceries.models import SshKey, Shopper
 
 class UnsafeSessionAuthentication(SessionAuthentication):
     def authenticate(self, request):
@@ -26,3 +27,18 @@ class LocalSessionAuthentication(SessionAuthentication):
            return None
 
         return (user, None)
+
+class SshSessionAuthentication(SessionAuthentication):
+    def authenticate(self, request):
+        data = request.data
+        message = data['message']
+        signature = data['signature']
+
+        shopper_id = request.data.get('shopper')
+        shopper = Shopper.objects.get(pk=shopper_id)
+
+        for sshkey in shopper.sshkey_set.all():
+            if sshkey.verify(message, signature):
+                return (request.user, None)
+
+        return None
