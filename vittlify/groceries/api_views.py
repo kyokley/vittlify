@@ -1,3 +1,4 @@
+import json
 from groceries.serializers import (ItemSerializer,
                                    ShoppingListSerializer,
                                    ShopperSerializer,
@@ -23,7 +24,7 @@ from rest_framework import status
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.http import (Http404,
                          )
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, MultipleObjectsReturned
 from config.settings import (ALEXA_LIST,
                              NODE_SERVER,
                              )
@@ -348,8 +349,34 @@ class CliShoppingListItemsView(ShoppingListItemsView):
     authentication_classes = (SshSessionAuthentication,)
 
     def get(self, request, format=None):
+        message = json.loads(request.data['message'])
         shopper = Shopper.objects.filter(user=request.user).first()
 
-        serializer = ShoppingListSerializer(shopper.shopping_lists, many=True)
+        if message['endpoint'].lower() == 'all lists':
+            serializer = ShoppingListSerializer(shopper.shopping_lists, many=True)
+        elif message['endpoint'].lower() == 'list':
+            guid = message['guid']
+            try:
+                shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+
+            if shopping_list in shopper.shopping_lists.all():
+                serializer = ShoppingListSerializer(shopping_list)
+        elif message['endpoint'].lower() == 'list items':
+            guid = message['guid']
+            try:
+                shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+            if shopping_list in shopper.shopping_lists.all():
+                serializer = ItemSerializer(shopping_list.items, many=True)
+        elif message['endpoint'].lower() == 'item':
+            guid = message['guid']
+            try:
+                item = Item.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)
+            serializer = ItemSerializer(item)
         return Response(serializer.data)
 

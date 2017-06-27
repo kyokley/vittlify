@@ -104,6 +104,15 @@ class Item(models.Model):
                            ''', (shopper.id, RECENTLY_COMPLETED_DAYS))
         return items
 
+    @classmethod
+    def get_by_guid(cls, guid, shopper=None):
+        if not shopper:
+            return cls.objects.get(guid__istartswith=guid)
+        else:
+            return (cls.objects
+                       .filter(shopping_list__shoppinglistmember__shopper=shopper)
+                       .get(guid__istartswith=guid))
+
 class Shopper(models.Model):
     DAILY = 'daily'
     WEEKLY = 'weekly'
@@ -208,6 +217,15 @@ class ShoppingList(models.Model):
 
     def count(self):
         return self.items.filter(_done=False).count()
+
+    @classmethod
+    def get_by_guid(cls, guid, shopper=None):
+        if not shopper:
+            return cls.objects.get(guid__istartswith=guid)
+        else:
+            return (cls.objects
+                       .filter(shoppinglistmember__shopper=shopper)
+                       .get(guid__istartswith=guid))
 
 class ShoppingListMember(models.Model):
     shopper = models.ForeignKey('Shopper')

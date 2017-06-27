@@ -16,6 +16,7 @@ class ItemSerializer(serializers.Serializer):
     done = serializers.BooleanField(default=False)
     category_id = serializers.IntegerField(required=False, allow_null=True)
     category_name = serializers.CharField(read_only=True)
+    guid = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
         if not validated_data.get('name'):
@@ -61,6 +62,7 @@ class ShoppingListSerializer(serializers.Serializer):
     owner_id = serializers.IntegerField()
     name = serializers.CharField()
     categories = ShoppingListCategorySerializer(many=True, read_only=True)
+    guid = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
         if not validated_data.get('name'):

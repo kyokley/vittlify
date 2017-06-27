@@ -6,3 +6,5 @@ body { padding-top: 70px; }
 .hidden-span {
     display: none;
 }
+.ssh-text { margin-top: 5px; }
+.ssh-row  { margin-bottom: 7px; }
