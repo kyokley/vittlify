@@ -360,6 +360,8 @@ class CliShoppingListItemsView(ShoppingListItemsView):
                 shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
             except MultipleObjectsReturned:
                 return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+            except ShoppingList.DoesNotExist:
+                return Response('Provided guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
 
             if shopping_list in shopper.shopping_lists.all():
                 serializer = ShoppingListSerializer(shopping_list)
@@ -369,6 +371,8 @@ class CliShoppingListItemsView(ShoppingListItemsView):
                 shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
             except MultipleObjectsReturned:
                 return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+            except ShoppingList.DoesNotExist:
+                return Response('Provided guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
             if shopping_list in shopper.shopping_lists.all():
                 serializer = ItemSerializer(shopping_list.items, many=True)
         elif message['endpoint'].lower() == 'item':
@@ -377,6 +381,8 @@ class CliShoppingListItemsView(ShoppingListItemsView):
                 item = Item.get_by_guid(guid, shopper=shopper)
             except MultipleObjectsReturned:
                 return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)
+            except Item.DoesNotExist:
+                return Response('Provided guid did not match any items', status=status.HTTP_404_NOT_FOUND)
             serializer = ItemSerializer(item)
         return Response(serializer.data)
 
