@@ -4,6 +4,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.exceptions import InvalidSignature
 from django.db import models
+from django.db.models import Q
 from django.utils.timezone import utc, localtime
 from datetime import datetime
 from email_template import EMAIL_TEMPLATE
@@ -106,12 +107,13 @@ class Item(models.Model):
 
     @classmethod
     def get_by_guid(cls, guid, shopper=None):
+        query = Q(guid__istartswith=guid) | Q(name__istartswith=guid)
         if not shopper:
-            return cls.objects.get(guid__istartswith=guid)
+            return cls.objects.get(query)
         else:
             return (cls.objects
                        .filter(shopping_list__shoppinglistmember__shopper=shopper)
-                       .get(guid__istartswith=guid))
+                       .get(query))
 
 class Shopper(models.Model):
     DAILY = 'daily'
@@ -220,12 +222,13 @@ class ShoppingList(models.Model):
 
     @classmethod
     def get_by_guid(cls, guid, shopper=None):
+        query = Q(guid__istartswith=guid) | Q(name__istartswith=guid)
         if not shopper:
-            return cls.objects.get(guid__istartswith=guid)
+            return cls.objects.get(query)
         else:
             return (cls.objects
                        .filter(shoppinglistmember__shopper=shopper)
-                       .get(guid__istartswith=guid))
+                       .get(query))
 
 class ShoppingListMember(models.Model):
     shopper = models.ForeignKey('Shopper')
