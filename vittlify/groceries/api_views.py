@@ -374,7 +374,7 @@ class CliShoppingListItemsView(ShoppingListItemsView):
             except ShoppingList.DoesNotExist:
                 return Response('Provided guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
             if shopping_list in shopper.shopping_lists.all():
-                serializer = ItemSerializer(shopping_list.items, many=True)
+                serializer = ItemSerializer(shopping_list.items.filter(_done=False), many=True)
         elif message['endpoint'].lower() == 'item':
             guid = message['guid']
             try:
@@ -383,6 +383,27 @@ class CliShoppingListItemsView(ShoppingListItemsView):
                 return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)
             except Item.DoesNotExist:
                 return Response('Provided guid did not match any items', status=status.HTTP_404_NOT_FOUND)
+            serializer = ItemSerializer(item)
+        elif message['endpoint'].lower() == 'completed':
+            serializer = ItemSerializer([x for x in Item.recentlyCompletedByShopper(shopper)], many=True)
+        return Response(serializer.data)
+
+    def put(self, request, format=None):
+        message = json.loads(request.data['message'])
+        shopper = Shopper.objects.filter(user=request.user).first()
+
+        if message['endpoint'].lower() == 'complete':
+            guid = message['guid']
+
+            try:
+                item = Item.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)
+            except Item.DoesNotExist:
+                return Response('Provided guid did not match any items', status=status.HTTP_404_NOT_FOUND)
+            item.done = True
+            item.save()
+
             serializer = ItemSerializer(item)
         return Response(serializer.data)
 
