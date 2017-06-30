@@ -386,24 +386,36 @@ class CliShoppingListItemsView(ShoppingListItemsView):
             serializer = ItemSerializer(item)
         elif message['endpoint'].lower() == 'completed':
             serializer = ItemSerializer([x for x in Item.recentlyCompletedByShopper(shopper)], many=True)
+        elif message['endpoint'].lower() == 'list all items':
+            guid = message['guid']
+            try:
+                shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+            except ShoppingList.DoesNotExist:
+                return Response('Provided guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
+            if shopping_list in shopper.shopping_lists.all():
+                serializer = ItemSerializer([x for x in shopping_list.items.all() if not x.done or x.recentlyCompleted()], many=True)
         return Response(serializer.data)
 
     def put(self, request, format=None):
         message = json.loads(request.data['message'])
         shopper = Shopper.objects.filter(user=request.user).first()
 
-        if message['endpoint'].lower() == 'complete':
-            guid = message['guid']
+        guid = message['guid']
 
-            try:
-                item = Item.get_by_guid(guid, shopper=shopper)
-            except MultipleObjectsReturned:
-                return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)
-            except Item.DoesNotExist:
-                return Response('Provided guid did not match any items', status=status.HTTP_404_NOT_FOUND)
-            item.done = True
+        try:
+            item = Item.get_by_guid(guid, shopper=shopper)
+            if message['endpoint'].lower() == 'complete':
+                item.done = True
+            elif message['endpoint'].lower() == 'uncomplete':
+                item.done = False
             item.save()
+        except MultipleObjectsReturned:
+            return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)
+        except Item.DoesNotExist:
+            return Response('Provided guid did not match any items', status=status.HTTP_404_NOT_FOUND)
 
-            serializer = ItemSerializer(item)
+        serializer = ItemSerializer(item)
         return Response(serializer.data)
 

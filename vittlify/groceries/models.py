@@ -6,7 +6,7 @@ from cryptography.exceptions import InvalidSignature
 from django.db import models
 from django.db.models import Q
 from django.utils.timezone import utc, localtime
-from datetime import datetime
+from datetime import datetime, timedelta
 from email_template import EMAIL_TEMPLATE
 from groceries.utils import createToken
 
@@ -104,6 +104,9 @@ class Item(models.Model):
                         AND item.date_completed > now() - INTERVAL '%s days';
                            ''', (shopper.id, RECENTLY_COMPLETED_DAYS))
         return items
+
+    def recentlyCompleted(self):
+        return self.done and self.date_completed > datetime.now().replace(tzinfo=utc) - timedelta(days=RECENTLY_COMPLETED_DAYS)
 
     @classmethod
     def get_by_guid(cls, guid, shopper=None):
