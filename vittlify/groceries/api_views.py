@@ -410,6 +410,8 @@ class CliShoppingListItemsView(ShoppingListItemsView):
                 item.done = True
             elif message['endpoint'].lower() == 'uncomplete':
                 item.done = False
+            elif message['endpoint'].lower() == 'modify':
+                item.comments = message['comments']
             item.save()
         except MultipleObjectsReturned:
             return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)
@@ -419,3 +421,24 @@ class CliShoppingListItemsView(ShoppingListItemsView):
         serializer = ItemSerializer(item)
         return Response(serializer.data)
 
+    def post(self, request):
+        message = json.loads(request.data['message'])
+        shopper = Shopper.objects.filter(user=request.user).first()
+
+        if message['endpoint'].lower() == 'add item':
+            guid = message['guid']
+            name = message['name']
+            comments = message.get('comments', '')
+
+            try:
+                shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+            except ShoppingList.DoesNotExist:
+                return Response('Provided guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
+
+            item = Item.new(name, shopping_list, comments=comments)
+            item.save()
+
+            serializer = ItemSerializer(item)
+            return Response(serializer.data)
