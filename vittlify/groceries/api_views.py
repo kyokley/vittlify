@@ -345,9 +345,19 @@ class SshKeyView(APIView):
         sshkey.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+def check_authenticated_user(func):
+    def wraps(*args, **kwargs):
+        request = args[1]
+        if not request.user.is_authenticated():
+            return Response('Auth failed', status=status.HTTP_401_UNAUTHORIZED)
+        return func(*args, **kwargs)
+    return wraps
+
+
 class CliShoppingListItemsView(ShoppingListItemsView):
     authentication_classes = (SshSessionAuthentication,)
 
+    @check_authenticated_user
     def get(self, request, format=None):
         message = json.loads(request.data['message'])
         shopper = Shopper.objects.filter(user=request.user).first()
@@ -398,6 +408,7 @@ class CliShoppingListItemsView(ShoppingListItemsView):
                 serializer = ItemSerializer([x for x in shopping_list.items.all() if not x.done or x.recentlyCompleted()], many=True)
         return Response(serializer.data)
 
+    @check_authenticated_user
     def put(self, request, format=None):
         message = json.loads(request.data['message'])
         shopper = Shopper.objects.filter(user=request.user).first()
@@ -421,6 +432,7 @@ class CliShoppingListItemsView(ShoppingListItemsView):
         serializer = ItemSerializer(item)
         return Response(serializer.data)
 
+    @check_authenticated_user
     def post(self, request):
         message = json.loads(request.data['message'])
         shopper = Shopper.objects.filter(user=request.user).first()
