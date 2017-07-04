@@ -166,14 +166,16 @@
   <div class="panel-body">
       {% for sshkey in sshkeys %}
           <div class="row ssh-row">
-              <div class="col-mid-1 col-xs-12">
+              <div class="col-xs-2">
                   <button id='delete-ssh-{{sshkey.id}}' class='btn btn-danger' onclick="deleteSSH({{sshkey.id}});">Delete</button>
               </div>
-              <div class="col-mid-1 col-xs-1 ssh-text">
+              <div class="col-xs-2">
                   <b>{{sshkey.title}}</b>
               </div>
-              <div class="col-mid-10 col-xs-11 ssh-text">
-                  {{sshkey.fingerprint}}
+              <div class="col-xs-4">
+                  {{sshkey.fingerprint | safe}}
+              </div>
+              <div class="col-xs-4">
               </div>
           </div>
       {% endfor %}
