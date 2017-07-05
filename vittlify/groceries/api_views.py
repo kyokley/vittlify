@@ -423,6 +423,15 @@ class CliShoppingListItemsView(ShoppingListItemsView):
                 item.done = False
             elif message['endpoint'].lower() == 'modify':
                 item.comments = message['comments']
+            elif message['endpoint'].lower() == 'move':
+                try:
+                    to_list = ShoppingList.get_by_guid(message['to_list_guid'], shopper=shopper)
+                except MultipleObjectsReturned:
+                    return Response('Provided to_list_guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+                except ShoppingList.DoesNotExist:
+                    return Response('Provided to_list_guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
+                item.move(to_list, shopper)
+                item.save()
             item.save()
         except MultipleObjectsReturned:
             return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)

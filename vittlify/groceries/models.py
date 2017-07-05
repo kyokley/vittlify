@@ -93,6 +93,13 @@ class Item(models.Model):
         self._done = val
     done = property(fget=_get_done, fset=_set_done)
 
+    def move(self, shopping_list, shopper):
+        if (shopper not in shopping_list.members.all() or
+                shopper not in self.shopping_list.members.all()):
+            raise Exception('User is not authorized to move this item')
+
+        self.shopping_list = shopping_list
+
     @classmethod
     def recentlyCompletedByShopper(cls, shopper):
         items = cls.objects.raw('''
