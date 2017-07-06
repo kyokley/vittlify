@@ -6,3 +6,6 @@ body { padding-top: 70px; }
 .hidden-span {
     display: none;
 }
+.ssh-row  { display: flex;
+            align-items: center;
+            margin-bottom: 5px; }

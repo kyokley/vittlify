@@ -1,13 +1,25 @@
+import hashlib
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.exceptions import InvalidSignature
 from django.db import models
+from django.db.models import Q
 from django.utils.timezone import utc, localtime
 from django.contrib.auth.models import User
-from datetime import datetime
+from datetime import datetime, timedelta
 from email_template import EMAIL_TEMPLATE
 from groceries.utils import createToken
 
 RECENTLY_COMPLETED_DAYS = 14
 LARGE_INT = 999999999
 ACTIVE_TOKENS = 5
+
+RSA_BEGIN = '-----BEGIN RSA PUBLIC KEY-----'
+RSA_END = '-----END RSA PUBLIC KEY-----'
+
+RSA_PRIVATE_BEGIN = '-----BEGIN RSA PRIVATE KEY-----'
+RSA_PRIVATE_END = '-----END RSA PRIVATE KEY-----'
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
@@ -18,6 +30,7 @@ class Item(models.Model):
     _done = models.BooleanField(db_column='done', default=False)
     date_completed = models.DateTimeField(null=True, blank=True)
     _category = models.ForeignKey('ShoppingListCategory', null=True, db_column='category')
+    guid = models.CharField(max_length=32, default=createToken, unique=True, null=False)
 
     class Meta:
         #unique_together = ('name', 'shopping_list')
@@ -80,6 +93,13 @@ class Item(models.Model):
         self._done = val
     done = property(fget=_get_done, fset=_set_done)
 
+    def move(self, shopping_list, shopper):
+        if (shopper not in shopping_list.members.all() or
+                shopper not in self.shopping_list.members.all()):
+            raise Exception('User is not authorized to move this item')
+
+        self.shopping_list = shopping_list
+
     @classmethod
     def recentlyCompletedByShopper(cls, shopper):
         items = cls.objects.raw('''
@@ -91,6 +111,19 @@ class Item(models.Model):
                         AND item.date_completed > now() - INTERVAL '%s days';
                            ''', (shopper.id, RECENTLY_COMPLETED_DAYS))
         return items
+
+    def recentlyCompleted(self):
+        return self.done and self.date_completed > datetime.now().replace(tzinfo=utc) - timedelta(days=RECENTLY_COMPLETED_DAYS)
+
+    @classmethod
+    def get_by_guid(cls, guid, shopper=None):
+        query = Q(guid__istartswith=guid) | Q(name__istartswith=guid)
+        if not shopper:
+            return cls.objects.get(query)
+        else:
+            return (cls.objects
+                       .filter(shopping_list__shoppinglistmember__shopper=shopper)
+                       .get(query))
 
 class Shopper(models.Model):
     DAILY = 'daily'
@@ -180,6 +213,11 @@ class Shopper(models.Model):
     def receive_weekly_email(self):
         return self.email_frequency == self.WEEKLY
 
+    @classmethod
+    def get_by_username(cls, username):
+        user = User.objects.filter(username__iexact=username).first()
+        return cls.objects.filter(user=user).first()
+
 class RecentlyCompletedShoppingList(object):
     def __init__(self,
                  owner,
@@ -195,6 +233,7 @@ class ShoppingList(models.Model):
     name = models.CharField(max_length=200, default='')
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
+    guid = models.CharField(max_length=32, default=createToken, unique=True, null=False)
 
     class Meta:
         ordering = ('date_added',)
@@ -237,6 +276,16 @@ class ShoppingList(models.Model):
 
     def count(self):
         return self.items.filter(_done=False).count()
+
+    @classmethod
+    def get_by_guid(cls, guid, shopper=None):
+        query = Q(guid__istartswith=guid) | Q(name__istartswith=guid)
+        if not shopper:
+            return cls.objects.get(query)
+        else:
+            return (cls.objects
+                       .filter(shoppinglistmember__shopper=shopper)
+                       .get(query))
 
 class ShoppingListMember(models.Model):
     shopper = models.ForeignKey('Shopper')
@@ -322,3 +371,61 @@ class ShoppingListCategory(models.Model):
                                                               shopping_list=self.shopping_list.name,
                                                               name=self.name,
                                                               )
+
+class SshKey(models.Model):
+    shopper = models.ForeignKey('Shopper', null=False, blank=False)
+    title = models.TextField(null=False, blank=False)
+    ssh_format = models.TextField(null=False, blank=False)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_edited = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('shopper', 'title')
+
+    def __str__(self):
+        return 'id: {id} u: {username} t: {title} f: {fingerprint}'.format(id=self.id,
+                                                                           title=self.title,
+                                                                           username=self.shopper.username,
+                                                                           fingerprint=self.fingerprint(),
+                                                                           )
+
+    @classmethod
+    def new(cls,
+            shopper,
+            title,
+            ssh_format):
+        if RSA_PRIVATE_BEGIN in ssh_format or RSA_PRIVATE_END in ssh_format:
+            raise ValueError('Only SSH formatted public keys are allowed')
+
+        new_key = cls()
+        new_key.shopper = shopper
+        new_key.ssh_format = ssh_format
+        new_key.title = title
+        new_key.rsaObj
+
+        return new_key
+
+    def hash_md5(self):
+        """ Calculate md5 fingerprint.
+        Shamelessly copied from http://stackoverflow.com/questions/6682815/deriving-an-ssh-fingerprint-from-a-public-key-in-python
+        For specification, see RFC4716, section 4.
+        """
+        fp_plain = hashlib.md5(self.ssh_format).hexdigest()
+        return "MD5&nbsp;" + ':'.join(a + b for a, b in zip(fp_plain[::2], fp_plain[1::2]))
+    fingerprint = hash_md5
+
+    @property
+    def rsaObj(self):
+        return serialization.load_ssh_public_key(self.ssh_format, default_backend())
+
+    def verify(self, message, signature):
+        try:
+            self.rsaObj.verify(signature,
+                               message,
+                               padding.PSS(mgf=padding.MGF1(hashes.SHA512()),
+                                           salt_length=padding.PSS.MAX_LENGTH),
+                               hashes.SHA512())
+
+            return True
+        except InvalidSignature:
+            return False

@@ -1,8 +1,10 @@
+import json
 from groceries.serializers import (ItemSerializer,
                                    ShoppingListSerializer,
                                    ShopperSerializer,
                                    WebSocketTokenSerializer,
                                    ShoppingListCategorySerializer,
+                                   SshKeySerializer,
                                    )
 from groceries.models import (Item,
                               ShoppingList,
@@ -10,9 +12,11 @@ from groceries.models import (Item,
                               NotifyAction,
                               ShoppingListMember,
                               WebSocketToken,
+                              SshKey,
                               )
 from groceries.auth import (UnsafeSessionAuthentication,
                             LocalSessionAuthentication,
+                            SshSessionAuthentication,
                             )
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,7 +24,7 @@ from rest_framework import status
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.http import (Http404,
                          )
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, MultipleObjectsReturned
 from config.settings import (ALEXA_LIST,
                              NODE_SERVER,
                              )
@@ -236,7 +240,7 @@ class ShoppingListView(APIView):
     def put(self, request, pk, format=None):
         shopper = Shopper.objects.filter(user=request.user).first()
         if request.data['owner_id'] != shopper.id:
-            raise ValueError('Cannot create shopping list owned by another user')
+            raise ValueError('Cannot modify shopping list owned by another user')
         shopping_list = self.get_shopping_list(pk)
         serializer = ShoppingListSerializer(shopping_list, data=request.data)
         if serializer.is_valid():
@@ -313,3 +317,149 @@ class ShoppingListCategoryView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SshKeyView(APIView):
+    authentication_classes = (BasicAuthentication, SessionAuthentication)
+
+    def get(self, request, pk, format=None):
+        shopper = Shopper.objects.filter(user=request.user).first()
+        serializer = SshKeySerializer(shopper.sshkey_set.all(), many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        shopper = Shopper.objects.filter(user=request.user).first()
+        serializer = SshKeySerializer(data={'shopper': shopper.id,
+                                            'title': request.data['title'],
+                                            'ssh_format': request.data['ssh_format']})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        shopper = Shopper.objects.filter(user=request.user).first()
+        sshkey = SshKey.objects.get(pk=pk)
+        if sshkey.shopper.id != shopper.id:
+            raise ValueError('Cannot delete SSH key not owned by the current user')
+        sshkey.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+def check_authenticated_user(func):
+    def wraps(*args, **kwargs):
+        request = args[1]
+        if not request.user.is_authenticated():
+            return Response('Auth failed', status=status.HTTP_401_UNAUTHORIZED)
+        return func(*args, **kwargs)
+    return wraps
+
+
+class CliShoppingListItemsView(ShoppingListItemsView):
+    authentication_classes = (SshSessionAuthentication,)
+
+    @check_authenticated_user
+    def get(self, request, format=None):
+        message = json.loads(request.data['message'])
+        shopper = Shopper.objects.filter(user=request.user).first()
+
+        if message['endpoint'].lower() == 'all lists':
+            serializer = ShoppingListSerializer(shopper.shopping_lists, many=True)
+        elif message['endpoint'].lower() == 'list':
+            guid = message['guid']
+            try:
+                shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+            except ShoppingList.DoesNotExist:
+                return Response('Provided guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
+
+            if shopping_list in shopper.shopping_lists.all():
+                serializer = ShoppingListSerializer(shopping_list)
+        elif message['endpoint'].lower() == 'list items':
+            guid = message['guid']
+            try:
+                shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+            except ShoppingList.DoesNotExist:
+                return Response('Provided guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
+            if shopping_list in shopper.shopping_lists.all():
+                serializer = ItemSerializer(shopping_list.items.filter(_done=False), many=True)
+        elif message['endpoint'].lower() == 'item':
+            guid = message['guid']
+            try:
+                item = Item.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)
+            except Item.DoesNotExist:
+                return Response('Provided guid did not match any items', status=status.HTTP_404_NOT_FOUND)
+            serializer = ItemSerializer(item)
+        elif message['endpoint'].lower() == 'completed':
+            serializer = ItemSerializer([x for x in Item.recentlyCompletedByShopper(shopper)], many=True)
+        elif message['endpoint'].lower() == 'list all items':
+            guid = message['guid']
+            try:
+                shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+            except ShoppingList.DoesNotExist:
+                return Response('Provided guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
+            if shopping_list in shopper.shopping_lists.all():
+                serializer = ItemSerializer([x for x in shopping_list.items.all() if not x.done or x.recentlyCompleted()], many=True)
+        return Response(serializer.data)
+
+    @check_authenticated_user
+    def put(self, request, format=None):
+        message = json.loads(request.data['message'])
+        shopper = Shopper.objects.filter(user=request.user).first()
+
+        guid = message['guid']
+
+        try:
+            item = Item.get_by_guid(guid, shopper=shopper)
+            if message['endpoint'].lower() == 'complete':
+                item.done = True
+            elif message['endpoint'].lower() == 'uncomplete':
+                item.done = False
+            elif message['endpoint'].lower() == 'modify':
+                item.comments = message['comments']
+            elif message['endpoint'].lower() == 'move':
+                try:
+                    to_list = ShoppingList.get_by_guid(message['to_list_guid'], shopper=shopper)
+                except MultipleObjectsReturned:
+                    return Response('Provided to_list_guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+                except ShoppingList.DoesNotExist:
+                    return Response('Provided to_list_guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
+                item.move(to_list, shopper)
+                item.save()
+            item.save()
+        except MultipleObjectsReturned:
+            return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)
+        except Item.DoesNotExist:
+            return Response('Provided guid did not match any items', status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ItemSerializer(item)
+        return Response(serializer.data)
+
+    @check_authenticated_user
+    def post(self, request):
+        message = json.loads(request.data['message'])
+        shopper = Shopper.objects.filter(user=request.user).first()
+
+        if message['endpoint'].lower() == 'add item':
+            guid = message['guid']
+            name = message['name']
+            comments = message.get('comments', '')
+
+            try:
+                shopping_list = ShoppingList.get_by_guid(guid, shopper=shopper)
+            except MultipleObjectsReturned:
+                return Response('Provided guid matched multiple lists', status=status.HTTP_409_CONFLICT)
+            except ShoppingList.DoesNotExist:
+                return Response('Provided guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
+
+            item = Item.new(name, shopping_list, comments=comments)
+            item.save()
+
+            serializer = ItemSerializer(item)
+            return Response(serializer.data)

@@ -159,6 +159,40 @@
       </div>
   </div>
 </div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">SSH Keys</h3>
+  </div>
+  <div class="panel-body">
+      {% for sshkey in sshkeys %}
+          <div class="row ssh-row">
+              <div class="col-xs-2">
+                  <button id='delete-ssh-{{sshkey.id}}' class='btn btn-danger' onclick="deleteSSH({{sshkey.id}});">Delete</button>
+              </div>
+              <div class="col-xs-2">
+                  <b>{{sshkey.title}}</b>
+              </div>
+              <div class="col-xs-4">
+                  {{sshkey.fingerprint | safe}}
+              </div>
+              <div class="col-xs-4">
+              </div>
+          </div>
+      {% endfor %}
+      <div class="form-group">
+          <label for="new-ssh-title">Title</label>
+          <input type="text" class="form-control" id="new-ssh-title"/>
+      </div>
+      <div class="form-group">
+          <label for="new-ssh-key">Key</label>
+          <textarea class="form-control" id="new-ssh-key" rows="5"></textarea>
+      </div>
+      <div class="form-group">
+          <button id="add-ssh-btn" class="btn btn-default" onclick="addSSH();">Add SSH Key</button>
+            <span id="ssh-status-text"></span>
+      </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block javascript_imports %}

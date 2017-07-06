@@ -5,6 +5,7 @@ from groceries.models import (Item,
                               ShoppingListMember,
                               WebSocketToken,
                               ShoppingListCategory,
+                              SshKey,
                               )
 
 class ItemSerializer(serializers.Serializer):
@@ -15,6 +16,7 @@ class ItemSerializer(serializers.Serializer):
     done = serializers.BooleanField(default=False)
     category_id = serializers.IntegerField(required=False, allow_null=True)
     category_name = serializers.CharField(read_only=True)
+    guid = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
         if not validated_data.get('name'):
@@ -60,6 +62,7 @@ class ShoppingListSerializer(serializers.Serializer):
     owner_id = serializers.IntegerField()
     name = serializers.CharField()
     categories = ShoppingListCategorySerializer(many=True, read_only=True)
+    guid = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
         if not validated_data.get('name'):
@@ -115,3 +118,13 @@ class WebSocketTokenSerializer(serializers.ModelSerializer):
         instance.active = validated_data.get('active')
         instance.save()
         return instance
+
+class SshKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SshKey
+        fields = ('shopper', 'title', 'ssh_format')
+
+    def create(self, validated_data):
+        key = SshKey.new(**validated_data)
+        key.save()
+        return key

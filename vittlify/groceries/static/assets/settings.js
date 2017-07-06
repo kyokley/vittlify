@@ -286,3 +286,43 @@ function saveThemeRadio(){
                  }
     });
 }
+
+function addSSH(){
+    var title = document.getElementById("new-ssh-title").value;
+    var new_key = document.getElementById("new-ssh-key").value;
+
+    jQuery.ajax({url: "/vittlify/sshkey/",
+                 type: "POST",
+                 dataType: "json",
+                 data: {"title": title,
+                        "ssh_format": new_key},
+                 success: function(json){
+                    location.reload(true);
+                    },
+                 error: function(json){
+                    console.log(json);
+                    var res = jQuery('#ssh-status-text');
+                    var statusField = res[0];
+                    statusField.style.color = "Red";
+                    statusField.innerText = "Error creating new SSH key";
+                    res.fadeOut(10000, function() {
+                        statusField.style.color = "Black";
+                        statusField.innerText = "";
+                        res.show(0);
+                    });
+                    }
+                    });
+}
+
+function deleteSSH(pk){
+    jQuery.ajax({url: "/vittlify/sshkey/" + pk + "/",
+                 type: "DELETE",
+                 dataType: "json",
+                 success: function(json){
+                    location.reload(true);
+                    },
+                 error: function(json){
+                    console.log(json);
+                    }
+                    });
+}
