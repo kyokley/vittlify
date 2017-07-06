@@ -190,6 +190,7 @@ class TestShoppingListItemsView(APITestCase):
                     'shopping_list_id': 1,
                     'category_id': None,
                     'comments': u'',
+                    'guid': self.item.guid,
                     'category_name': None}
         response = self.client.get(reverse('groceries:shopping_list_items', args=[self.item.id]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
