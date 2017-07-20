@@ -30,6 +30,7 @@
                 <select class="form-control" id="user-email-frequency-select">
                     <option value="daily" {% if owner.email_frequency == 'daily'%}selected{% endif %}>Daily</option>
                     <option value="weekly" {% if owner.email_frequency == 'weekly'%}selected{% endif %}>Weekly</option>
+                    <option value="none" {% if not owner.email_frequency %}selected{% endif %}>No Emails</option>
                 </select>
               </div>
               <div class="form-group">

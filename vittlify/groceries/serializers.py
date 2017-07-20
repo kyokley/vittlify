@@ -85,7 +85,7 @@ class ShopperSerializer(serializers.ModelSerializer):
     shopping_lists = ShoppingListSerializer(many=True, read_only=True)
     email = serializers.EmailField(required=False)
     user = serializers.CharField(read_only=True)
-    email_frequency = serializers.CharField(required=False)
+    email_frequency = serializers.CharField(required=False, allow_null=True)
 
     class Meta:
         model = Shopper

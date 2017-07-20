@@ -279,8 +279,9 @@ class ShopperView(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
+        data = queryDictToDict(request.data)
         shopper = self.get_shopper(pk=pk)
-        serializer = ShopperSerializer(shopper, data=request.data)
+        serializer = ShopperSerializer(shopper, data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

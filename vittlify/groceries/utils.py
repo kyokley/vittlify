@@ -45,5 +45,5 @@ def sendMail(to_addr, subject, text, from_addr=EMAIL_FROM_ADDR, files=None, serv
 def queryDictToDict(data):
     ret = dict()
     for key, val in data.items():
-        ret[key] = val
+        ret[key] = val if val != 'none' else None
     return ret

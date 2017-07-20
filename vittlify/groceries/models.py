@@ -130,12 +130,15 @@ class Shopper(models.Model):
     WEEKLY = 'weekly'
     EMAIL_FREQUENCY_CHOICES = ((DAILY, 'Daily'),
                                (WEEKLY, 'Weekly'),
+                               (None, 'No Emails'),
                                )
     user = models.OneToOneField('auth.User')
     shopping_lists = models.ManyToManyField('ShoppingList', blank=True, through='ShoppingListMember', related_name='members')
     email_frequency = models.CharField(max_length=6,
                                        choices=EMAIL_FREQUENCY_CHOICES,
-                                       default=DAILY)
+                                       default=DAILY,
+                                       null=True,
+                                       blank=True)
     theme = models.TextField(default='default', blank=False, null=False)
 
     @classmethod
@@ -187,25 +190,26 @@ class Shopper(models.Model):
         return {'id': self.id}
 
     def generateEmail(self):
-        actionTemplate = ''
-        for shopping_list in self.shopping_lists.all():
-            actions = NotifyAction.objects.filter(shopping_list=shopping_list)
+        if self.email_frequency:
+            actionTemplate = ''
+            for shopping_list in self.shopping_lists.all():
+                actions = NotifyAction.objects.filter(shopping_list=shopping_list)
 
-            if self.receive_daily_email():
-                actions = actions.filter(sent=False)
-            elif self.receive_weekly_email():
-                actions = actions.filter(weekly_sent=False)
+                if self.receive_daily_email():
+                    actions = actions.filter(sent=False)
+                elif self.receive_weekly_email():
+                    actions = actions.filter(weekly_sent=False)
 
-            actions = list(actions.order_by('date_added').all())
+                actions = list(actions.order_by('date_added').all())
 
-            if actions:
-                actionTemplate += '<h1>%s</h1>\n' % shopping_list.name
-                for action in actions:
-                    actionTemplate += '<ul><li>%s</li></ul>\n' % action.getActionRecord(display_day=self.receive_weekly_email())
-        template = None
-        if actionTemplate:
-            template = EMAIL_TEMPLATE.format(actions=actionTemplate)
-        return template
+                if actions:
+                    actionTemplate += '<h1>%s</h1>\n' % shopping_list.name
+                    for action in actions:
+                        actionTemplate += '<ul><li>%s</li></ul>\n' % action.getActionRecord(display_day=self.receive_weekly_email())
+            template = None
+            if actionTemplate:
+                template = EMAIL_TEMPLATE.format(actions=actionTemplate)
+            return template
 
     def receive_daily_email(self):
         return self.email_frequency == self.DAILY
