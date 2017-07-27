@@ -432,7 +432,6 @@ class CliShoppingListItemsView(ShoppingListItemsView):
                 except ShoppingList.DoesNotExist:
                     return Response('Provided to_list_guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
                 item.move(to_list, shopper)
-                item.save()
             item.save()
         except MultipleObjectsReturned:
             return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)

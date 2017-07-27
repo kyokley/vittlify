@@ -370,11 +370,34 @@ class ShoppingListCategory(models.Model):
         unique_together = ('name', 'shopping_list')
         verbose_name_plural = 'Shopping list categories'
 
+    @classmethod
+    def new(cls,
+            name,
+            shopping_list):
+        trimmed_name = name.strip().title()
+        existing = cls.objects.filter(shopping_list=shopping_list).filter(name__iexact=trimmed_name).first()
+
+        if existing:
+            return existing
+
+        new_category = cls()
+        new_category.shopping_list = shopping_list
+        new_category.name = trimmed_name
+        new_category.save()
+        return new_category
+
+
     def __str__(self):
         return 'id: {id} l: {shopping_list} n: {name}'.format(id=self.id,
                                                               shopping_list=self.shopping_list.name,
                                                               name=self.name,
                                                               )
+
+    @classmethod
+    def get_shopping_list_category_by_name(cls, name, shopping_list):
+        trimmed_name = name.strip()
+        category = cls.objects.filter(shopping_list=shopping_list).filter(name__iexact=trimmed_name).first()
+
 
 class SshKey(models.Model):
     shopper = models.ForeignKey('Shopper', null=False, blank=False)
