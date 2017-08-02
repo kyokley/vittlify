@@ -52,6 +52,23 @@ class ItemSerializer(serializers.Serializer):
         instance.save()
         return instance
 
+class ShoppingListCategorySerializer(serializers.ModelSerializer):
+    pk = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(required=True)
+    shopping_list = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = ShoppingListCategory
+        fields = ('pk', 'name', 'shopping_list')
+
+    def create(self, validated_data):
+        if not validated_data.get('name'):
+            raise ValueError('Name must be provided for a new ShoppingListCategory object')
+        if not validated_data.get('shopping_list_id'):
+            raise ValueError('ShoppingLlistId must be provided for a new ShoppingListCategory object')
+        new_category = ShoppingListCategory.new(**validated_data)
+        return new_category
+
 class ShoppingListSerializer(serializers.Serializer):
     pk = serializers.IntegerField(read_only=True)
     owner_id = serializers.IntegerField()
@@ -75,24 +92,6 @@ class ShoppingListSerializer(serializers.Serializer):
         instance.name = validated_data.get('name', instance.name)
         instance.save()
         return instance
-
-class ShoppingListCategorySerializer(serializers.ModelSerializer):
-    pk = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(required=True)
-    shopping_list = ShoppingListSerializer(required=True)
-
-    #class Meta:
-        #model = ShoppingListCategory
-        #fields = '__all__'
-
-    def create(self, validated_data):
-        if not validated_data.get('name'):
-            raise ValueError('Name must be provided for a new ShoppingListCategory object')
-        if not validated_data.get('shopping_list_id'):
-            raise ValueError('ShoppingLlistId must be provided for a new ShoppingListCategory object')
-        new_category = ShoppingListCategory.new(**validated_data)
-        return new_category
-
 
 class ShopperSerializer(serializers.ModelSerializer):
     shopping_lists = ShoppingListSerializer(many=True, read_only=True)
