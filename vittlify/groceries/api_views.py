@@ -13,6 +13,7 @@ from groceries.models import (Item,
                               ShoppingListMember,
                               WebSocketToken,
                               SshKey,
+                              ShoppingListCategory,
                               )
 from groceries.auth import (UnsafeSessionAuthentication,
                             LocalSessionAuthentication,
@@ -432,6 +433,14 @@ class CliShoppingListItemsView(ShoppingListItemsView):
                 except ShoppingList.DoesNotExist:
                     return Response('Provided to_list_guid did not match any lists', status=status.HTTP_404_NOT_FOUND)
                 item.move(to_list, shopper)
+            elif message['endpoint'].lower() == 'categorize':
+                try:
+                    category = ShoppingListCategory.get_shopping_list_category_by_name(message['category_name'],
+                                                                                       item.shopping_list)
+                except ShoppingListCategory.DoesNotExist:
+                    return Response('Could not find provided category %s' % (message['category_name'],), status=status.HTTP_404_NOT_FOUND)
+
+                item.category = category
             item.save()
         except MultipleObjectsReturned:
             return Response('Provided guid matched multiple items', status=status.HTTP_409_CONFLICT)

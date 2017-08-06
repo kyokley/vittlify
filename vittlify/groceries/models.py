@@ -396,8 +396,16 @@ class ShoppingListCategory(models.Model):
     @classmethod
     def get_shopping_list_category_by_name(cls, name, shopping_list):
         trimmed_name = name.strip()
+
+        if trimmed_name.lower() == 'none':
+            return None
+
         category = cls.objects.filter(shopping_list=shopping_list).filter(name__iexact=trimmed_name).first()
 
+        if not category:
+            raise cls.DoesNotExist('Could not find provided category %s' % name)
+
+        return category
 
 class SshKey(models.Model):
     shopper = models.ForeignKey('Shopper', null=False, blank=False)
