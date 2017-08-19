@@ -424,7 +424,10 @@ class CliShoppingListItemsView(ShoppingListItemsView):
             elif message['endpoint'].lower() == 'uncomplete':
                 item.done = False
             elif message['endpoint'].lower() == 'modify':
-                item.comments = message['comments']
+                comment = message['comments']
+                if message['append'] and item.comments:
+                    comment = '\n'.join([item.comments, comment])
+                item.comments = comment
             elif message['endpoint'].lower() == 'move':
                 try:
                     to_list = ShoppingList.get_by_guid(message['to_list_guid'], shopper=shopper)
