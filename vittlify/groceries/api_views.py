@@ -424,9 +424,13 @@ class CliShoppingListItemsView(ShoppingListItemsView):
             elif message['endpoint'].lower() == 'uncomplete':
                 item.done = False
             elif message['endpoint'].lower() == 'modify':
+                if message['delete'] and message['comments']:
+                    return Response('Cannot both delete and set comments', status=status.HTTP_400_BAD_REQUEST)
                 comment = message['comments']
                 if message['append'] and item.comments:
                     comment = '\n'.join([item.comments, comment])
+                elif message['delete']:
+                    comment = ''
                 item.comments = comment
             elif message['endpoint'].lower() == 'move':
                 try:
