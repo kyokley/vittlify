@@ -15,11 +15,9 @@ RECENTLY_COMPLETED_DAYS = 14
 LARGE_INT = 999999999
 ACTIVE_TOKENS = 5
 
-RSA_BEGIN = '-----BEGIN RSA PUBLIC KEY-----'
-RSA_END = '-----END RSA PUBLIC KEY-----'
-
 RSA_PRIVATE_BEGIN = '-----BEGIN RSA PRIVATE KEY-----'
 RSA_PRIVATE_END = '-----END RSA PRIVATE KEY-----'
+
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
@@ -33,7 +31,7 @@ class Item(models.Model):
     guid = models.CharField(max_length=32, default=createToken, unique=True, null=False)
 
     class Meta:
-        #unique_together = ('name', 'shopping_list')
+        unique_together = ('name', 'shopping_list')
         ordering = ('name',)
 
     @classmethod
@@ -63,6 +61,7 @@ class Item(models.Model):
 
     def _get_category(self):
         return self._category
+
     def _set_category(self, val):
         if val and val.shopping_list != self.shopping_list:
             raise Exception('Invalid category for this item')
@@ -71,6 +70,7 @@ class Item(models.Model):
 
     def _get_category_id(self):
         return self.category and self.category.id
+
     def _set_category_id(self, val):
         if val:
             category = ShoppingListCategory.objects.get(pk=val)
@@ -85,6 +85,7 @@ class Item(models.Model):
 
     def _get_done(self):
         return self._done
+
     def _set_done(self, val):
         if val:
             self.date_completed = datetime.utcnow().replace(tzinfo=utc)
@@ -124,6 +125,7 @@ class Item(models.Model):
             return (cls.objects
                        .filter(shopping_list__shoppinglistmember__shopper=shopper)
                        .get(query))
+
 
 class Shopper(models.Model):
     DAILY = 'daily'
@@ -222,6 +224,7 @@ class Shopper(models.Model):
         user = User.objects.filter(username__iexact=username).first()
         return cls.objects.filter(user=user).first()
 
+
 class RecentlyCompletedShoppingList(object):
     def __init__(self,
                  owner,
@@ -231,6 +234,7 @@ class RecentlyCompletedShoppingList(object):
         self.owner = owner if isinstance(owner, Shopper) else Shopper.objects.filter(user=owner).first()
         self.name = name
         self.displayItems = [x for x in Item.recentlyCompletedByShopper(self.owner)]
+
 
 class ShoppingList(models.Model):
     owner = models.ForeignKey('Shopper', related_name='owned_lists')
@@ -291,6 +295,7 @@ class ShoppingList(models.Model):
                        .filter(shoppinglistmember__shopper=shopper)
                        .get(query))
 
+
 class ShoppingListMember(models.Model):
     shopper = models.ForeignKey('Shopper')
     shopping_list = models.ForeignKey('ShoppingList')
@@ -304,6 +309,7 @@ class ShoppingListMember(models.Model):
         return {'shopper': self.shopper.as_dict(),
                 'shopping_list': self.shopping_list.as_dict(),
                 'id': self.id}
+
 
 class NotifyAction(models.Model):
     item = models.ForeignKey('Item', null=True)
@@ -333,6 +339,7 @@ class NotifyAction(models.Model):
                                         localtime(self.date_added).strftime('%a %b %d'),
                                         self.action)
 
+
 class WebSocketToken(models.Model):
     guid = models.CharField(max_length=32, default=createToken, unique=True)
     shopper = models.ForeignKey('Shopper', null=False, blank=False)
@@ -360,6 +367,7 @@ class WebSocketToken(models.Model):
         for token in tokens[5:]:
             token.delete()
 
+
 class ShoppingListCategory(models.Model):
     shopping_list = models.ForeignKey('ShoppingList', related_name='categories', null=False, blank=False)
     name = models.CharField(max_length=200, null=False, blank=False, default='None')
@@ -386,7 +394,6 @@ class ShoppingListCategory(models.Model):
         new_category.save()
         return new_category
 
-
     def __str__(self):
         return 'id: {id} l: {shopping_list} n: {name}'.format(id=self.id,
                                                               shopping_list=self.shopping_list.name,
@@ -406,6 +413,7 @@ class ShoppingListCategory(models.Model):
             raise cls.DoesNotExist('Could not find provided category %s' % name)
 
         return category
+
 
 class SshKey(models.Model):
     shopper = models.ForeignKey('Shopper', null=False, blank=False)
@@ -445,7 +453,7 @@ class SshKey(models.Model):
         Shamelessly copied from http://stackoverflow.com/questions/6682815/deriving-an-ssh-fingerprint-from-a-public-key-in-python
         For specification, see RFC4716, section 4.
         """
-        fp_plain = hashlib.md5(self.ssh_format).hexdigest() #nosec
+        fp_plain = hashlib.md5(self.ssh_format).hexdigest()  # nosec
         return "MD5&nbsp;" + ':'.join(a + b for a, b in zip(fp_plain[::2], fp_plain[1::2]))
     fingerprint = hash_md5
 
