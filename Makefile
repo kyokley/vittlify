@@ -1,4 +1,4 @@
-.PHONY: build build-dev
+.PHONY: build build-dev help list up shell down
 
 help: ## This help
 	@grep -F "##" $(MAKEFILE_LIST) | grep -vF '@grep -F "##" $$(MAKEFILE_LIST)' | sed -E 's/(:).*##/\1/' | sort
@@ -26,3 +26,6 @@ up: ## Run vittlify on port 8000
 
 shell:
 	docker-compose run vittlify /bin/bash
+
+down:
+	docker-compose down
