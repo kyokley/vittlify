@@ -1,10 +1,10 @@
 # Based on an example from http://masnun.com/2010/01/01/sending-mail-via-postfix-a-perfect-python-example.html
 import smtplib
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEBase import MIMEBase
-from email.MIMEText import MIMEText
-from email.Utils import COMMASPACE, formatdate
-from email import Encoders
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate
+from email import encoders
 import os
 from config.settings import EMAIL_FROM_ADDR
 from binascii import hexlify
@@ -33,7 +33,7 @@ def sendMail(to_addr, subject, text, from_addr=EMAIL_FROM_ADDR, files=None, serv
     for file in files:
         part = MIMEBase('application', 'octet-stream')
         part.set_payload(open(file, 'rb').read())
-        Encoders.encode_base64(part)
+        encoders.encode_base64(part)
         part.add_header('Content-Disposition',
                         'attachment; filename="%s"' % os.path.basename(file))
         msg.attach(part)

@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.utils.timezone import utc, localtime
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
-from email_template import EMAIL_TEMPLATE
+from .email_template import EMAIL_TEMPLATE
 from groceries.utils import createToken
 
 RECENTLY_COMPLETED_DAYS = 14
@@ -21,13 +21,13 @@ RSA_PRIVATE_END = '-----END RSA PRIVATE KEY-----'
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
-    shopping_list = models.ForeignKey('ShoppingList', related_name='items')
+    shopping_list = models.ForeignKey('ShoppingList', related_name='items', on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
     comments = models.TextField(default='', blank=True)
     _done = models.BooleanField(db_column='done', default=False)
     date_completed = models.DateTimeField(null=True, blank=True)
-    _category = models.ForeignKey('ShoppingListCategory', null=True, db_column='category')
+    _category = models.ForeignKey('ShoppingListCategory', null=True, db_column='category', on_delete=models.SET_NULL)
     guid = models.CharField(max_length=32, default=createToken, unique=True, null=False)
 
     class Meta:
@@ -134,7 +134,7 @@ class Shopper(models.Model):
                                (WEEKLY, 'Weekly'),
                                (None, 'No Emails'),
                                )
-    user = models.OneToOneField('auth.User')
+    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
     shopping_lists = models.ManyToManyField('ShoppingList', blank=True, through='ShoppingListMember', related_name='members')
     email_frequency = models.CharField(max_length=6,
                                        choices=EMAIL_FREQUENCY_CHOICES,
@@ -237,7 +237,7 @@ class RecentlyCompletedShoppingList(object):
 
 
 class ShoppingList(models.Model):
-    owner = models.ForeignKey('Shopper', related_name='owned_lists')
+    owner = models.ForeignKey('Shopper', related_name='owned_lists', on_delete=models.PROTECT)
     name = models.CharField(max_length=200, default='')
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
@@ -297,8 +297,8 @@ class ShoppingList(models.Model):
 
 
 class ShoppingListMember(models.Model):
-    shopper = models.ForeignKey('Shopper')
-    shopping_list = models.ForeignKey('ShoppingList')
+    shopper = models.ForeignKey('Shopper', on_delete=models.CASCADE)
+    shopping_list = models.ForeignKey('ShoppingList', on_delete=models.CASCADE)
 
     def __str__(self):
         return '{list_name} is shared with shopper {shopper_name}'.format(
@@ -312,9 +312,9 @@ class ShoppingListMember(models.Model):
 
 
 class NotifyAction(models.Model):
-    item = models.ForeignKey('Item', null=True)
-    shopping_list = models.ForeignKey('ShoppingList', null=True)
-    shopper = models.ForeignKey('Shopper', null=False)
+    item = models.ForeignKey('Item', null=True, on_delete=models.CASCADE)
+    shopping_list = models.ForeignKey('ShoppingList', null=True, on_delete=models.SET_NULL)
+    shopper = models.ForeignKey('Shopper', null=False, on_delete=models.CASCADE)
     action = models.TextField(default='', blank=True)
     sent = models.BooleanField(null=False, default=False, db_index=True)
     weekly_sent = models.BooleanField(null=False, default=False, db_index=True)
@@ -342,7 +342,7 @@ class NotifyAction(models.Model):
 
 class WebSocketToken(models.Model):
     guid = models.CharField(max_length=32, default=createToken, unique=True)
-    shopper = models.ForeignKey('Shopper', null=False, blank=False)
+    shopper = models.ForeignKey('Shopper', null=False, blank=False, on_delete=models.CASCADE)
     active = models.BooleanField(null=False, default=True)
     date_added = models.DateTimeField(auto_now_add=True)
     date_edited = models.DateTimeField(auto_now=True)
@@ -369,7 +369,7 @@ class WebSocketToken(models.Model):
 
 
 class ShoppingListCategory(models.Model):
-    shopping_list = models.ForeignKey('ShoppingList', related_name='categories', null=False, blank=False)
+    shopping_list = models.ForeignKey('ShoppingList', related_name='categories', null=False, blank=False, on_delete=models.CASCADE)
     name = models.CharField(max_length=200, null=False, blank=False, default='None')
     date_added = models.DateTimeField(auto_now_add=True)
 
@@ -416,7 +416,7 @@ class ShoppingListCategory(models.Model):
 
 
 class SshKey(models.Model):
-    shopper = models.ForeignKey('Shopper', null=False, blank=False)
+    shopper = models.ForeignKey('Shopper', null=False, blank=False, on_delete=models.CASCADE)
     title = models.TextField(null=False, blank=False)
     ssh_format = models.TextField(null=False, blank=False)
     date_added = models.DateTimeField(auto_now_add=True)

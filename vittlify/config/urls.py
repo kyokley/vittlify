@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^vittlify/', include('groceries.urls', namespace='groceries')),
+    url(r'^admin/', admin.site.urls),
+    url(r'^vittlify/', include('groceries.urls')),
     url(r'^$', RedirectView.as_view(url='/vittlify/')),
 ]
