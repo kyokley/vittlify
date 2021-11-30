@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(default=b'', max_length=200)),
                 ('date_added', models.DateTimeField(auto_now_add=True)),
                 ('date_edited', models.DateTimeField(auto_now=True)),
-                ('owner', models.ForeignKey(to='groceries.Shopper')),
+                ('owner', models.ForeignKey(on_delete=models.deletion.PROTECT, to='groceries.Shopper')),
             ],
             options={
                 'ordering': ('date_added',),
@@ -50,8 +50,8 @@ class Migration(migrations.Migration):
             name='ShoppingListMember',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('shopper', models.ForeignKey(to='groceries.Shopper')),
-                ('shopping_list', models.ForeignKey(to='groceries.ShoppingList')),
+                ('shopper', models.ForeignKey(on_delete=models.deletion.CASCADE, to='groceries.Shopper')),
+                ('shopping_list', models.ForeignKey(on_delete=models.deletion.CASCADE, to='groceries.ShoppingList')),
             ],
         ),
         migrations.AddField(
@@ -62,12 +62,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='shopper',
             name='user',
-            field=models.OneToOneField(to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(on_delete=models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
             model_name='item',
             name='shopping_list',
-            field=models.ForeignKey(related_name='items', to='groceries.ShoppingList'),
+            field=models.ForeignKey(on_delete=models.deletion.CASCADE, related_name='items', to='groceries.ShoppingList'),
         ),
         migrations.AlterUniqueTogether(
             name='item',
