@@ -16,7 +16,6 @@ build: ## Build API container with production requirements
 build-dev: ## Build API container with dev/test requirements
 	docker build \
 		  --build-arg BUILDKIT_INLINE_CACHE=1 \
-		  --build-arg BUILDKIT_INLINE_CACHE=1 \
 		  --tag=kyokley/vittlify \
 		  --target=dev \
 		  .
