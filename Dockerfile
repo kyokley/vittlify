@@ -26,6 +26,9 @@ FROM base AS dev
 ENV VIRTUAL_ENV=/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+RUN apt-get update && \
+        apt-get install -y ripgrep
+
 WORKDIR /code
 
 COPY pyproject.toml poetry.lock ./
