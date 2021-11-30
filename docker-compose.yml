@@ -19,6 +19,10 @@ services:
         build:
           context: .
           target: dev
+        environment:
+          - DB_NAME=postgres
+          - DB_USER=postgres
+          - DB_HOST=postgres
         command:
             sh -c "/venv/bin/python manage.py runserver 0.0.0.0:8000"
         hostname: vittlify
