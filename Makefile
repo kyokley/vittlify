@@ -38,5 +38,8 @@ down:
 fresh: ## Reload a fresh copy of the application
 	docker-compose down -v
 	docker-compose up -d
-	sleep 5
+	sleep 3
 	docker-compose exec vittlify /bin/bash -c 'python manage.py migrate'
+
+attach:
+	docker attach $(docker ps -qf name=vittlify-vittlify-1)

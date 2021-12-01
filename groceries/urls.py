@@ -3,6 +3,7 @@ from . import (views,
                api_views,
                )
 
+app_name = 'groceries'
 urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^signin/$', views.signin, name='signin'),

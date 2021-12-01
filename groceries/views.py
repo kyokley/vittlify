@@ -16,10 +16,11 @@ from .models import (Shopper,
                      )
 from config.settings import NODE_SERVER
 
+
 def home(request):
     context = {'loggedin': False}
     user = request.user
-    if user and user.is_authenticated():
+    if user and user.is_authenticated:
         context['loggedin'] = True
         shopper = Shopper.objects.filter(user=user).first()
         shopping_lists = list(shopper.shopping_lists.all())
@@ -38,11 +39,12 @@ def home(request):
         context['theme'] = shopper.theme
     return render(request, 'groceries/home.html', context)
 
+
 def settings(request):
     context = {'loggedin': False}
     user = request.user
 
-    if not user or not user.is_authenticated():
+    if not user or not user.is_authenticated:
         return HttpResponseRedirect('/vittlify')
 
     context['node_server'] = NODE_SERVER
@@ -56,9 +58,10 @@ def settings(request):
                                       .all())
     context['owned_lists'] = owned_lists
     context['shoppers'] = [shopper for shopper in Shopper.objects.select_related('user').all()
-                                if shopper.user != user]
+                           if shopper.user != user]
     context['sshkeys'] = list(owner.sshkey_set.all())
     return render(request, 'groceries/settings.html', context)
+
 
 def signin(request):
     context = {}
@@ -94,11 +97,13 @@ def signin(request):
     context['form'] = form
     return render(request, 'groceries/signin.html', context)
 
+
 def signout(request):
     logout(request)
     context = {}
     context['node_server'] = NODE_SERVER
     return render(request, 'groceries/signout.html', context)
+
 
 def shared_lists(request, shopper_id):
     if request.method == 'GET':
@@ -117,6 +122,7 @@ def shared_lists(request, shopper_id):
         data = {'selected': [x.as_dict() for x in selected],
                 'unselected': [x.as_dict() for x in unselected]}
         return JsonResponse(data)
+
 
 def shared_list_member_json(request, shopper_id, list_id):
     owner = Shopper.objects.filter(user=request.user).first()
@@ -145,11 +151,12 @@ def shared_list_member_json(request, shopper_id, list_id):
             slm.delete()
             return JsonResponse({}, status=200)
 
+
 def import_file(request):
     context = {'loggedin': False}
     user = request.user
 
-    if not user or not user.is_authenticated():
+    if not user or not user.is_authenticated:
         return HttpResponseRedirect('/vittlify')
 
     context = {'loggedin': True}
