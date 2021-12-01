@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='item',
             name='_category',
-            field=models.ForeignKey(db_column=b'category', null=True, on_delete=django.db.models.deletion.CASCADE, to='groceries.ShoppingListCategory'),
+            field=models.ForeignKey(db_column='category', null=True, on_delete=django.db.models.deletion.CASCADE, to='groceries.ShoppingListCategory'),
         ),
     ]

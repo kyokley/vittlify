@@ -20,6 +20,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='shopper',
             name='email_frequency',
-            field=models.CharField(choices=[(b'daily', b'Daily'), (b'weekly', b'Weekly')], default=b'daily', max_length=6),
+            field=models.CharField(choices=[('daily', 'Daily'), ('weekly', 'Weekly')], default='daily', max_length=6),
         ),
     ]

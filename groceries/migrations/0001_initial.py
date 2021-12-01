@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('date_added', models.DateTimeField(auto_now_add=True)),
                 ('date_edited', models.DateTimeField(auto_now=True)),
                 ('comments', models.TextField(default=b'', blank=True)),
-                ('_done', models.BooleanField(default=False, db_column=b'done')),
+                ('_done', models.BooleanField(default=False, db_column='done')),
                 ('date_completed', models.DateTimeField(null=True, blank=True)),
             ],
             options={
