@@ -38,12 +38,12 @@ services:
           - ./:/code
 
     vittlify-node:
-        image: kyokley/vittlify
+        image: kyokley/vittlify-node
         build:
-          context: .
+          context: ./nodejs
           target: vittlify-node
         ports:
-            - "8000:8000"
+          - "3000:3000"
 
 # Persistent Volumes
 volumes:

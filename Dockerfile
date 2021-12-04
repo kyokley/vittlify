@@ -41,8 +41,3 @@ ENV VIRTUAL_ENV=/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 CMD ["gunicorn", "-b", "0.0.0.0:8000", "--conf", "gunicorn_conf.py", "--access-logfile", "-", "--log-file", "-", "--error-logfile", "-", "vittlify.config.wsgi:application"]
-
-FROM ${NODE_IMAGE} AS vittlify-node
-WORKDIR /code
-COPY ./nodejs /code
-CMD ["node", "/code/vittlify.js"]
