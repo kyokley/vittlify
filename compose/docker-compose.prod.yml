@@ -1,0 +1,9 @@
+version: '3.4'
+
+services:
+  vittlify:
+    build:
+      context: .
+      target: prod
+    command:
+      /bin/sh -c "gunicorn -b 0.0.0.0:8000 --conf gunicorn_conf.py --access-logfile - --log-file - --error-logfile - vittlify.config.wsgi:application"

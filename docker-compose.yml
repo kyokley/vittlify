@@ -1,60 +1,33 @@
 version: '3.4'
 
 services:
-    postgres:
-        hostname: postgres
-        image: postgres
-        environment:
-          - POSTGRES_PASSWORD=postgres
-          - POSTGRES_HOST_AUTH_METHOD=trust
-        ports:
-            - "5432:5432"
-        volumes:
-          - vittlify-data:/var/lib/postgresql/data
-        networks:
-          - vittlify-backend
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - vittlify-data:/var/lib/postgresql/data
 
-    vittlify:
-        image: kyokley/vittlify
-        build:
-          context: .
-          target: dev
-        environment:
-          - DB_NAME=postgres
-          - DB_USER=postgres
-          - DB_HOST=postgres
-          - INTERNAL_NODE_SERVER=http://vittlify-node:3000
-          - EXTERNAL_NODE_SERVER=http://localhost:3000
-        command:
-            sh -c "/venv/bin/python manage.py runserver 0.0.0.0:8000"
-        hostname: vittlify
-        depends_on:
-            - "postgres"
-        ports:
-            - "8000:8000"
-        tty: true
-        stdin_open: true
-        networks:
-          - vittlify-backend
-        volumes:
-          - ./:/code
+  vittlify:
+    image: kyokley/vittlify
+    build:
+      context: .
+      target: dev
+    depends_on:
+      - "postgres"
+    ports:
+      - "8000:8000"
+    tty: true
+    stdin_open: true
 
-    vittlify-node:
-        image: kyokley/vittlify-node
-        build:
-          context: ./nodejs
-          target: vittlify-node
-        hostname: vittlify-node
-        ports:
-          - "3000:3000"
-        networks:
-          - vittlify-backend
-        volumes:
-          - ./nodejs:/code
+  vittlify-node:
+    image: kyokley/vittlify-node
+    build:
+      context: ./nodejs
+      target: vittlify-node
+    ports:
+      - "3000:3000"
 
 # Persistent Volumes
 volumes:
   vittlify-data:
-
-networks:
-    vittlify-backend:
