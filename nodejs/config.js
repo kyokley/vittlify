@@ -1,5 +1,5 @@
 var config = {};
-config.host = 'localhost';
+config.host = 'vittlify';
 config.port = 8000;
 config.protocol = 'http';
 
