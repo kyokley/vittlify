@@ -40,4 +40,7 @@ FROM base AS prod
 ENV VIRTUAL_ENV=/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+COPY . /code
+WORKDIR /code
+
 CMD ["gunicorn", "-b", "0.0.0.0:8000", "--conf", "gunicorn_conf.py", "--access-logfile", "-", "--log-file", "-", "--error-logfile", "-", "vittlify.config.wsgi:application"]

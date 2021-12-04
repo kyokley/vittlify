@@ -27,10 +27,11 @@ from django.http import (Http404,
                          )
 from django.core.exceptions import PermissionDenied, MultipleObjectsReturned
 from config.settings import (ALEXA_LIST,
-                             NODE_SERVER,
+                             INTERNAL_NODE_SERVER,
                              )
 from groceries.utils import queryDictToDict
 import requests
+
 
 class ShoppingListItemsView(APIView):
     def get_items(self, pk):
@@ -43,6 +44,7 @@ class ShoppingListItemsView(APIView):
         items = self.get_items(pk)
         serializer = ItemSerializer(items, many=True)
         return Response(serializer.data)
+
 
 class ItemView(APIView):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
@@ -111,7 +113,7 @@ class ItemView(APIView):
                 socket_tokens = WebSocketToken.objects.filter(shopper=shopping_list_member.shopper).filter(active=True).all()
                 for socket_token in socket_tokens:
                     data['socket_token'] = socket_token.guid
-                    node_resp = requests.put('%s/item/%s' % (NODE_SERVER,
+                    node_resp = requests.put('%s/item/%s' % (INTERNAL_NODE_SERVER,
                                                              item.id), data=data)
                     node_resp.raise_for_status()
 
@@ -152,11 +154,12 @@ class ItemView(APIView):
                 socket_tokens = WebSocketToken.objects.filter(shopper=shopping_list_member.shopper).filter(active=True).all()
                 for socket_token in socket_tokens:
                     data['socket_token'] = socket_token.guid
-                    node_resp = requests.post('%s/item' % NODE_SERVER, data=data)
+                    node_resp = requests.post('%s/item' % INTERNAL_NODE_SERVER, data=data)
                     node_resp.raise_for_status()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UnsafeItemView(ItemView):
     authentication_classes = (UnsafeSessionAuthentication,)
@@ -192,34 +195,12 @@ class UnsafeItemView(ItemView):
                 socket_tokens = WebSocketToken.objects.filter(shopper=shopping_list_member.shopper).filter(active=True).all()
                 for socket_token in socket_tokens:
                     data['socket_token'] = socket_token.guid
-                    node_resp = requests.post('%s/item' % NODE_SERVER, data=data)
+                    node_resp = requests.post('%s/item' % INTERNAL_NODE_SERVER, data=data)
                     node_resp.raise_for_status()
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # If Alexa ever supports completing items, this will be useful
-    # until then, just leaving this commented out
-    #def put(self, request, format=None):
-        #name = request.data['name']
-        #shopping_list = ShoppingList.objects.get(pk=ALEXA_LIST)
-        #items = (Item.objects.filter(shopping_list=shopping_list)
-                             #.filter(name=name)
-                             #.all())
-        #for item in items:
-            #na = NotifyAction()
-            #na.shopper = shopping_list.owner
-            #na.shopping_list = shopping_list
-            #na.item = item
-            #template = '{item_name} has been completed by {username}'
-            #na.action = template.format(
-                            #item_name=item.name,
-                            #username=na.shopper.username)
-            #na.save()
-#
-            #item.done = True
-            #item.save()
-        #return Response(status=status.HTTP_200_OK)
 
 class ShoppingListView(APIView):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
@@ -265,6 +246,7 @@ class ShoppingListView(APIView):
         shopping_list.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class ShopperView(APIView):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
 
@@ -288,8 +270,10 @@ class ShopperView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class WebSocketTokenView(APIView):
     authentication_classes = (LocalSessionAuthentication,)
+
     def get_token(self, guid):
         try:
             return WebSocketToken.objects.filter(guid=guid).first()
@@ -309,6 +293,7 @@ class WebSocketTokenView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class ShoppingListCategoryView(APIView):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
 
@@ -319,6 +304,7 @@ class ShoppingListCategoryView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class SshKeyView(APIView):
     authentication_classes = (BasicAuthentication, SessionAuthentication)
@@ -346,6 +332,7 @@ class SshKeyView(APIView):
             raise ValueError('Cannot delete SSH key not owned by the current user')
         sshkey.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 def check_authenticated_user(func):
     def wraps(*args, **kwargs):

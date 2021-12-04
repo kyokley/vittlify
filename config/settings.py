@@ -39,7 +39,7 @@ except IOError:
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['vittlify', 'localhost']
 
 
 # Application definition
@@ -121,6 +121,8 @@ EMAIL_FROM_ADDR = 'info@vittlify.com'
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = []
+STATIC_ROOT = '/var/www/static/'
 
 ALEXA_PASS = 'ALEXA_PASS'
 ALEXA_LIST = 1
@@ -129,7 +131,8 @@ CRON_CLASSES = ['groceries.scheduled_task.EmailJob',
                 'groceries.scheduled_task.EmailWeeklyJob',
                 'groceries.scheduled_task.CleanUpTokensJob']
 
-NODE_SERVER = 'http://vittlify-node:3000'
+INTERNAL_NODE_SERVER = os.getenv('INTERNAL_NODE_SERVER')
+EXTERNAL_NODE_SERVER = os.getenv('EXTERNAL_NODE_SERVER')
 
 try:
     from .local_settings import *

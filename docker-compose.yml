@@ -23,6 +23,8 @@ services:
           - DB_NAME=postgres
           - DB_USER=postgres
           - DB_HOST=postgres
+          - INTERNAL_NODE_SERVER=http://vittlify-node:3000
+          - EXTERNAL_NODE_SERVER=http://localhost:3000
         command:
             sh -c "/venv/bin/python manage.py runserver 0.0.0.0:8000"
         hostname: vittlify
@@ -47,6 +49,8 @@ services:
           - "3000:3000"
         networks:
           - vittlify-backend
+        volumes:
+          - ./nodejs:/code
 
 # Persistent Volumes
 volumes:

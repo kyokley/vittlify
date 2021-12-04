@@ -14,7 +14,7 @@ from .models import (Shopper,
                      ShoppingListMember,
                      WebSocketToken,
                      )
-from config.settings import NODE_SERVER
+from config.settings import EXTERNAL_NODE_SERVER
 
 
 def home(request):
@@ -27,7 +27,7 @@ def home(request):
         context['shopping_lists'] = shopping_lists
         recently_completed_list = RecentlyCompletedShoppingList(user)
         context['shopping_lists'].append(recently_completed_list)
-        context['node_server'] = NODE_SERVER
+        context['node_server'] = EXTERNAL_NODE_SERVER
 
         token = WebSocketToken()
         token.active = True
@@ -47,7 +47,7 @@ def settings(request):
     if not user or not user.is_authenticated:
         return HttpResponseRedirect('/vittlify')
 
-    context['node_server'] = NODE_SERVER
+    context['node_server'] = EXTERNAL_NODE_SERVER
     context['loggedin'] = True
     owner = Shopper.objects.filter(user=user).first()
     context['owner'] = owner
@@ -65,7 +65,7 @@ def settings(request):
 
 def signin(request):
     context = {}
-    context['node_server'] = NODE_SERVER
+    context['node_server'] = EXTERNAL_NODE_SERVER
     if request.method == 'POST':
         form = SignInForm(request.POST)
         if form.is_valid():
@@ -101,7 +101,7 @@ def signin(request):
 def signout(request):
     logout(request)
     context = {}
-    context['node_server'] = NODE_SERVER
+    context['node_server'] = EXTERNAL_NODE_SERVER
     return render(request, 'groceries/signout.html', context)
 
 

@@ -1,4 +1,4 @@
-.PHONY: build build-dev help list up shell down
+.PHONY: build build-dev help list up shell down attach
 
 help: ## This help
 	@grep -F "##" $(MAKEFILE_LIST) | grep -vF '@grep -F "##" $$(MAKEFILE_LIST)' | sed -E 's/(:).*##/\1/' | sort
@@ -14,11 +14,10 @@ build: ## Build API container with production requirements
 		  .
 
 build-dev: ## Build API container with dev/test requirements
-	docker build \
-		  --build-arg BUILDKIT_INLINE_CACHE=1 \
-		  --tag=kyokley/vittlify \
-		  --target=dev \
-		  .
+	docker-compose build --parallel
+
+build-node: ## Build node container
+	docker-compose build vittlify-node
 
 up: ## Run vittlify on port 8000
 	docker-compose up -d
@@ -42,4 +41,4 @@ fresh: ## Reload a fresh copy of the application
 	docker-compose exec vittlify /bin/bash -c 'python manage.py migrate'
 
 attach:
-	docker attach $(docker ps -qf name=vittlify-vittlify-1)
+	docker attach $$(docker ps -qf name=vittlify_vittlify_1)
