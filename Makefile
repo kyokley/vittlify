@@ -10,14 +10,17 @@ help: ## This help
 list: ## List all targets
 	@make -qp | awk -F':' '/^[a-zA-Z0-9][^$$#\/\t=]*:([^=]|$$)/ {split($$1,A,/ /);for(i in A)print A[i]}'
 
-build: ## Build API container with production requirements
+build-prod: ## Build API container with production requirements
 	docker-compose ${PROD_DOCKER_COMPOSE_ARGS} build --parallel
 
 build-dev: ## Build API container with dev/test requirements
 	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} build --parallel
 
-up: ## Run vittlify on port 8000
+up-dev: ## Run vittlify on port 8000
 	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} up -d
+
+up-prod:
+	docker-compose ${PROD_DOCKER_COMPOSE_ARGS} up -d
 
 shell: up ## Open a shell into a running vittlify container
 	docker-compose exec vittlify /bin/bash

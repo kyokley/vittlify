@@ -15,6 +15,7 @@ services:
       target: dev
     depends_on:
       - "postgres"
+      - "vittlify-node"
     ports:
       - "8000:8000"
     tty: true

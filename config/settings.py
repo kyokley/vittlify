@@ -91,7 +91,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
-    # Testing settings!!!
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': os.getenv('DB_NAME'),                      # Or path to database file if using sqlite3.
@@ -122,7 +121,7 @@ EMAIL_FROM_ADDR = 'info@vittlify.com'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = []
-STATIC_ROOT = '/var/www/static/'
+STATIC_ROOT = '/static/'
 
 ALEXA_PASS = 'ALEXA_PASS'
 ALEXA_LIST = 1
@@ -133,8 +132,3 @@ CRON_CLASSES = ['groceries.scheduled_task.EmailJob',
 
 INTERNAL_NODE_SERVER = os.getenv('INTERNAL_NODE_SERVER')
 EXTERNAL_NODE_SERVER = os.getenv('EXTERNAL_NODE_SERVER')
-
-try:
-    from .local_settings import *
-except ImportError:
-    pass
