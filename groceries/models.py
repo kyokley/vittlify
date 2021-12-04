@@ -453,13 +453,13 @@ class SshKey(models.Model):
         Shamelessly copied from http://stackoverflow.com/questions/6682815/deriving-an-ssh-fingerprint-from-a-public-key-in-python
         For specification, see RFC4716, section 4.
         """
-        fp_plain = hashlib.md5(self.ssh_format).hexdigest()  # nosec
+        fp_plain = hashlib.md5(self.ssh_format.encode()).hexdigest()  # nosec
         return "MD5&nbsp;" + ':'.join(a + b for a, b in zip(fp_plain[::2], fp_plain[1::2]))
     fingerprint = hash_md5
 
     @property
     def rsaObj(self):
-        return serialization.load_ssh_public_key(self.ssh_format, default_backend())
+        return serialization.load_ssh_public_key(self.ssh_format.encode(), default_backend())
 
     def verify(self, message, signature):
         try:
