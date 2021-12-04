@@ -129,7 +129,7 @@ CRON_CLASSES = ['groceries.scheduled_task.EmailJob',
                 'groceries.scheduled_task.EmailWeeklyJob',
                 'groceries.scheduled_task.CleanUpTokensJob']
 
-NODE_SERVER = 'http://localhost:3000'
+NODE_SERVER = 'http://vittlify-node:3000'
 
 try:
     from .local_settings import *

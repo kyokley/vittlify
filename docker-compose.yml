@@ -42,8 +42,11 @@ services:
         build:
           context: ./nodejs
           target: vittlify-node
+        hostname: vittlify-node
         ports:
           - "3000:3000"
+        networks:
+          - vittlify-backend
 
 # Persistent Volumes
 volumes:

@@ -109,12 +109,13 @@ app.post('/item', function(req, res){
                 category_name: req.body.category_name};
 
     var socket_token = req.body.socket_token;
-    if(req.get('host') == 'localhost:3000'){
+    if(req.get('host') == 'vittlify-node:3000'){
         console.log('POST-ing to ' + socket_token);
         console.log(data);
         io.emit('asyncAddItem_' + socket_token, data);
     } else {
         console.log('Request came from an invalid source. Ignoring');
+        console.log(req.get('host'));
     }
     res.send('Success!');
 });
@@ -131,7 +132,7 @@ app.put('/item/:id', function(req, res){
                 category_id: req.body.category_id,
                 category_name: req.body.category_name};
     var socket_token = req.body.socket_token;
-    if(req.get('host') == 'localhost:3000'){
+    if(req.get('host') == 'vittlify-node:3000'){
         console.log('PUT-ing to ' + socket_token);
         console.log(data);
         if(data.modified_done === 'True'){
@@ -147,6 +148,7 @@ app.put('/item/:id', function(req, res){
         }
     } else {
         console.log('Request came from an invalid source. Ignoring');
+        console.log(req.get('host'));
     }
     res.send('Success!');
 });
