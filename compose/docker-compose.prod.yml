@@ -1,23 +1,19 @@
 version: '3.4'
 
 services:
-  postgres:
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST_AUTH_METHOD=trust
-
   vittlify:
     build:
       context: .
       target: prod
     environment:
-      - DB_NAME=postgres
-      - DB_USER=postgres
-      - DB_HOST=postgres
+      - DB_NAME=changeme
+      - DB_USER=changeme
+      - DB_HOST=changeme
+      - DB_PASSWORD=changeme
       - INTERNAL_NODE_SERVER=http://vittlify-node:3000
       - EXTERNAL_NODE_SERVER=http://localhost:3000
     volumes:
-      - ./static:/static
+      - ./docker_static:/static
     command:
       /bin/sh -c "/venv/bin/python manage.py collectstatic --noinput --clear && gunicorn -b 0.0.0.0:8000 --access-logfile - --log-file - --error-logfile - config.wsgi:application"
 
