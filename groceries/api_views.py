@@ -337,7 +337,7 @@ class SshKeyView(APIView):
 def check_authenticated_user(func):
     def wraps(*args, **kwargs):
         request = args[1]
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             return Response('Auth failed', status=status.HTTP_401_UNAUTHORIZED)
         return func(*args, **kwargs)
     return wraps

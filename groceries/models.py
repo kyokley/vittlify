@@ -470,5 +470,11 @@ class SshKey(models.Model):
                                hashes.SHA512())
 
             return True
+        except Exception:
+            self.rsaObj.verify(signature,
+                               message,
+                               )
+
+            return True
         except InvalidSignature:
             return False
