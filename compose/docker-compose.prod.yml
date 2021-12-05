@@ -6,6 +6,7 @@ services:
       context: .
       target: prod
     environment:
+      - DEBUG=false
       - DB_NAME=changeme
       - DB_USER=changeme
       - DB_HOST=changeme
