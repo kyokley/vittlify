@@ -1,7 +1,7 @@
 import hashlib
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric import padding, ed25519, ec, dsa
 from cryptography.exceptions import InvalidSignature
 from django.db import models
 from django.db.models import Q
@@ -463,17 +463,19 @@ class SshKey(models.Model):
 
     def verify(self, message, signature):
         try:
-            self.rsaObj.verify(signature,
-                               message,
-                               padding.PSS(mgf=padding.MGF1(hashes.SHA512()),
-                                           salt_length=padding.PSS.MAX_LENGTH),
-                               hashes.SHA512())
+            if isinstance(self.rsaObj, (ed25519.Ed25519PublicKey,
+                                        ec.EllipticCurvePublicKey,
+                                        dsa.DSAPublicKey)):
+                self.rsaObj.verify(signature,
+                                   message,
+                                   )
 
-            return True
-        except Exception:
-            self.rsaObj.verify(signature,
-                               message,
-                               )
+            else:
+                self.rsaObj.verify(signature,
+                                   message,
+                                   padding.PSS(mgf=padding.MGF1(hashes.SHA512()),
+                                               salt_length=padding.PSS.MAX_LENGTH),
+                                   hashes.SHA512())
 
             return True
         except InvalidSignature:

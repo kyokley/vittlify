@@ -1,5 +1,4 @@
 ARG BASE_IMAGE=python:3.9-slim-bullseye
-ARG NODE_IMAGE=node:latest
 
 FROM ${BASE_IMAGE} AS base
 ENV VIRTUAL_ENV=/venv
