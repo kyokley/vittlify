@@ -1,6 +1,10 @@
 version: '3.4'
 
 services:
+  postgres:
+    ports:
+      - "127.0.0.1:5432:5432"
+
   vittlify:
     build:
       context: .
@@ -15,6 +19,11 @@ services:
       - EXTERNAL_NODE_SERVER=http://localhost:3000
     volumes:
       - ./docker_static:/static
+    ports:
+      - "127.0.0.1:8000:8000"
     command:
       /bin/sh -c "/venv/bin/python manage.py collectstatic --noinput --clear && gunicorn -b 0.0.0.0:8000 --access-logfile - --log-file - --error-logfile - config.wsgi:application"
 
+  vittlify-node:
+    ports:
+      - "127.0.0.1:3000:3000"
