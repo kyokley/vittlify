@@ -4,6 +4,7 @@ services:
   postgres:
     ports:
       - "127.0.0.1:5432:5432"
+    restart: always
 
   vittlify:
     build:
@@ -23,7 +24,9 @@ services:
       - "127.0.0.1:8000:8000"
     command:
       /bin/sh -c "/venv/bin/python manage.py collectstatic --noinput --clear && gunicorn -b 0.0.0.0:8000 --access-logfile - --log-file - --error-logfile - config.wsgi:application"
+    restart: always
 
   vittlify-node:
     ports:
       - "127.0.0.1:3000:3000"
+    restart: always
