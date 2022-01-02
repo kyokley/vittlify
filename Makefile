@@ -42,3 +42,7 @@ fresh: ## Reload a fresh copy of the application
 
 attach:
 	docker attach $$(docker ps -qf name=vittlify_vittlify_1)
+
+publish: build-prod ## Publish container image to dockerhub
+	docker push kyokley/vittlify
+	docker push kyokley/vittlify-node
