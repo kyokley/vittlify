@@ -22,8 +22,8 @@ up-dev: ## Run vittlify on port 8000
 up-prod:
 	docker-compose ${PROD_DOCKER_COMPOSE_ARGS} up -d
 
-shell: up ## Open a shell into a running vittlify container
-	docker-compose exec vittlify /bin/bash
+shell: up-dev ## Open a shell into a running vittlify container
+	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} exec vittlify /bin/bash
 
 db-up:
 	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} up -d postgres
@@ -42,6 +42,12 @@ fresh: ## Reload a fresh copy of the application
 
 attach:
 	docker attach $$(docker ps -qf name=vittlify_vittlify_1)
+
+tests: build-dev ## Run tests
+	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} run vittlify /bin/bash -c 'python manage.py test'
+
+check-migrations: build-dev ## Check for missing migrations
+	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} run vittlify /bin/bash -c 'python manage.py makemigrations --check'
 
 publish: build-prod ## Publish container image to dockerhub
 	docker push kyokley/vittlify
