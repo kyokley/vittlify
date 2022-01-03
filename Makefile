@@ -52,3 +52,24 @@ check-migrations: build-dev ## Check for missing migrations
 publish: build-prod ## Publish container image to dockerhub
 	docker push kyokley/vittlify
 	docker push kyokley/vittlify-node
+
+export SOCKET=/tmp/vittlify-pgdump-socket
+
+db-reload: dropdb createdb ## Dump db for loading locally
+	echo SOCKET=${SOCKET}
+	echo ALMAGEST_SSH_SERVER=${ALMAGEST_SSH_SERVER}
+	ssh -q -M -S $$SOCKET -fnNT -L 5632:localhost:5632 $$ALMAGEST_SSH_SERVER 2>&1 >/dev/null
+	docker run \
+        --rm -it \
+        --net=host \
+        -e "PGTZ=America/Chicago" \
+        -v "$$HOME/.pgpass:/root/.pgpass" \
+        --entrypoint "pg_dump" \
+        kyokley/psql \
+        -U postgres -h localhost -p 5632 -d postgres | docker run \
+        --rm -i \
+        --net=host \
+        -v "$$HOME/.pgpass:/root/.pgpass" \
+        kyokley/psql \
+        -U postgres -h localhost postgres
+	ssh -q -S $$SOCKET -O exit $$ALMAGEST_SSH_SERVER 2>&1 >/dev/null
