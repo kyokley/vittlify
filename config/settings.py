@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': os.getenv('DB_NAME'),                      # Or path to database file if using sqlite3.
         'USER': os.getenv('DB_USER'),
         'PASSWORD': os.getenv('DB_PASSWORD', ''),
@@ -101,6 +101,8 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', ''),                      # Set to empty string for default.
     },
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
