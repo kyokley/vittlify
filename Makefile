@@ -22,14 +22,20 @@ up-dev: ## Run vittlify on port 8000
 up-prod:
 	docker-compose ${PROD_DOCKER_COMPOSE_ARGS} up -d
 
-shell: up ## Open a shell into a running vittlify container
-	docker-compose exec vittlify /bin/bash
+shell: up-dev ## Open a shell into a running vittlify container
+	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} exec vittlify /bin/bash
 
 db-up:
 	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} up -d postgres
 
 db-shell: db-up
 	docker-compose exec postgres /bin/bash
+
+dropdb: down db-up ## Drop postgres db
+	docker-compose exec postgres dropdb -U postgres postgres || true
+
+createdb: down db-up ## Create postgres db
+	docker-compose exec postgres createdb -U postgres postgres
 
 down:
 	docker-compose down
@@ -42,3 +48,37 @@ fresh: ## Reload a fresh copy of the application
 
 attach:
 	docker attach $$(docker ps -qf name=vittlify_vittlify_1)
+
+tests: build-dev ## Run tests
+	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} run vittlify /bin/bash -c 'python manage.py test'
+
+check-migrations: build-dev ## Check for missing migrations
+	docker-compose ${DEV_DOCKER_COMPOSE_ARGS} run vittlify /bin/bash -c 'python manage.py makemigrations --check'
+
+publish: build-prod ## Publish container image to dockerhub
+	docker push kyokley/vittlify
+	docker push kyokley/vittlify-node
+
+SOCKET ?= /tmp/vittlify-pgdump-socket
+# May need to set this to host.docker.internal on mac os systems
+DOCKER_LOCALHOST ?= localhost
+
+db-reload: dropdb createdb ## Dump db for loading locally
+	echo SOCKET=${SOCKET}
+	echo ALMAGEST_SSH_SERVER=${ALMAGEST_SSH_SERVER}
+	echo DOCKER_LOCALHOST=${DOCKER_LOCALHOST}
+	ssh -q -M -S ${SOCKET} -fnNT -L 5632:localhost:5632 ${ALMAGEST_SSH_SERVER} 2>&1 >/dev/null
+	docker run \
+        --rm -it \
+        --net=host \
+        -e "PGTZ=America/Chicago" \
+        -v "$$HOME/.pgpass:/root/.pgpass" \
+        --entrypoint "pg_dump" \
+        kyokley/psql \
+        -U postgres -h ${DOCKER_LOCALHOST} -p 5632 -d postgres | docker run \
+        --rm -i \
+        --net=host \
+        -v "$$HOME/.pgpass:/root/.pgpass" \
+        kyokley/psql \
+        -U postgres -h ${DOCKER_LOCALHOST} -p 5633 postgres
+	ssh -q -S ${SOCKET} -O exit ${ALMAGEST_SSH_SERVER} 2>&1 >/dev/null
